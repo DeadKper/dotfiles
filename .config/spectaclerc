@@ -1,0 +1,23 @@
+[$Version]
+update_info=spectacle_clipboard.upd:clipboard-settings-change,spectacle_rememberregion.upd:spectacle-migrate-rememberregion
+
+[General]
+autoSaveImage=true
+clipboardGroup=PostScreenshotCopyImage
+onLaunchAction=DoNotTakeScreenshot
+showMagnifier=true
+
+[GuiConfig]
+quitAfterSaveCopyExport=true
+window-position=0,0
+
+[KFileDialog Settings]
+Recent Files[$e]=file:$HOME/Downloads/Screenshot_2023.08.20_16.31.41.png,file:$HOME/Downloads/Screenshot_2023.08.20_16.31.41.png
+Recent URLs[$e]=file:$HOME/Downloads/
+detailViewIconSize=16
+
+[Save]
+defaultSaveLocation=file:$HOME/Pictures/Screenshots
+lastSaveAsLocation=file:$HOME/Downloads/Screenshot_2023.08.20_16.31.41.png
+lastSaveLocation=file:$HOME/Pictures/Screenshots/Screenshot_2023.10.21_21.54.13.png
+saveFilenameFormat=Screenshot_%Y.%M.%D_%H.%m.%S

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+  <kcfgfile name=""/>
+
+  <group name="General">
+    <entry name="compactView" type="Bool">
+      <label>If true it only shows a button for the application menu.</label>
+      <default>false</default>
+    </entry>
+    <entry name="fillWidth" type="Bool">
+      <label>If true it always fill the maximum available width, even when there are no menu items shown.</label>
+      <default>false</default>
+    </entry>
+    <entry name="filterByActive" type="Bool">
+      <label>If true it only shows the app menu if the current window that provides its menu is also active</label>
+      <default>true</default>
+    </entry>
+    <entry name="filterChildrenWindows" type="Bool">
+      <label>If true it only shows the app menu only for the current active window and not for its children</label>
+      <default>false</default>
+    </entry>
+    <entry name="filterByScreen" type="Bool">
+      <label>If true it only shows the app menu if the current active window is in the same screen with the plasmoid</label>
+      <default>false</default>
+    </entry>
+    <entry name="filterByMaximized" type="Bool">
+      <label>If true it only shows the app menu if the current active window is maximized</label>
+      <default>false</default>
+    </entry>
+    <entry name="spacing" type="Int">
+      <label>Spacing between menu items</label>
+      <default>6</default>
+    </entry>
+    <entry name="windowTitleIsPresent" type="Bool">
+      <default>false</default>
+      <label>try to identify if windowTitle exists in the same containment. This is set only with applets cooperation</label>
+    </entry>
+    <entry name="showWindowTitleOnMouseExit" type="Bool">
+      <default>false</default>
+      <label>will become hidden in favour of appmenu when the mouse hovers the applet</label>
+    </entry>
+    <entry name="sendActivateWindowTitleCooperationFromEditMode" type="Int">
+        <default>-1</default>
+        <label>-1, means sent. 0, means sent false. 1, means sent true</label>
+    </entry>    
+    <entry name="supportsActiveWindowSchemes" type="Bool">
+      <default>false</default>
+      <label>current option will become available in such case</label>
+    </entry>
+    <entry name="selectedScheme" type="String">
+      <default>_default_</default>
+      <label>current scheme used</label>
+    </entry>
+
+    <entry name="containmentType" type="Enum">
+      <choices>
+         <choice name="Loading"/>
+         <choice name="Plasma"/>
+         <choice name="Latte"/>
+      </choices>
+      <label>it helps to enable/disable options that are specific to plasma or Latte panels</label>
+      <default>0</default>
+    </entry>
+
+    <entry name="toggleMaximizedOnDoubleClick" type="Bool">
+      <default>false</default>
+      <label>If true, toggles active window maximized/restored on double click</label>
+    </entry>
+        <entry name="toggleMaximizedOnMouseWheel" type="Bool">
+      <default>false</default>
+      <label>If true, toggles active window maximized/restored on mouse wheel up/down</label>
+    </entry>
+  </group>
+</kcfg>
