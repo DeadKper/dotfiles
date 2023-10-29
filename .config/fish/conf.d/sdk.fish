@@ -81,4 +81,3 @@ if not set -q SDKMAN_DIR; or test (ls -ld "$SDKMAN_DIR" | awk '{print $3}') != (
   set -e SDKMAN_DIR
   __fish_sdkman_run_in_bash "source $__fish_sdkman_init"
 end
-

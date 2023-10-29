@@ -1,7 +1,6 @@
-function vcode --wraps=cd --description 'alias vcode=cd $argv; code .; exit'
+function vcode --wraps=cd --description 'alias vcode=j $argv; code .; exit'
   if test -n "$argv"
-    cd $argv
+    j $argv
   end
   code .
-  exit
 end

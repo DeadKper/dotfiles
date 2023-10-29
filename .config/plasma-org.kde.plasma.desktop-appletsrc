@@ -39,15 +39,15 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=com.github.casout.wallpaperEngineKde
 
 [Containments][1][ConfigDialog]
-DialogHeight=712
-DialogWidth=1366
+DialogHeight=704
+DialogWidth=1358
 
 [Containments][1][Configuration]
-PreloadWeight=26
+PreloadWeight=18
 
 [Containments][1][General]
 ToolBoxButtonState=topcenter
-ToolBoxButtonX=282
+ToolBoxButtonX=167
 positions={"1366x768":[]\\,"1920x1080":[]\\,"1024x768":[""]}
 sortMode=-1
 
@@ -55,10 +55,14 @@ sortMode=-1
 CustomConf=eyJmYXZvciI6W119
 DisplayMode=1
 FilterStr=01111111011111111111111111111111111
+MuteAudio=false
+PerOptChanged=true
 ResumeTime=50
 SteamLibraryPath[$e]=file:$HOME/.local/share/Steam
-WallpaperSource[$e]=file:$HOME/.local/share/Steam/steamapps/workshop/content/431960/2791113107/scene.json+scene
-WallpaperWorkShopId=2791113107
+VideoBackend=1
+Volume=25
+WallpaperSource[$e]=file:$HOME/.local/share/Steam/steamapps/workshop/content/431960/2223010867/fubukiwallpaper_v2.mp4+video
+WallpaperWorkShopId=2223010867
 
 [Containments][1][Wallpaper][org.kde.image][General]
 Image=file:///usr/share/backgrounds/f36/default/f36-01-day.png
@@ -78,7 +82,7 @@ plugin=org.kde.plasma.kickoff
 
 [Containments][2][Applets][29][Configuration]
 PreloadWeight=100
-popupHeight=515
+popupHeight=512
 popupWidth=657
 
 [Containments][2][Applets][29][Configuration][ConfigDialog]
@@ -87,7 +91,7 @@ DialogWidth=720
 
 [Containments][2][Applets][29][Configuration][General]
 favoritesPortedToKAstats=true
-icon=cx.ring.ring-kde
+icon=ring-kde
 systemFavorites=suspend\\,hibernate\\,reboot\\,shutdown
 
 [Containments][2][Applets][38]
@@ -95,7 +99,7 @@ immutability=1
 plugin=org.kde.plasma.icontasks
 
 [Containments][2][Applets][38][Configuration]
-PreloadWeight=36
+PreloadWeight=100
 
 [Containments][2][Applets][38][Configuration][ConfigDialog]
 DialogHeight=540
@@ -113,14 +117,14 @@ showOnlyCurrentScreen=true
 wheelSkipMinimized=false
 
 [Containments][2][Applets][38][Shortcuts]
-global=Ctrl+Space
+global=
 
 [Containments][2][Applets][39]
 immutability=1
 plugin=org.kde.plasma.digitalclock
 
 [Containments][2][Applets][39][Configuration]
-PreloadWeight=60
+PreloadWeight=100
 popupHeight=450
 popupWidth=810
 
@@ -129,7 +133,7 @@ customDateFormat=dd/MM/yy
 dateDisplayFormat=BesideTime
 dateFormat=custom
 enabledCalendarPlugins=/usr/lib/qt/plugins/plasmacalendarplugins/astronomicalevents.so,/usr/lib/qt/plugins/plasmacalendarplugins/holidaysevents.so
-firstDayOfWeek=0
+firstDayOfWeek=1
 showWeekNumbers=true
 use24hFormat=2
 
@@ -142,14 +146,14 @@ immutability=1
 plugin=org.kde.plasma.pager
 
 [Containments][2][Applets][4][Configuration]
-PreloadWeight=26
+PreloadWeight=18
 
 [Containments][2][Applets][6]
 immutability=1
 plugin=org.kde.plasma.marginsseparator
 
 [Containments][2][Applets][6][Configuration]
-PreloadWeight=26
+PreloadWeight=18
 
 [Containments][2][Applets][7]
 immutability=1
@@ -164,7 +168,7 @@ DialogHeight=84
 DialogWidth=1366
 
 [Containments][2][Configuration]
-PreloadWeight=26
+PreloadWeight=18
 
 [Containments][2][General]
 AppletOrder=29;4;6;38;7;39
@@ -186,10 +190,21 @@ DialogHeight=540
 DialogWidth=720
 
 [Containments][26][Configuration]
-PreloadWeight=34
+PreloadWeight=26
 
 [Containments][26][Wallpaper][org.kde.image][General]
 Image=file:///home/missael/.local/share/wallpapers/Utterly-Nord/contents/images/3840x2160.png
+
+[Containments][40]
+ItemGeometries-1366x768=
+ItemGeometriesHorizontal=
+activityId=741ab6db-c8a2-4a78-980d-44dabf047f49
+formfactor=0
+immutability=1
+lastScreen=1
+location=0
+plugin=org.kde.plasma.folder
+wallpaperplugin=org.kde.image
 
 [Containments][8]
 activityId=
@@ -207,7 +222,7 @@ immutability=1
 plugin=org.kde.plasma.clipboard
 
 [Containments][8][Applets][10][Configuration]
-PreloadWeight=51
+PreloadWeight=43
 
 [Containments][8][Applets][11]
 immutability=1
@@ -221,28 +236,28 @@ immutability=1
 plugin=org.kde.plasma.keyboardindicator
 
 [Containments][8][Applets][12][Configuration]
-PreloadWeight=31
+PreloadWeight=33
 
 [Containments][8][Applets][13]
 immutability=1
 plugin=org.kde.plasma.keyboardlayout
 
 [Containments][8][Applets][13][Configuration]
-PreloadWeight=26
+PreloadWeight=18
 
 [Containments][8][Applets][14]
 immutability=1
 plugin=org.kde.plasma.manage-inputmethod
 
 [Containments][8][Applets][14][Configuration]
-PreloadWeight=26
+PreloadWeight=18
 
 [Containments][8][Applets][15]
 immutability=1
 plugin=org.kde.plasma.nightcolorcontrol
 
 [Containments][8][Applets][15][Configuration]
-PreloadWeight=26
+PreloadWeight=0
 
 [Containments][8][Applets][16]
 immutability=1
@@ -256,14 +271,14 @@ immutability=1
 plugin=org.kde.plasma.printmanager
 
 [Containments][8][Applets][17][Configuration]
-PreloadWeight=31
+PreloadWeight=23
 
 [Containments][8][Applets][18]
 immutability=1
 plugin=org.kde.plasma.vault
 
 [Containments][8][Applets][18][Configuration]
-PreloadWeight=31
+PreloadWeight=28
 
 [Containments][8][Applets][19]
 immutability=1
@@ -277,6 +292,7 @@ DialogHeight=540
 DialogWidth=720
 
 [Containments][8][Applets][19][Configuration][General]
+migrated=true
 showVirtualDevices=true
 
 [Containments][8][Applets][22]
@@ -284,7 +300,7 @@ immutability=1
 plugin=org.kde.plasma.battery
 
 [Containments][8][Applets][22][Configuration]
-PreloadWeight=33
+PreloadWeight=25
 
 [Containments][8][Applets][23]
 immutability=1
@@ -305,45 +321,55 @@ immutability=1
 plugin=org.kde.plasma.weather
 
 [Containments][8][Applets][25][Configuration]
-PreloadWeight=91
-pressureUnit=5029
-source=noaa|weather|Culiacan, SIN
-speedUnit=9001
-temperatureUnit=6001
-updateInterval=30
-visibilityUnit=2007
+PreloadWeight=100
+configMigrated=true
 
 [Containments][8][Applets][25][Configuration][ConfigDialog]
 DialogHeight=540
 DialogWidth=720
+
+[Containments][8][Applets][25][Configuration][Units]
+pressureUnit=5029
+speedUnit=9001
+temperatureUnit=6001
+visibilityUnit=2007
+
+[Containments][8][Applets][25][Configuration][WeatherStation]
+source=noaa|weather|Culiacan, SIN
+updateInterval=30
 
 [Containments][8][Applets][30]
 immutability=1
 plugin=dev.jhyub.supergfxctl
 
 [Containments][8][Applets][30][Configuration]
-PreloadWeight=65
+PreloadWeight=49
+
+[Containments][8][Applets][41]
+immutability=1
+plugin=org.kde.kscreen
 
 [Containments][8][Applets][9]
 immutability=1
 plugin=org.kde.kdeconnect
 
 [Containments][8][Applets][9][Configuration]
-PreloadWeight=61
+PreloadWeight=100
 
 [Containments][8][ConfigDialog]
 DialogHeight=540
 DialogWidth=720
 
 [Containments][8][Configuration]
-PreloadWeight=26
+PreloadWeight=18
 
 [Containments][8][General]
-extraItems=org.kde.kdeconnect,org.kde.plasma.battery,org.kde.plasma.bluetooth,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.keyboardindicator,org.kde.plasma.keyboardlayout,org.kde.plasma.manage-inputmethod,org.kde.plasma.mediacontroller,org.kde.plasma.networkmanagement,org.kde.plasma.nightcolorcontrol,org.kde.plasma.notifications,org.kde.plasma.printmanager,org.kde.plasma.vault,org.kde.plasma.volume,org.kde.plasma.weather,dev.jhyub.supergfxctl
-hiddenItems=Discover Notifier_org.kde.DiscoverNotifier,KDE Daemon,dropbox-client-PID,org.kde.plasma.clipboard,org.kde.plasma.weather,org.kde.plasma.mediacontroller,seapplet,gdlauncher,dropbox,Yakuake,1,org.kde.kdeconnect,org.kde.plasma.devicenotifier,org.kde.plasma.printmanager,org.kde.plasma.networkmanagement,AutoKey
+extraItems=org.kde.kdeconnect,org.kde.plasma.battery,org.kde.plasma.bluetooth,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.keyboardindicator,org.kde.plasma.keyboardlayout,org.kde.plasma.manage-inputmethod,org.kde.plasma.mediacontroller,org.kde.plasma.networkmanagement,org.kde.plasma.nightcolorcontrol,org.kde.plasma.notifications,org.kde.plasma.printmanager,org.kde.plasma.vault,org.kde.plasma.volume,org.kde.plasma.weather,dev.jhyub.supergfxctl,org.kde.kscreen
+hiddenItems=Discover Notifier_org.kde.DiscoverNotifier,KDE Daemon,dropbox-client-PID,org.kde.plasma.clipboard,org.kde.plasma.weather,org.kde.plasma.mediacontroller,seapplet,gdlauncher,dropbox,Yakuake,1,org.kde.kdeconnect,org.kde.plasma.devicenotifier,org.kde.plasma.printmanager,org.kde.plasma.networkmanagement,AutoKey,IBus Panel,awakened-poe-trade1,ibus-ui-gtk3,Portal
 iconSpacing=1
-knownItems=org.kde.kdeconnect,org.kde.plasma.battery,org.kde.plasma.bluetooth,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.keyboardindicator,org.kde.plasma.keyboardlayout,org.kde.plasma.manage-inputmethod,org.kde.plasma.mediacontroller,org.kde.plasma.networkmanagement,org.kde.plasma.nightcolorcontrol,org.kde.plasma.notifications,org.kde.plasma.printmanager,org.kde.plasma.vault,org.kde.plasma.volume,dev.jhyub.supergfxctl
+knownItems=org.kde.kdeconnect,org.kde.plasma.battery,org.kde.plasma.bluetooth,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.keyboardindicator,org.kde.plasma.keyboardlayout,org.kde.plasma.manage-inputmethod,org.kde.plasma.mediacontroller,org.kde.plasma.networkmanagement,org.kde.plasma.nightcolorcontrol,org.kde.plasma.notifications,org.kde.plasma.printmanager,org.kde.plasma.vault,org.kde.plasma.volume,dev.jhyub.supergfxctl,org.kde.kscreen
 scaleIconsToFit=true
+shownItems=Nextcloud
 
 [ScreenMapping]
 itemsOnDisabledScreens=
