@@ -1,6 +1,9 @@
 [Appearance]
 HideSkinBorders=true
 
+[Desktop Entry]
+DefaultProfile=DeadKper.profile
+
 [Dialogs]
 FirstRun=false
 
