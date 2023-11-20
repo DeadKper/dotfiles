@@ -85,7 +85,7 @@ disabled = false
 symbol = " "
 
 [character]
-success_symbol = "[❯](#fd3f92)"
+success_symbol = "[❯](purple)"
 error_symbol = "[❯](red)"
 vicmd_symbol = "[❮](green)"
 
