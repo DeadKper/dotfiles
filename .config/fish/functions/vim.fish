@@ -1,18 +1,25 @@
-function vim --argument file
-    if test -z "$file" # no file given, just open vim
-        if type -q nvim
-            command nvim
-        else if type -q vim
-            command vim
-        else
-            command nano
-        end
-        return 0
+function vim --argument-names file
+    # check vim instalation
+    if type -q nvim
+        set -f vim nvim
+    else if type -q vim
+        set -f vim vim
+    else if type -q vi
+        set -f vim vi
+    else
+        echo "neovim, vim and vi are not installed"
+        return 1
     end
 
+    # more than 1 arg or args is not a path, just open vim
+    if test (count $argv) -ne 1 -o -z "$(echo $file | grep -E '^(\.?|[^\0/-][^\0/]+)((/[^\0/]+)+/?|/?)$')"
+        command $vim $argv && return 0; return 1
+    end
+    
     set -f pwd "$PWD" # save current dir
 
-    if string match -q -r '.*/$' -- "$file" # ends with '/' so it's a folder
+    # ends witch '/' so it's a folder
+    if string match -q -r '.*/$' -- "$file"
         set -f folder "$file"
         set -f file "."
     else
@@ -20,7 +27,8 @@ function vim --argument file
         set -f file (basename "$file")
     end
 
-    if test ! -d "$folder" # create folder if it doesn't exist
+    # create folder if it doesn't exist
+    if test ! -d "$folder"
         set -l folder_copy "$folder"
         set -f folders
         while test ! -d "$folder_copy"
@@ -29,23 +37,19 @@ function vim --argument file
         end
         mkdir -p "$folder"
     end
-
+    
     cd "$folder"
-
-    if type -q nvim
-        command nvim -- "$file"
-    else if type -q vim
-        command vim -- "$file"
-    else
-        command nano -- "$file"
-    end
+    set -l error 1
+    command $vim -- "$file" && set error 0
 
     cd ..
-    while test (count $folders) -gt 0; and is_empty_dir "$folders[1]" # remove empty folders if created
+    # remove empty folders if created
+    while test (count $folders) -gt 0; and is_empty_dir "$folders[1]"
         rm -rf "$folders[1]"
         set -e folders[1]
         cd ..
     end
 
     cd "$pwd" # cd back to original dir
+    return $error
 end
