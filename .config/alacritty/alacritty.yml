@@ -1,3 +1,22 @@
+font:
+  normal:
+    family: SauceCodePro Nerd Font
+    style: Regular
+
+  bold:
+    family: SauceCodePro Nerd Font
+    style: Bold
+
+  italic:
+    family: SauceCodePro Nerd Font
+    style: Italic
+
+  bold_italic:
+    family: SauceCodePro Nerd Font
+    style: Bold Italic
+
+  size: 12
+
 colors:
   primary:
     background: '0x000000'
@@ -24,4 +43,4 @@ colors:
     white:   '0xe5e5e5'
 
 window:
-  opacity: 0.8
+  opacity: 0.85
