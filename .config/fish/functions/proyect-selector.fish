@@ -16,7 +16,7 @@ function proyect-selector --argument filter command return
     if test -z "$proyect"
         return 1
     end
-    if test -z "$command"
+    if test -z "$command" -o "$filter" = "."
         set -f command nvim
     end
     set -l pwd "$PWD"
