@@ -1,28 +1,34 @@
-function proyect-selector --argument filter command return
-    set -l proyects "$HOME/.config/nvim" "$HOME/.config/fish"
-    set -l proyect_folders
-    set -l discover_folders "$HOME/Documents/Codes"
-    if test (count $proyect_folders) -gt 0 -a -d "$proyect_folders"
-        set -a proyects (find $proyect_folders -maxdepth 1 -mindepth 1 -type d)
+function proyect-selector --argument filter application return
+    if test -f "$HOME/.config/proyect-selector.fish"
+        source "$HOME/.config/proyect-selector.fish"
     end
-    if test (count $discover_folders) -gt 0 -a -d "$discover_folders"
-        set -a proyects (find $discover_folders -maxdepth 2 -mindepth 2 -type d)
+
+    if test (count $folders_depth1) -gt 0
+        set -a proyects (find $folders_depth1 -maxdepth 1 -mindepth 1 -type d)
     end
+    if test (count $folders_depth2) -gt 0
+        set -a proyects (find $folders_depth2 -maxdepth 2 -mindepth 2 -type d)
+    end
+
     if test -z "$filter" -o "$filter" = "*" -o "$filter" = "."
         set -f proyect (printf '%s\n' $proyects | fzf)
     else
         set -f proyect (printf '%s\n' $proyects | grep "$filter" | fzf)
     end
+
     if test -z "$proyect"
         return 1
     end
-    if test -z "$command" -o "$command" = "."
-        set -f command nvim
+
+    if test -z "$application" -o "$application" = "."
+        set -f application vim
     end
-    set -l pwd "$PWD"
+
+    set -f pwd "$PWD"
     cd "$proyect"
-    command "$command" "$proyect"
-    if test -n "$return"
+    eval "$application" "$proyect"
+
+    if test "$return" = "true" -o "$return" = "1"
         cd "$pwd"
     end
 end
