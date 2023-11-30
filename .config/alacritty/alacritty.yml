@@ -13,3 +13,9 @@ colors:
 
 window:
   opacity: 0.85
+
+cursor:
+  style:
+    shape: Beam
+
+  blink_timeout: 0

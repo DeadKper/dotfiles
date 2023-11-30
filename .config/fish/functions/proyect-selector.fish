@@ -1,20 +1,14 @@
-function proyect-selector --argument filter application return
+function proyect-selector --argument application return
     if test -f "$HOME/.config/proyect-selector.fish"
         source "$HOME/.config/proyect-selector.fish"
     end
 
-    if test (count $folders_depth1) -gt 0
-        set -a proyects (find $folders_depth1 -maxdepth 1 -mindepth 1 -type d)
-    end
-    if test (count $folders_depth2) -gt 0
-        set -a proyects (find $folders_depth2 -maxdepth 2 -mindepth 2 -type d)
+    if ! type -q $application
+        echo "Unknown command: $application"
+        return 1
     end
 
-    if test -z "$filter" -o "$filter" = "*" -o "$filter" = "."
-        set -f proyect (printf '%s\n' $proyects | fzf)
-    else
-        set -f proyect (printf '%s\n' $proyects | grep "$filter" | fzf)
-    end
+    set -f proyect (printf '%s\n' $proyects | sort | fzf | sed -E "s,^~,$HOME,")
 
     if test -z "$proyect"
         return 1
@@ -28,7 +22,7 @@ function proyect-selector --argument filter application return
     cd "$proyect"
     eval "$application" "$proyect"
 
-    if test "$return" = "true" -o "$return" = "1"
+    if test "$return" = "true" -a "$application" != "cd"
         cd "$pwd"
     end
 end
