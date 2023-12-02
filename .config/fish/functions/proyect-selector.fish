@@ -1,4 +1,4 @@
-function proyect-selector --argument application return
+function proyect-selector --argument application
     if test -f "$HOME/.config/proyect-selector.fish"
         source "$HOME/.config/proyect-selector.fish"
     end
@@ -18,11 +18,6 @@ function proyect-selector --argument application return
         set -f application vim
     end
 
-    set -f pwd "$PWD"
     cd "$proyect"
-    eval "$application" "$proyect"
-
-    if test "$return" = "true" -a "$application" != "cd"
-        cd "$pwd"
-    end
+    eval "$application ."
 end
