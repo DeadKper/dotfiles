@@ -1,9 +1,8 @@
-function __tmux-selector --argument type app tmux_win
-    source "$HOME/.config/proyect-selector.fish"
-
-    set -f proyect (printf '%s\n' $proyects | sort | fzf | sed -E "s,^~,$HOME,")
-
-    tmux select-window -t "$tmux_win"
+function __tmux-selector --argument type app proyect
+    if test -z "$proyect"
+        source "$HOME/.config/proyect-selector.fish"
+        set -f proyect (printf '%s\n' $proyects | sort | fzf | sed -E "s,^~,$HOME,")
+    end
 
     if test -z "$proyect"
         return 1
@@ -15,7 +14,7 @@ function __tmux-selector --argument type app tmux_win
         set -f session (basename "$proyect")
         if tmux has-session -t "$session" 2>&1 >/dev/null
             set -f window (tmux list-windows -t "$session" | count)
-            if ! echo "$tmux_win" | grep "$session" 2>&1 >/dev/null
+            if test "$(tmux display-message -p '#S')" != "$session"
                 set window (math $window + 1)
             end
             __tmux-selector-windowizer "$session:$window" "$app" "$proyect"
@@ -26,6 +25,10 @@ function __tmux-selector --argument type app tmux_win
         tmux send-keys -t "$session:" "$app ." Enter
         tmux switch-client -t "$session"
     else
-        __tmux-selector-windowizer "$(tmux display-message -p '#S'):$(tmux list-windows | count)" "$app" "$proyect"
+        set -f window (tmux list-windows -t "$session" | count)
+        if test ! (tmux list-windows | grep -E "^0:" 2>&1 >/dev/null)
+            set window (math $window + 1)
+        end
+        __tmux-selector-windowizer "$(tmux display-message -p '#S'):$window" "$app" "$proyect"
     end
 end

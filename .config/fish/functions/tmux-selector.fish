@@ -37,7 +37,6 @@ function tmux-selector --argument type application sort
     end
 
     set -f session (tmux display-message -p '#S')
-    set -f window (tmux list-windows -t "$session" | grep active | sed -E "s,([0-9]+)(:.*),\1,")
 
-    tmux new-window -t "$session:0" -n "select" "__tmux-selector '$type' '$application' '$session:$window'"
+    tmux new-window -t "$session:0" -n "select" "__tmux-selector '$type' '$application'"
 end
