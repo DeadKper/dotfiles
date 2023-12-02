@@ -8,14 +8,23 @@ function proyect-selector --argument application
         return 1
     end
 
+    if test -z "$application" -o "$application" = "."
+        if type -q nvim
+            set -f application nvim
+        else if type -q vim
+            set -f application vim
+        else if type -q vi
+            set -f application vi
+        else
+            echo "Cannot set default application to nvim, vim or vi" 1>&2
+            return 1
+        end
+    end
+
     set -f proyect (printf '%s\n' $proyects | sort | fzf | sed -E "s,^~,$HOME,")
 
     if test -z "$proyect"
         return 1
-    end
-
-    if test -z "$application" -o "$application" = "."
-        set -f application vim
     end
 
     cd "$proyect"

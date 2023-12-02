@@ -1,42 +1,40 @@
-function tmux-selector --argument type application sort
-    if test -f "$HOME/.config/proyect-selector.fish"
+function tmux-selector --argument type app proyect
+    function windowizer --argument session app proyect
+        tmux new-window -t "$session" -d -c "$proyect"
+        sleep 0.1 # Wait for tmux to create window
+        tmux select-window -t "$session"
+        sleep 0.2 # Wait for fish to load
+        tmux send-keys -t "$session" "$app ." Enter 
+    end
+
+    if test -z "$proyect"
         source "$HOME/.config/proyect-selector.fish"
-    else
-        echo "Cannot source '$HOME/.config/proyect-selector.fish' because it doesn't exist" 1>&2
-        echo "'proyect-selector.fish' should 'set -f' at least 'proyects'" 1>&2
+        set -f proyect (printf '%s\n' $proyects | sort | fzf | sed -E "s,^~,$HOME,")
+    end
+
+    if test -z "$proyect"
         return 1
     end
 
-    if test -z "$type" -o "$type" = "."
-        set type "w"
-    end
-
-    if ! test "$type" = "s" -o "$type" = "w"
-        echo "Unknown type: $type" 1>&2
-        echo "s = session" 1>&2
-        echo "w = window" 1>&2
-        return 1
-    end
-
-    if test -z "$application" -o "$application" = "."
-        if type -q nvim
-            set -f application nvim
-        else if type -q vim
-            set -f application vim
-        else if type -q vi
-            set -f application vi
-        else
-            echo "Cannot set default application to nvim, vim or vi" 1>&2
-            return 1
+    if test "$type" = "s"
+        set -f session (basename "$proyect")
+        if tmux has-session -t "$session" 2>&1 >/dev/null
+            set -f window (tmux list-windows -t "$session" | count)
+            if test "$(tmux display-message -p '#S')" != "$session"
+                set window (math $window + 1)
+            end
+            windowizer "$session:$window" "$app" "$proyect"
+            return
         end
+        tmux new-session -d -s "$session" -c "$proyect" 
+        sleep 0.3 # Wait for fish to load
+        tmux send-keys -t "$session:" "$app ." Enter
+        tmux switch-client -t "$session"
+    else
+        set -f window (tmux list-windows -t "$session" | count)
+        if test -z "$(tmux list-windows | grep -E '^0:')"
+            set window (math $window + 1)
+        end
+        windowizer "$(tmux display-message -p '#S'):$window" "$app" "$proyect"
     end
-
-    if ! type -q $application
-        echo "Unknown command: $application" 1>&2
-        return 1
-    end
-
-    set -f session (tmux display-message -p '#S')
-
-    tmux new-window -t "$session:0" -n "select" "__tmux-selector '$type' '$application'"
 end
