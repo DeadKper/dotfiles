@@ -8,8 +8,10 @@ if test -z "$ENV_SET"
 	set -xg EDITOR nvim
 	set -xg VISUAL nvim
 	set -xg NIXPKGS_ALLOW_UNFREE 1
-	set -xg XKB_DEFAULT_LAYOUT (setxkbmap -query | grep layout | sed -r "s/^layout:\t* *(.*)/\1/g")
-	set -xg XKB_DEFAULT_VARIANT (setxkbmap -query | grep variant | sed -r "s/^variant:\t* *(.*)/\1/g")
+	if type -q setxkbmap
+		set -xg XKB_DEFAULT_LAYOUT (setxkbmap -query | grep layout | sed -r "s/^layout:\t* *(.*)/\1/g")
+		set -xg XKB_DEFAULT_VARIANT (setxkbmap -query | grep variant | sed -r "s/^variant:\t* *(.*)/\1/g")
+	end
 end
 
 # Set XDG variables if not set
