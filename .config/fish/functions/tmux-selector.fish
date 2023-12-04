@@ -40,7 +40,7 @@ function tmux-selector --argument type application proyect
 
     if test "$type" = "s"
         set -f session (basename "$proyect")
-        if tmux has-session -t "$session" 2>&1 >/dev/null
+        if tmux has-session -t "$session" 2>/dev/null
             set -f window (tmux list-windows -t "$session" | count)
             if test "$(tmux display-message -p '#S')" != "$session"
                 set window (math $window + 1)
