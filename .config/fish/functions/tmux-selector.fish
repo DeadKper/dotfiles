@@ -41,11 +41,7 @@ function tmux-selector --argument type application proyect
     if test "$type" = "s"
         set -f session (basename "$proyect")
         if tmux has-session -t "$session" 2>/dev/null
-            set -f window (tmux list-windows -t "$session" | count)
-            if test "$(tmux display-message -p '#S')" != "$session"
-                set window (math $window + 1)
-            end
-            windowizer "$session:$window" "$application" "$proyect"
+            tmux switch-client -t "$session"
             return
         end
         tmux new-session -d -s "$session" -c "$proyect" 
