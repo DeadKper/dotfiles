@@ -21,8 +21,10 @@ end
 
 set path (realpath -s "$path" 2>&1 | sed -E 's,realpath: (.+): No such file or directory,\1,g;s,\'(.*)\',\1,g')
 
+set depth (math $depth - 1)
 set -f out_path (basename "$path")
 set path (dirname "$path")
+
 while test "$depth" != "0" -a "$path" != "/" -a "$path" != "$HOME"
     set depth (math $depth - 1)
     set out_path "$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
