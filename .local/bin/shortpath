@@ -7,7 +7,7 @@ if test -z "$path"
     set path "$PWD"
 end
 if test -z "$depth"
-    set depth 3
+    set depth 5
 end
 
 if test "$path" = "$HOME"
