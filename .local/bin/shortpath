@@ -19,7 +19,7 @@ if test "$path" = "/"
 	return
 end
 
-set path (realpath $path 2>&1 | sed -E 's,realpath: (.+): No such file or directory,\1,g;s,\'(.*)\',\1,g')
+set path (realpath -s $path 2>&1 | sed -E 's,realpath: (.+): No such file or directory,\1,g;s,\'(.*)\',\1,g')
 
 set -f out_path (basename $path)
 set path (dirname $path)
