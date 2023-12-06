@@ -4,31 +4,36 @@ set -f path $argv[1]
 set -f depth $argv[2]
 
 if test -z "$path"
-	set path "$PWD"
+    set path "$PWD"
 end
 if test -z "$depth"
-	set depth 5
+    set depth 3
 end
 
 if test "$path" = "$HOME"
-	echo '~'
-	return
+    echo '~'
+    return
 end
 if test "$path" = "/"
-	echo '/'
-	return
+    echo '/'
+    return
 end
 
-set path (realpath -s $path 2>&1 | sed -E 's,realpath: (.+): No such file or directory,\1,g;s,\'(.*)\',\1,g')
+set path (realpath -s "$path" 2>&1 | sed -E 's,realpath: (.+): No such file or directory,\1,g;s,\'(.*)\',\1,g')
 
-set -f out_path (basename $path)
-set path (dirname $path)
-while test "$depth" != "0" -a "$path" != "/" -a "$path" != "./" -a "$path" != "$HOME"
-	set depth (math $depth - 1)
-	set out_path "$(basename $path | sed -E 's,^(\.?.).*,\1,g')/$out_path"
-	set path (dirname $path)
+set -f out_path (basename "$path")
+set path (dirname "$path")
+while test "$depth" != "0" -a "$path" != "/" -a "$path" != "$HOME"
+    set depth (math $depth - 1)
+    set out_path "$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
+    set path (dirname "$path")
 end
 
+# avoid shortening if only one folder up is left
+if test "$(dirname "$path")" = "/" -o "$(dirname "$path")" = "$HOME"
+    set out_path "$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
+    set path (dirname "$path")
+end
 set out_path "$(echo $path | sed -E "s,^$HOME,~/," | sed -E "s,(~?/).+,\1…/,")$out_path"
 
 echo $out_path
