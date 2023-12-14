@@ -11,18 +11,18 @@ if not set -q TMUX; and status is-interactive
     if test "$__init_tmux" = '1'
         source "$HOME/.config/tmux-init-conf.fish"
 
-        set -f cnt (seq (math (count $tmux_sessions_names)))
+        set -f cnt (seq (math (count $tmux_window_names)))
         echo $cnt
 
         for i in $cnt
             if test "$i" != '1'
-                if test -z "$tmux_sessions_names[$i]"
-                    tmux new-window -t "$TMUX_HOME" -s "$tmux_sessions_names[$i]"
+                if test -z "$tmux_window_names[$i]"
+                    tmux new-window -t "$TMUX_HOME" -s "$tmux_window_names[$i]"
                 else
                     tmux new-window -t "$TMUX_HOME"
                 end
-            else if test -n "$tmux_sessions_names[$i]"
-                tmux rename-window -t "$TMUX_HOME:1" "$tmux_sessions_names[$i]"
+            else if test -n "$tmux_window_names[$i]"
+                tmux rename-window -t "$TMUX_HOME:1" "$tmux_window_names[$i]"
             end
         end
 
@@ -33,7 +33,7 @@ if not set -q TMUX; and status is-interactive
         tmux select-window -t "$TMUX_HOME:{end}"
 
         for i in $cnt
-            tmux send-keys -t "$TMUX_HOME:$i" "$tmux_sessions_cmds[$i]" Enter
+            tmux send-keys -t "$TMUX_HOME:$i" "$tmux_window_cmds[$i]" Enter
         end
     end
 
