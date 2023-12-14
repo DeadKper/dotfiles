@@ -9,7 +9,7 @@ if not set -q TMUX; and status is-interactive
     end
 
     if test "$__init_tmux" = '1'
-        source "$HOME/.config/tmux-sessions.fish"
+        source "$HOME/.config/tmux-init-conf.fish"
 
         set -f cnt (seq (math (count $tmux_sessions_names)))
         echo $cnt
