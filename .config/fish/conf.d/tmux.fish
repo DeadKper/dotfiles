@@ -1,10 +1,14 @@
 if not set -q TMUX; and status is-interactive
-    set -x TMUX_HOME 'home'
-    
-    if not tmux has-session -t "$TMUX_HOME" &> /dev/null
-        tmux new-session -s "$TMUX_HOME" -c "$HOME" -d
+    source "$HOME/.config/tmux-init-conf.fish"
 
-        source "$HOME/.config/tmux-init-conf.fish"
+    if test -n "$tmux_session_home_name"
+        set -x TMUX_HOME "$tmux_session_home_name"
+    else
+        set -x TMUX_HOME 'home'
+    end
+
+    if not tmux list-sessions &> /dev/null; and test "$tmux_session_home_create" = "y"
+        tmux new-session -s "$TMUX_HOME" -c "$HOME" -d
 
         set -f cnt (seq (math (count $tmux_window_names)))
 
@@ -34,7 +38,7 @@ if not set -q TMUX; and status is-interactive
         end
     end
 
-    if not tmux info &> /dev/null
+    if not tmux info &> /dev/null; and tmux has-session -t "$TMUX_HOME" &> /dev/null; and test "$tmux_session_home_attach" = "y"
         tmux attach-session -t "$TMUX_HOME"
     end
 end
