@@ -18,7 +18,12 @@ function vim --argument-names file
     
     set -f pwd "$PWD" # save current dir
 
-    # ends witch '/' so it's a folder
+    # check if it's a wslpath
+    if type -q wslpath; and wslpath "$file" &> /dev/null
+        set file (wslpath "$file")
+    end
+
+    # ends with '/' so it's a folder
     if string match -q -r '.*/$' -- "$file"
         set -f folder "$file"
         set -f file "."
