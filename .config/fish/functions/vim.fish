@@ -11,17 +11,20 @@ function vim --argument-names file
         return 1
     end
 
-    # more than 1 arg or args is not a path, just open vim
-    if test (count $argv) -ne 1 -o -z "$(echo $file | grep -E '^(\.?|[^\0/-][^\0/]+)((/[^\0/]+)+/?|/?)$')"
+    # check if it's a wslpath
+    if type -q wslpath; and wslpath "$file" &> /dev/null
+        set -f file (wslpath "$file")
+        set -f valid 'y'
+    else if -n "$(echo $file | grep -E '^(\.?|[^\0/-][^\0/]+)((/[^\0/]+)+/?|/?)$')"
+        set -f valid 'y'
+    end
+
+    if test (count $argv) -ne 1 -o -z "$valid"
+        # more than 1 arg or args is not a path, just open vim
         command $vim $argv && return 0; return 1
     end
     
     set -f pwd "$PWD" # save current dir
-
-    # check if it's a wslpath
-    if type -q wslpath; and wslpath "$file" &> /dev/null
-        set file (wslpath "$file")
-    end
 
     # ends with '/' so it's a folder
     if string match -q -r '.*/$' -- "$file"
