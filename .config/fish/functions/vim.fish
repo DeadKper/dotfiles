@@ -15,7 +15,7 @@ function vim --argument-names file
     if type -q wslpath; and wslpath "$file" &> /dev/null
         set -f file (wslpath "$file")
         set -f valid 'y'
-    else if -n "$(echo $file | grep -E '^(\.?|[^\0/-][^\0/]+)((/[^\0/]+)+/?|/?)$')"
+    else if test -n "$(echo $file | grep -E '^(\.?|[^\0/-][^\0/]+)((/[^\0/]+)+/?|/?)$')"
         set -f valid 'y'
     end
 
