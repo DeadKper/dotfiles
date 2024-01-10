@@ -103,8 +103,10 @@ function ps
     switch $type
     case t
         set -f selected (cat "$XDG_CACHE_HOME/ps_proyects" | sk | string replace -r '^~' "$HOME")
-        cd "$selected"
-        eval "$cmd ."
+        if test -n "$selected"
+            cd "$selected"
+            eval "$cmd ."
+        end
     case s w
         tmux new-window -t "$curr_session:0" -n 'sessionizer' "cat '$XDG_CACHE_HOME/ps_proyects' | sk | string replace -r '^~' '$HOME' > '$XDG_CACHE_HOME/ps_selected'"
         while tmux list-windows | rg -e '^0: sessionizer' &> /dev/null
