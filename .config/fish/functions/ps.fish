@@ -5,24 +5,41 @@ function ps
         case _
             set -a positional $value
         case t type
-            set -f type $value
-        case c cmd command
-            set -f cmd $value
-        case l launcher
-            set -f launcher 1
-            set -a positional $value
-        case d dry
-            set -f dry 1
-            set -a positional $value
+            if test -n "$value"
+                if test "$value" = "true"
+                    echo 'no value was given to flag \'-t/--type\''
+                    return 1
+                else
+                    set -f type "$value"
+                end
+            end
+        case c cmd
+            if test -n "$value"
+                if test "$value" = "true"
+                    echo 'no value was given to flag \'-c/--cmd\''
+                    return 1
+                else
+                    set -f cmd "$value"
+                end
+            end
         case conf
-            set -f conf_file $value
+            if test -n "$value"
+                if test "$value" = "true"
+                    echo 'no value was given to flag \'--conf\''
+                    return 1
+                else
+                    set -f conf_file "$value"
+                end
+            end
         case h help
-            printf '%s\n'
-            printf '%s\t%s\n' '-h --help' 'prints help message'
-            printf '\n'
+            printf '%s\n' 'usage: ps [args] [proyect folders...]'
+            printf '%s\t%s\n' '-t --type'     'select type to open proyect, \'s\' for a new tmux session, \'w\' for a new tmux window and \'t\' (default) for current terminal'
+            printf '%s\t%s\n' '-c --cmd'      'command to execute on the selected proyect folder, defaults to \'nvim .\' if installed, or vim/vi'
+            printf '%s\t%s\n' '--conf  '      'config file to use, defaults to \'~/.config/proyect-selector.fish\', config file should \'set -f cmd <command with args>\' if not already set, and \'set -f proyects <array of proyect folders>\''
+            printf '%s\t%s\n' '-h --help'     'prints help message'
             return 0
         case \*
-            echo "$key flag is unknown" 1>&2
+            echo "\'$key\' flag is unknown" 1>&2
             return 1
         end
     end
@@ -70,21 +87,19 @@ function ps
     end
     if not set -q cmd
         if type -q nvim
-            set -f cmd nvim
+            set -f cmd 'nvim .'
         else if type -q vim
-            set -f cmd vim
+            set -f cmd 'vim .'
         else if type -q vi
-            set -f cmd vi
+            set -f cmd 'vi .'
         else
             echo "cannot set default command to nvim, vim or vi" 1>&2
             return 1
         end
     end
-    if not set -q TMUX; and \( test "$type" != 't'; or set -q launcher \)
+    if not set -q TMUX; and test "$type" != 't'
         if test "$type" != 't'
             echo "not in a tmux session but type '$type' requires it" 1>&2
-        else if set -q launcher
-            echo "not in a tmux session but launcher requires a tmux session with window 0 available" 1>&2
         end
     end
 
@@ -94,10 +109,6 @@ function ps
 
     printf '%s\n' $proyects | string replace -r "^$HOME" '~' | sort > "$XDG_CACHE_HOME/ps_proyects"
 
-    if set -q dry
-        return 0
-    end
-
     set -f curr_session (tmux display-message -p '#S')
 
     switch $type
@@ -105,7 +116,7 @@ function ps
         set -f selected (cat "$XDG_CACHE_HOME/ps_proyects" | sk | string replace -r '^~' "$HOME")
         if test -n "$selected"
             cd "$selected"
-            eval "$cmd ."
+            eval "$cmd"
         end
     case s w
         tmux new-window -t "$curr_session:0" -n 'sessionizer' "cat '$XDG_CACHE_HOME/ps_proyects' | sk | string replace -r '^~' '$HOME' > '$XDG_CACHE_HOME/ps_selected'"
@@ -119,7 +130,7 @@ function ps
             if not tmux has-session -t "$session" 2>/dev/null
                 tmux new-session -d -s "$session" -c "$selected" 
                 sleep 0.3 # Wait for fish to load
-                tmux send-keys -t "$session:" "$cmd ." Enter
+                tmux send-keys -t "$session:" "$cmd" Enter
             end
             tmux switch-client -t "$session"
         else
@@ -130,7 +141,7 @@ function ps
                     set -f window "$curr_session:$i"
                 end
             end
-            sleep 0.3 # Wait for tmux to create window
+            sleep 0.3 # Wait for fish to load
             tmux send-keys -t "$window" "$cmd ." Enter 
             tmux select-window -t "$window"
         end
