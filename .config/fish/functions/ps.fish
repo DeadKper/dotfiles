@@ -100,6 +100,7 @@ function ps
     if not set -q TMUX; and test "$type" != 't'
         if test "$type" != 't'
             echo "not in a tmux session but type '$type' requires it" 1>&2
+            return 1
         end
     end
 
