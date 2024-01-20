@@ -33,4 +33,4 @@ SETUVAR fish_pager_color_description:B3A06D\x1eyellow\x1e\x2di
 SETUVAR fish_pager_color_prefix:cyan\x1e\x2d\x2dbold\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
 SETUVAR fish_pager_color_selected_background:\x2dr
-SETUVAR fish_user_paths:/home/missael/\x2esurrealdb\x1e/home/missael/\x2econfig/emacs/bin\x1e/home/missael/\x2elocal/bin
+SETUVAR fish_user_paths:/usr/lib/jvm/java\x2d17\x2dopenjdk\x2d17\x2e0\x2e9\x2e0\x2e9\x2d1\x2efc39\x2ex86_64/bin\x1e/home/missael/\x2esurrealdb\x1e/home/missael/\x2econfig/emacs/bin\x1e/home/missael/\x2elocal/bin
