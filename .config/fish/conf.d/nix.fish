@@ -4,9 +4,8 @@ if test -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
 
   fish_add_path "$HOME/.nix-profile/bin"
 
-  set -x --path XDG_DATA_DIRS
   set -q XDG_DATA_DIRS[1]; or set XDG_DATA_DIRS /usr/local/share /usr/share
-  set -xa XDG_DATA_DIRS "$XDG_DATA_HOME/nix-env/share"
+  add_path XDG_DATA_DIRS "$XDG_DATA_HOME/nix-env/share" $XDG_DATA_DIRS
 
   function nix-env
     command nix-env $argv

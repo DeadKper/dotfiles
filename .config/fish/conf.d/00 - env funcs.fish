@@ -1,4 +1,23 @@
-# Add path functions
+function add_path --no-scope-shadowing
+    set -l flag (contains -i -- -p $argv; or contains -i -- -a $argv)
+    if test -n "$flag"
+        set -l tmp $argv[$flag]
+        set -e argv[$flag]
+        set flag $tmp
+    else
+        set flag '-p'
+    end
+
+    set -l name $argv[1]
+    set -x --path $name $$name
+
+    for path in (printf '%s\n' $argv[-1..2] | sed -r 's/:/\n/')
+        if echo $path | grep -vE -- '^-' &> /dev/null; and not contains $path $$name
+            set -x $flag $name $path
+        end
+    end
+end
+
 function github_download --argument-names ORG REPO FILE TYPE OUTPUT
     set -l url_type
     if test $TYPE = zip
