@@ -9,12 +9,16 @@ function add_path --no-scope-shadowing
     end
 
     set -l name $argv[1]
-    set -x --path $name $$name
+    set -l to_add
 
-    for path in (printf '%s\n' $argv[-1..2] | sed -r 's/:/\n/')
-        if echo $path | grep -vE -- '^-' &> /dev/null; and not contains $path $$name
-            set -x $flag $name $path
+    for path in (printf '%s\n' $argv[2..] | sed -r 's/:/\n/')
+        if echo $path | grep -vE -- '^-' &> /dev/null; and not contains $path $$name $to_add
+            set -a to_add $path
         end
+    end
+
+    if count $to_add &> /dev/null
+        set $flag $name $to_add
     end
 end
 
