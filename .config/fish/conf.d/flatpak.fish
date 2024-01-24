@@ -13,5 +13,5 @@ if type -q flatpak
         set installations $installations (flatpak --installations)
     end
 
-    add_path XDG_DATA_DIRS {$installations}/exports/share $XDG_DATA_DIRS
+    add_to_path XDG_DATA_DIRS {$installations}/exports/share $XDG_DATA_DIRS
 end

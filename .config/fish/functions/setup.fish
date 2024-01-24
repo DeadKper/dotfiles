@@ -173,7 +173,7 @@ function setup --argument-names cmd app --description "A installer of linux util
 
           set -x --path XDG_DATA_DIRS $XDG_DATA_DIRS
           set -q XDG_DATA_DIRS[1]; or set XDG_DATA_DIRS /usr/local/share /usr/share
-          add_path XDG_DATA_DIRS "$XDG_DATA_HOME/nix-env/share" $XDG_DATA_DIRS
+          add_to_path XDG_DATA_DIRS "$XDG_DATA_HOME/nix-env/share" $XDG_DATA_DIRS
 
           function nix-env
             command nix-env $argv
@@ -182,7 +182,7 @@ function setup --argument-names cmd app --description "A installer of linux util
           end
         end' | sed -r "s/^ {8}//g" > "$HOME/.config/fish/conf.d/nix.fish"
       source "$HOME/.config/fish/conf.d/nix.fish"
-      nix-channel --add https://nixos.org/channels/nixpkgs-unstable unstable
+      nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
       nix-channel --update
     case '*'
         echo "Use \"setup list\" to list available apps"

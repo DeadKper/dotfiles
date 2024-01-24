@@ -1,4 +1,4 @@
-function add_path --no-scope-shadowing
+function add_to_path --no-scope-shadowing
     set -l flag (contains -i -- -p $argv; or contains -i -- -a $argv)
     if test -n "$flag"
         set -l tmp $argv[$flag]

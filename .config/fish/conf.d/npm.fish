@@ -3,7 +3,7 @@ if type -q npm
 
   fish_add_path "$NPM_PACKAGES/bin"
   set -x --path MANPATH $MANPATH
-  add_path MANPATH "$NPM_PACKAGES/share/man"
+  add_to_path MANPATH "$NPM_PACKAGES/share/man"
   set -x NODE_PATH "$NPM_PACKAGES/lib/node_modules"
 
   if not test -f "$HOME/.npmrc"
