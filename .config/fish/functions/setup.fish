@@ -158,30 +158,15 @@ function setup --argument-names cmd app --description "A installer of linux util
       sh (curl -L https://nixos.org/nix/install | psub) --daemon
       mkdir "$XDG_DATA_HOME/nix-env/" 2>/dev/null
       mkdir "$HOME/.config/nixpkgs/" 2>/dev/null
-      echo '{
-          packageOverrides = pkgs: {
-            nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-              inherit pkgs;
-            };
-          };
-        }' | sed -r "s/^ {8}//g" > "$HOME/.config/nixpkgs/config.nix"
-      echo 'if test -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
-          . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
-          set -x NIXPKGS_ALLOW_UNFREE 1
-
-          fish_add_path "$HOME/.nix-profile/bin"
-
-          set -x --path XDG_DATA_DIRS $XDG_DATA_DIRS
-          set -q XDG_DATA_DIRS[1]; or set XDG_DATA_DIRS /usr/local/share /usr/share
-          add_to_path XDG_DATA_DIRS "$XDG_DATA_HOME/nix-env/share" $XDG_DATA_DIRS
-
-          function nix-env
-            command nix-env $argv
-            rsync -pqrLK --chmod=u+rwx "$HOME/.nix-profile/share/" "$XDG_DATA_HOME/nix-env/share/" --delete-after &>/dev/null
-            update-desktop-database "$XDG_DATA_HOME/nix-env/share/applications" &>/dev/null
-          end
-        end' | sed -r "s/^ {8}//g" > "$HOME/.config/fish/conf.d/nix.fish"
+      # echo '{
+      #     packageOverrides = pkgs: {
+      #       nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      #         inherit pkgs;
+      #       };
+      #     };
+      #   }' | sed -r "s/^ {8}//g" > "$HOME/.config/nixpkgs/config.nix"
       source "$HOME/.config/fish/conf.d/nix.fish"
+      source "$HOME/.config/fish/conf.d/nix-conf.fish"
       nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
       nix-channel --update
     case '*'
