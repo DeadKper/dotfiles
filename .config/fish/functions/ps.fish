@@ -32,11 +32,12 @@ function ps
                 end
             end
         case h help
-            printf '%s\n' 'usage: ps [args] [proyect folders...]'
+            printf '%s\n' 'usage: ps [flags] [query...]'
             printf '%s\t%s\n' '-t --type'     'select type to open proyect, \'s\' for a new tmux session, \'w\' for a new tmux window and \'t\' (default) for current terminal'
             printf '%s\t%s\n' '-c --cmd'      'command to execute on the selected proyect folder, defaults to \'nvim .\' if installed, or vim/vi'
             printf '%s\t%s\n' '--conf  '      'config file to use, defaults to \'~/.config/proyect-selector.fish\', config file should \'set -f cmd <command with args>\' if not already set, and \'set -f proyects <array of proyect folders>\''
             printf '%s\t%s\n' '-h --help'     'prints help message'
+            printf '%s\t%s\n' '[query...]'    'querys to match with \'grep -i\' on the proyects'
             return 0
         case \*
             echo "\'$key\' flag is unknown" 1>&2
@@ -65,7 +66,12 @@ function ps
         set proyects (printf '%s\n' $proyects | grep -i $arg)
     end
 
-    if count $proyects &>/dev/null
+    if not count $proyects &>/dev/null
+        echo "no proyects left after matching positional args with 'grep -i'"
+        return 1
+    end
+    
+    if test (count $proyects) = 1
         set -f selected (echo $proyects | string replace -r '^~' "$HOME")
     end
 
