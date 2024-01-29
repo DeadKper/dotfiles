@@ -57,7 +57,7 @@ if test -e /home/missael/.nix-profile; and test -z "$__ETC_PROFILE_NIX_SOURCED"
             command nix-env $argv
         end
         # Sync symlinks to another folder to stop nix slowing down the pc on startup
-        rsync -pqrLK --chmod=u+rwx "$HOME/.nix-profile/share/" "$XDG_DATA_HOME/nix-env/share/" --delete-after &>/dev/null
+        rsync -pqrLK --chmod=u+rwx --delete-after "$HOME/.nix-profile/share/" "$XDG_DATA_HOME/nix-env/share/" &>/dev/null
         update-desktop-database "$XDG_DATA_HOME/nix-env/share/applications" &>/dev/null
     end
 
