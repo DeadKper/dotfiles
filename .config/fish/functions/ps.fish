@@ -52,8 +52,6 @@ function ps
         source "$conf_file"
     end
 
-    set -a proyects $positional
-
     if test (count $proyects) -eq 0
         if not test -f "$conf_file"
             echo "no proyects to select in arguments, config file was not detected" 1>&2
@@ -61,6 +59,14 @@ function ps
             echo "no proyects to select in config file or in arguments" 1>&2
         end
         return 1
+    end
+
+    for arg in $positional
+        set proyects (printf '%s\n' $proyects | grep -i $arg)
+    end
+
+    if count $proyects &>/dev/null
+        set -f selected (echo $proyects | string replace -r '^~' "$HOME")
     end
 
     if not set -q TMUX
@@ -114,18 +120,22 @@ function ps
 
     switch $type
     case t
-        set -f selected (cat "$XDG_CACHE_HOME/ps_proyects" | sk | string replace -r '^~' "$HOME")
+        if test -z "$selected"
+            set -f selected (cat "$XDG_CACHE_HOME/ps_proyects" | sk | string replace -r '^~' "$HOME")
+        end
         if test -n "$selected"
             cd "$selected"
             eval "$cmd"
         end
     case s w
-        tmux new-window -t "$curr_session:0" -n 'sessionizer' "cat '$XDG_CACHE_HOME/ps_proyects' | sk | string replace -r '^~' '$HOME' > '$XDG_CACHE_HOME/ps_selected'"
-        while tmux list-windows | rg -e '^0: sessionizer' &> /dev/null
-            sleep 0.1
+        if test -z "$selected"
+            tmux new-window -t "$curr_session:0" -n 'sessionizer' "cat '$XDG_CACHE_HOME/ps_proyects' | sk | string replace -r '^~' '$HOME' > '$XDG_CACHE_HOME/ps_selected'"
+            while tmux list-windows | rg -e '^0: sessionizer' &> /dev/null
+                sleep 0.1
+            end
+            set -f selected (cat "$XDG_CACHE_HOME/ps_selected")
+            rm "$XDG_CACHE_HOME/ps_selected"
         end
-        set -f selected (cat "$XDG_CACHE_HOME/ps_selected")
-        rm "$XDG_CACHE_HOME/ps_selected"
         if test "$type" = "s"
             set -f session (basename "$selected")
             if not tmux has-session -t "$session" 2>/dev/null
