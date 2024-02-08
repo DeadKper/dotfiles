@@ -27,3 +27,7 @@ if test -z "$XDG_CONFIG_HOME"
 	#set -x XDG_DATA_DIRS "/usr/share/kde-settings/kde-profile/default/share:/usr/local/share:/usr/share"
 	#set -x XDG_CONFIG_DIRS "$HOME/.config/kdedefaults:/etc/xdg:/usr/share/kde-settings/kde-profile/default/xdg"
 end
+
+if test -z "$JDTLS_JVM_ARGS" -a -e "$HOME/.local/share/nvim/mason/packages/jdtls/lombok.jar"
+	set -x JDTLS_JVM_ARGS "-javaagent:$HOME/.local/share/nvim/mason/packages/jdtls/lombok.jar"
+end
