@@ -16,7 +16,12 @@ end
 # Set XDG variables if not set
 if test -z "$XDG_CONFIG_HOME"
 	if not test -f "$HOME/.config/user-dirs.dirs"
-		xdg-user-dirs-update
+		if type -q xdg-user-dirs-update
+			xdg-user-dirs-update
+		else
+			set -x XDG_DATA_DIRS "/usr/local/share:/usr/share"
+			set -x XDG_CONFIG_DIRS "/etc/xdg"
+		end
 	end
 
 	set -x XDG_CONFIG_HOME "$HOME/.config"
@@ -24,8 +29,8 @@ if test -z "$XDG_CONFIG_HOME"
 	set -x XDG_DATA_HOME "$HOME/.local/share"
 	set -x XDG_STATE_HOME "$HOME/.local/state"
 
-	#set -x XDG_DATA_DIRS "/usr/share/kde-settings/kde-profile/default/share:/usr/local/share:/usr/share"
-	#set -x XDG_CONFIG_DIRS "$HOME/.config/kdedefaults:/etc/xdg:/usr/share/kde-settings/kde-profile/default/xdg"
+	# set -x XDG_DATA_DIRS "/usr/share/kde-settings/kde-profile/default/share:/usr/local/share:/usr/share"
+	# set -x XDG_CONFIG_DIRS "$HOME/.config/kdedefaults:/etc/xdg:/usr/share/kde-settings/kde-profile/default/xdg"
 end
 
 if test -z "$JDTLS_JVM_ARGS" -a -e "$HOME/.local/share/nvim/mason/packages/jdtls/lombok.jar"
