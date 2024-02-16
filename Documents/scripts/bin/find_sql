@@ -1,0 +1,81 @@
+#!/bin/fish
+
+if test (count $argv) -lt 2
+	echo "usage: $(basename (status -f)) folder [functions...]"
+	return 1
+end
+
+set -e new_line
+set -l count 0
+
+if test "$argv[1]" != 'rg' -a "$argv[1]" != 'fd'
+	set -p argv fd
+end
+
+for func in (printf '%s\n' $argv[3..] | sort -rf)
+	if test "$argv[1]" = 'rg'
+		set -f files (rg -li "^\s*create\b.*\bfunction (public\.)?$func\(" "$argv[2]")
+	else if test "$argv[1]" = 'fd'
+		set -f files (fd -i "^$func(\.|\$)" "$argv[2]" -e sql)
+	end
+
+	if not count $files &> /dev/null
+		echo "$func not found" 1>&2
+		continue
+	end
+
+	set files (printf '%s\n' $files | xargs -d '\n' -n 1 readlink -f)
+
+	if set -q new_line
+		read
+		echo ''
+	else
+		set -f new_line 1
+	end
+
+	set -l uniq_names
+	set -l uniq_files
+	set -l uniq_dates
+	for file in $files
+		set -l name (basename "$file" | awk '{print tolower($0)}')
+		set -l i (contains -i "$name" $uniq_names)
+		if test -z "$i"
+			set -a uniq_names "$name"
+			set -a uniq_files "$file"
+			set -a uniq_dates (date -d (git -C "$(dirname "$file")" log -n 1 --format=format:%ai "$(basename "$file")") +%s)
+		else
+			set -l date (date -d (git -C "$(dirname "$file")" log -n 1 --format=format:%ai "$(basename "$file")") +%s)
+			if test "$date" -gt "$uniq_dates[$i]"
+				set uniq_files[$i] "$file"
+				set uniq_dates[$i] "$date"
+			end
+		end
+	end
+
+	set -e file_new_line
+	for file in (printf '%s\n' $uniq_files | sd '(.*)/' '$1\x04' | sort -t \x04 -k+2rf | sd -F \x04 '/')
+		set count (math $count + 1)
+
+		if set -q file_new_line 
+			read
+			echo ''
+		else
+			set -f file_new_line 1
+		end
+
+		set -l root (git -C "$(dirname "$file")" rev-parse --show-toplevel)
+
+		set -l folder (dirname "$file" | sd "^$root/" '')
+		if test "$folder" = "."
+			set folder ''
+		end
+
+		set -l commit (git -C "$root" log -n 1 -- "$file" | rg -F 'commit' | sd 'commit\s+' '')
+		echo "File ($(printf "%03d" $count)): $(basename "$file")"
+		echo "Author:     $(git -C "$root" log -n 1 --format=format:%an "$file")"
+		echo "Time:       $(git -C "$root" log -n 1 --format=format:%ai "$file")"
+		echo "Commit:     $(echo $commit | sd '^(\w{8}).+' '$1')"
+		echo "Git URL:    $(git -C "$root" config --get remote.origin.url | sd '\.git$' '')/-/tree/$commit/$folder"
+		echo "MD5 Sum:    $(md5 "$file" | sd '\s+.+$' '')"
+	end
+end
