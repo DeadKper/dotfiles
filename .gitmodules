@@ -1,0 +1,3 @@
+[submodule "/home/missael/.local/share/yadm-project"]
+	path = /home/missael/.local/share/yadm-project
+	url = https://github.com/TheLocehiliosan/yadm.git
