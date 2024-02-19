@@ -71,7 +71,6 @@ user_pref("browser.download.always_ask_before_handling_new_types", true);
  * [NOTE] If "history" is true, downloads will also be cleared
  * [NOTE] "sessions": Active Logins: refers to HTTP Basic Authentication [1], not logins via cookies
  * [1] https://en.wikipedia.org/wiki/Basic_access_authentication ***/
-user_pref("privacy.clearOnShutdown.formdata", false);  // [DEFAULT: true]
 user_pref("privacy.clearOnShutdown.history", false);   // [DEFAULT: true]
 /* 4504: enable RFP letterboxing [FF67+]
  * Dynamically resizes the inner window by applying margins in stepped ranges [2]
