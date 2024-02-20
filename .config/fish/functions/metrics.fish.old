@@ -1,0 +1,16 @@
+function metrics --argument glob clone_url
+    if test -n "$clone_url"
+        git clone "$clone_url"
+        set -l folder (echo "$clone_url" | sed -E "s/.*\/([^\/]+)\$/\1/g")
+        cd $folder
+    end
+    set -l lines (find . -iwholename "$glob" -type f -exec cat {} + | wc -l)
+    set -l size  (find . -iwholename "$glob" -type f -exec du -cb {} + | grep "total\$" | sed -E "s/([0-9]+).*/\1/g")
+    set -l files (find . -iwholename "$glob" -type f | wc -l)
+    echo "Lines: $(math $lines + $files)"
+    echo "Size:  $size B"
+    echo "Files: $files"
+    if test -n "$clone_url"
+        cd ..
+    end
+end
