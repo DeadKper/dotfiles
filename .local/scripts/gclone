@@ -1,0 +1,19 @@
+#!/bin/fish
+
+if not count $argv &> /dev/null
+	echo "usage: $(basename (status -f)) <branch> [functions...]"
+	return 1
+end
+
+if echo "$argv[1]" | rg -i '^http' &> /dev/null
+	set -p argv ''
+end
+
+for url in $argv[2..]
+	set -l folder (echo $url | sd -f i '^https?://[^/]+/|\.git$' '')
+	mkdir -p "$folder" &> /dev/null
+	git clone "$url" "$folder"
+	if test -n "$argv[1]"
+		git -C "$folder" checkout "$argv[1]"
+	end
+end

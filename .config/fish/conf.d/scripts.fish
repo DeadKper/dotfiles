@@ -1,3 +1,3 @@
-if test -e "$HOME/Documents/scripts/bin"
-    fish_add_path "$HOME/Documents/scripts/bin"
+if test -e "$HOME/.local/scripts"
+    fish_add_path "$HOME/.local/scripts"
 end
