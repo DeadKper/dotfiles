@@ -1,7 +1,7 @@
 #!/bin/fish
 
 if not count $argv &> /dev/null
-	echo "usage: $(basename (status -f)) <branch> [functions...]"
+	echo "usage: $(basename (status -f)) <branch> [urls...]"
 	return 1
 end
 
