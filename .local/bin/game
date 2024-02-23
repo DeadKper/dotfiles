@@ -1,9 +1,10 @@
 #!/bin/fish
 
+set -e opt_flag
 if echo $argv | rg -i 'steam' &> /dev/null
 	set -f opt_flag "-e"
 end
 
 set -l res (xrandr | rg -F '*+' | sd '^\s+|\s+$|\*\+' '' | sd '\s+|x' '\n')
 
-gamemoderun gamescope $opt_flag -W "$res[1]" -H "$res[2]" -b -o 5 --force-grab-cursor -F fsr --sharpness 0 --adaptive-sync $argv
+gamemoderun gamescope $opt_flag -W "$res[1]" -H "$res[2]" -b -o 5 --force-grab-cursor $argv
