@@ -38,7 +38,6 @@ if test -e /home/missael/.nix-profile; and test -z "$__ETC_PROFILE_NIX_SOURCED"
     fish_add_path "$HOME/.nix-profile/bin"
 
     set -x XDG_DATA_HOME $XDG_DATA_HOME
-    set -q XDG_DATA_HOME[1]; or set XDG_DATA_HOME "$HOME/.local/share"
     if not test -e "$XDG_DATA_HOME/nix-env/share/"
         mkdir -p "$XDG_DATA_HOME/nix-env/share" 2>/dev/null
     end
@@ -49,10 +48,9 @@ if test -e /home/missael/.nix-profile; and test -z "$__ETC_PROFILE_NIX_SOURCED"
 
     # Populate bash completions, .desktop files, etc
     set -x --path XDG_DATA_DIRS $XDG_DATA_DIRS
-    set -q XDG_DATA_DIRS[1]; or set XDG_DATA_DIRS /usr/local/share /usr/share
-    add_to_path XDG_DATA_DIRS "$XDG_DATA_HOME/nix-env/share" "/nix/var/nix/profiles/default" $XDG_DATA_DIRS
+    add_to_path XDG_DATA_DIRS "$XDG_DATA_HOME/nix-env/share" "/nix/var/nix/profiles/default/share"
 
-    function nix-env
+    function nix-env --wraps nix-env
         if not test "$argv" = "--sync"
             command nix-env $argv
         end
