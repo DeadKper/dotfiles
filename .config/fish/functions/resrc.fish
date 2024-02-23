@@ -1,9 +1,4 @@
-function resrc 
-    if count ~/.config/fish/profile/*.fish &> /dev/null
-        set -l src
-
-        for src in ~/.config/fish/profile/*.fish
-            source "$src"
-        end
-    end
+function resrc
+    set FISH_RESOURCE
+    source "$HOME/.config/fish/conf.d/00 - profile.fish"
 end

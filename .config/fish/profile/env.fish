@@ -11,6 +11,10 @@ if test -d ~/.local/bin
 	fish_add_path ~/.local/bin
 end
 
+if test -d ~/.local/scripts
+	fish_add_path ~/.local/scripts
+end
+
 if test -d ~/.surrealdb
 	fish_add_path ~/.surrealdb
 end
