@@ -1,6 +1,7 @@
 command_timeout = 10
 
 format = """
+$shell\
 $all\
 $fill\
 $cmd_duration\
@@ -8,7 +9,6 @@ $jobs\
 $battery\
 $time\
 $status\
-$shell\
 $container\
 $line_break\
 $character"""
@@ -35,3 +35,6 @@ format = ' [$symbol \[$name\]]($style)'
 
 [directory]
 style = "bright-blue"
+
+[shell]
+disabled = false
