@@ -1,7 +1,7 @@
 # If .nix-profile folder exists this has not already been set
-if test -e /home/missael/.nix-profile; and test -z "$__ETC_PROFILE_NIX_SOURCED"
+if test -e /home/missael/.nix-profile #; and test -z "$__ETC_PROFILE_NIX_SOURCED"
     # Only execute this file once per shell.
-    set __ETC_PROFILE_NIX_SOURCED 1
+    # set __ETC_PROFILE_NIX_SOURCED 1
 
     # Set up environment.
     # This part should be kept in sync with nixpkgs:nixos/modules/programs/environment.nix
@@ -34,12 +34,11 @@ if test -e /home/missael/.nix-profile; and test -z "$__ETC_PROFILE_NIX_SOURCED"
     # Allow unfree
     set --export NIXPKGS_ALLOW_UNFREE 1
 
-    add-path PATH "/nix/var/nix/profiles/default/bin"
-    add-path PATH "$HOME/.nix-profile/bin"
+    add-path PATH "$HOME/.nix-profile/bin" "/nix/var/nix/profiles/default/bin"
 
     set -x XDG_DATA_HOME $XDG_DATA_HOME
     if not test -e "$XDG_DATA_HOME/nix-env/share/"
-        mkdir -p "$XDG_DATA_HOME/nix-env/share" 2>/dev/null
+        mkdir -p "$XDG_DATA_HOME/nix-env/share/man" 2>/dev/null
     end
 
     # Set manpath
@@ -48,16 +47,14 @@ if test -e /home/missael/.nix-profile; and test -z "$__ETC_PROFILE_NIX_SOURCED"
 
     # Populate bash completions, .desktop files, etc
     set -x --path XDG_DATA_DIRS $XDG_DATA_DIRS
-    add-path XDG_DATA_DIRS "$XDG_DATA_HOME/nix-env/share" "/nix/var/nix/profiles/default/share"
+    add-path XDG_DATA_DIRS "$HOME/.nix-profile/share/" "/nix/var/nix/profiles/default/share"
 
-    function nix-env --wraps nix-env
-        if not test "$argv" = "--sync"
-            command nix-env $argv
-        end
-        # Sync symlinks to another folder to stop nix slowing down the pc on startup
-        rsync -pqrLK --chmod=u+rwx --delete-after "$HOME/.nix-profile/share/" "$XDG_DATA_HOME/nix-env/share/" &>/dev/null
-        update-desktop-database "$XDG_DATA_HOME/nix-env/share/applications" &>/dev/null
-    end
-
-    nix-env --sync
+    # function nix-env --wraps nix-env
+    #     if not test "$argv" = "--sync"
+    #         command nix-env $argv
+    #     end
+    #     # Sync symlinks to another folder to stop nix slowing down the pc on startup
+    #     rsync -pqrLK --chmod=u+rwx --delete-after "$HOME/.nix-profile/share/" "$XDG_DATA_HOME/nix-env/share/" &>/dev/null
+    #     update-desktop-database "$XDG_DATA_HOME/nix-env/share/applications" &>/dev/null
+    # end
 end
