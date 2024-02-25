@@ -6,6 +6,7 @@ function setup --argument-names cmd app --description "A installer of linux util
     echo "       setup help                   Print help"
   case list
     echo "Applications:"
+    echo "  cargo"
     echo "  brew"
     echo "  gimp"
     echo "  noisetorch"
@@ -14,6 +15,13 @@ function setup --argument-names cmd app --description "A installer of linux util
     echo "  nix"
   case install
     switch "$app"
+    case cargo
+      sudo dnf install -y gcc zlib-ng cmake
+      set -x RUSTUP_HOME="$HOME/.local/share/rust/rustup"
+      set -x CARGO_HOME="$HOME/.local/share/rust/cargo"
+
+      RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+      "$CARGO_HOME/bin/cargo" install skim fd-find sd ripgrep starship zoxide
     case gimp
       flatpak install flathub org.gimp.GIMP -y
 
