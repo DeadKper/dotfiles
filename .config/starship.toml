@@ -1,7 +1,6 @@
-command_timeout = 10
+command_timeout = 50
 
 format = """
-$shell\
 $all\
 $fill\
 $cmd_duration\
@@ -11,6 +10,7 @@ $time\
 $status\
 $container\
 $line_break\
+$shell\
 $character"""
 
 add_newline = false
