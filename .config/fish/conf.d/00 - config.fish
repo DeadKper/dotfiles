@@ -35,8 +35,7 @@ if status is-login
             add-path PATH ~/.local/scripts
         end
 
-        set -l paths '/usr/local' '/usr' ''
-        add-path -a PATH {$paths}/bin {$paths}/sbin
+        add-path -a PATH /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
         set -e src
     end
