@@ -1,6 +1,6 @@
-[submodule "/home/missael/.local/share/yadm-project"]
-	path = /home/missael/.local/share/yadm-project
+[submodule ".local/share/yadm-project"]
+	path = .local/share/yadm-project
 	url = https://github.com/TheLocehiliosan/yadm.git
-[submodule "/home/missael/.config/nvim"]
-	path = /home/missael/.config/nvim
-	url = git@github.com:DeadKper/nvim.git
+[submodule ".config/nvim"]
+	path = .config/nvim
+	url = https://github.com/DeadKper/nvim.git
