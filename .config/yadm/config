@@ -1,0 +1,8 @@
+[pull]
+	rebase = false
+[push]
+	recurseSubmodules = check
+[diff]
+	submodule = log
+[status]
+	submodulesummary = 1

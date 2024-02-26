@@ -1,71 +1,8 @@
-command_timeout = 100
+command_timeout = 50
 
 format = """
-$username\
-$hostname\
-$localip\
-$shlvl\
-$singularity\
-$kubernetes\
-$directory\
-$vcsh\
-$git_branch\
-$git_commit\
-$git_state\
-$git_metrics\
-$git_status\
-$hg_branch\
-$docker_context\
-$package\
-$c\
-$cmake\
-$cobol\
-$daml\
-$dart\
-$deno\
-$dotnet\
-$elixir\
-$elm\
-$erlang\
-$golang\
-$haskell\
-$helm\
-$java\
-$julia\
-$kotlin\
-$lua\
-$nim\
-$nodejs\
-$ocaml\
-$perl\
-$php\
-$pulumi\
-$purescript\
-$python\
-$raku\
-$rlang\
-$red\
-$ruby\
-$rust\
-$scala\
-$swift\
-$terraform\
-$vlang\
-$vagrant\
-$zig\
-$buf\
-$nix_shell\
-$conda\
-$spack\
-$memory_usage\
-$aws\
-$gcloud\
-$openstack\
-$azure\
-$env_var\
-$crystal\
-$custom\
-$sudo\
+$shell\
+$all\
 $fill\
 $cmd_duration\
 $jobs\
@@ -73,7 +10,6 @@ $battery\
 $time\
 $status\
 $container\
-$shell\
 $line_break\
 $character"""
 
@@ -87,14 +23,18 @@ disabled = false
 symbol = " "
 
 [character]
-success_symbol = "[❯](purple)"
-error_symbol = "[❯](red)"
-vicmd_symbol = "[❮](green)"
+success_symbol = "[❯](#9134cc)"
 
 [time]
 disabled = false
 style = "white"
 format = "[$time]($style)"
 
+[container]
+format = ' [$symbol \[$name\]]($style)'
+
 [directory]
 style = "bright-blue"
+
+[shell]
+disabled = false
