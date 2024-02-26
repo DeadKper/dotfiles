@@ -12,7 +12,7 @@ function add-path --no-scope-shadowing
     set -l to_add
 
     for path in $argv[2..]
-        if test -e "$path"; and not contains "$path" $to_add $$name
+        if not contains "$path" $to_add $$name
             set -a to_add $path
         end
     end

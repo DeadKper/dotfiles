@@ -21,8 +21,7 @@ if status is-login
             set -a XDG_CONFIG_DIRS /usr/share/kde-settings/kde-profile/default/xdg
         end
 
-        set -l paths '/usr/local' '/usr' ''
-        set -x --path PATH {$paths}/bin {$paths}/sbin
+        set -x --path PATH $PATH
 
         for src in ~/.config/fish/conf.d/profile/*.fish
             source "$src"
@@ -35,6 +34,9 @@ if status is-login
         if test -d ~/.local/scripts
             add-path PATH ~/.local/scripts
         end
+
+        set -l paths '/usr/local' '/usr' ''
+        add-path -a PATH {$paths}/bin {$paths}/sbin
 
         set -e src
     end
