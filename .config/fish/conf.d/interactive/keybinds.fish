@@ -19,8 +19,8 @@ bind -M insert \e\[1\;5C forward-bigword
 # closest I can get to visual line
 bind -M default -m visual V beginning-of-buffer begin-selection end-of-buffer
 
-# ctrl + l to accept autosuggestion
-bind -M insert \ce accept-autosuggestion
+# ctrl + e to accept autosuggestion
+bind -M insert \cE accept-autosuggestion
 
 # search prefix through history
 bind -M insert \cp history-prefix-search-backward
