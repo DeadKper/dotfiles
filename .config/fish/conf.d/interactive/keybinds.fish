@@ -22,8 +22,7 @@ bind -M default -m visual V beginning-of-buffer begin-selection end-of-buffer
 # ctrl + e to accept autosuggestion
 bind -M insert \cE accept-autosuggestion
 
-# ctrl + backspace/delete
-bind -M insert \b backward-kill-word
+# ctrl + delete to kill word
 bind -M insert \e\[3\;5~ kill-word
 
 # search prefix through history
