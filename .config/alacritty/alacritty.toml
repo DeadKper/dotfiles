@@ -1,0 +1,19 @@
+import = ["/home/missael/.config/alacritty/themes/themes/one_dark.toml"]
+
+[colors.primary]
+background = "#000000"
+
+[cursor]
+blink_timeout = 0
+
+[cursor.style]
+shape = "Beam"
+
+[font]
+size = 12
+
+[font.normal]
+family = "SauceCodePro Nerd Font"
+
+[window]
+opacity = 0.9
