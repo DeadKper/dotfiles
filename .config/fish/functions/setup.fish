@@ -10,7 +10,7 @@ function setup --argument-names cmd app --description "A installer of linux util
     echo "  brew"
     echo "  gimp"
     echo "  noisetorch"
-    echo "  wallpaper-engine"
+    echo "  wallpaper-engin"
     echo "  doom-emacs"
     echo "  nix"
   case install
@@ -55,7 +55,9 @@ function setup --argument-names cmd app --description "A installer of linux util
       rm -rf $dir
       rm -f $filename
     case wallpaper-engine
+      set -l url 'https://github.com/catsout/wallpaper-engine-kde-plugin.git'
       set --local folder "$HOME/.local/share/wallpaper-engine-kde-plugin"
+      set -l pwd "$(pwd)"
 
       if not test -d $folder
         sudo dnf install --skip-broken vulkan-headers plasma-workspace-devel \
@@ -64,17 +66,16 @@ function setup --argument-names cmd app --description "A installer of linux util
           qt5-qtwebsockets-devel cmake -y
         cd "$HOME/.local/share"
         # Download source
-        git clone https://github.com/catsout/wallpaper-engine-kde-plugin.git
+        git clone "$url"
         cd wallpaper-engine-kde-plugin
       else
         cd "$folder"
         git pull origin main
+        rm -rf build
       end
 
       # Download submodule (glslang)
       git submodule update --init
-
-      rm -rf build
 
       # Configure
       # 'USE_PLASMAPKG=ON': using plasmapkg2 tool to install plugin
@@ -82,16 +83,30 @@ function setup --argument-names cmd app --description "A installer of linux util
       cmake .. -DUSE_PLASMAPKG=OFF
 
       # Build
-      make
+      if test $status = 0
+        make
+      end
 
       # Install package (ignore if USE_PLASMAPKG=OFF for system-wide installation)
-      make install_pkg
+      if test $status = 0
+        make install_pkg
+      end
       # install lib
-      sudo make install
+      if test $status = 0
+        sudo make install
+      end
 
-      killall plasmashell
-      kwin --replace
-      kstart plasmashell
+      if test $status = 0
+        systemctl --user restart plasma-plasmashell.service
+      end
+
+      if test $status != 0
+        echo could not install wallpaper-engine
+        cd "$pwd"
+        return $status
+      end
+
+      cd "$pwd"
     case brew
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
