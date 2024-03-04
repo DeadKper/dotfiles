@@ -14,6 +14,6 @@ size = 12
 
 [font.normal]
 family = "SauceCodePro Nerd Font"
-
+# asd
 [window]
 opacity = 0.9
