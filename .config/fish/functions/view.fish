@@ -1,3 +1,3 @@
 function view
-    nvim +Man! -c 'set filetype=text'
+    nvim +'set noma | set nofoldenable | set nonumber | map q :qa!<cr>' $argv
 end
