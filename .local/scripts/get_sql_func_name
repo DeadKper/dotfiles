@@ -1,0 +1,8 @@
+#!/bin/fish
+
+if test (count $argv) -lt 1
+    echo "usage: $(basename (status -f)) [files or folder]"
+    return 1
+end
+
+rg -iH "^\s*create\b.*\bfunction" $argv | sd -f i '^([^:]+.sql):\s*create\b.*\bfunction (public\.)?([^(]+)(\([^)]*\)).*' '$3\t$4\t$1' | sort -u

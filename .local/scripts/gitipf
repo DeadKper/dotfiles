@@ -1,0 +1,8 @@
+#!/bin/fish
+
+git init
+git branch -m "$argv[2]"
+git remote add origin $argv[1]
+git add -A
+git commit -m 'initial commit'
+git push -f -u origin "$argv[2]"
