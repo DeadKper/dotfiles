@@ -11,6 +11,8 @@ if test -d errors
     rm -rf errors
 end
 
+set -l count 0
+
 get_sql_func_name "$argv[1]" | while read -l data
     set -l data (echo "$data" | sd '\t' '\n')
 
@@ -55,8 +57,9 @@ get_sql_func_name "$argv[1]" | while read -l data
         if not test -d errors
             mkdir errors
         end
-        mv test1.tmp "errors/org_$(basename "$data[3]")"
-        mv test2.tmp "errors/cmp_$(basename "$found[3]")"
+        mv test1.tmp "errors/$count-org-$(basename "$data[3]")"
+        mv test2.tmp "errors/$count-cmp-$(basename "$found[3]")"
+        set count (math $count + 1)
     end
 end
 
