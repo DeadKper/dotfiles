@@ -70,7 +70,7 @@ function ps
         echo "no proyects left after matching positional args with 'grep -i'"
         return 1
     end
-    
+
     if test (count $proyects) = 1
         set -f selected (echo $proyects | string replace -r '^~' "$HOME")
     end
@@ -87,7 +87,6 @@ function ps
         end
     end
 
-
     if not set -q type
         set -f type 't'
     else if not test "$type" = 's' -o "$type" = 'w' -o "$type" = 't'
@@ -97,13 +96,14 @@ function ps
         echo "'s' new tmux session" 1>&2
         return 1
     end
+
     if not set -q cmd
         if type -q nvim
-            set -f cmd 'nvim .'
+            set -f cmd 'nvim'
         else if type -q vim
-            set -f cmd 'vim .'
+            set -f cmd 'vim'
         else if type -q vi
-            set -f cmd 'vi .'
+            set -f cmd 'vi'
         else
             echo "cannot set default command to nvim, vim or vi" 1>&2
             return 1
@@ -159,7 +159,7 @@ function ps
                 end
             end
             sleep 0.3 # Wait for fish to load
-            tmux send-keys -t "$window" "$cmd ." Enter 
+            tmux send-keys -t "$window" "$cmd" Enter 
             tmux select-window -t "$window"
         end
     end
