@@ -1,0 +1,13 @@
+#!/bin/fish
+
+if not test -d 'results'
+    mkdir 'results'
+else if test -d 'results'; and count results/{.*,*} >/dev/null
+    echo 'folder "results" is no empty'
+    return 1
+end
+
+for i in $argv
+    echo $i
+    rg -iF 'connection authorized' $i | sd '.* ((\d{1,3}\.){3}\d{1,3}|\[local\]).*user=(\S+) database=(\S+).*' '$1 $3 $4' > "results/$i"
+end

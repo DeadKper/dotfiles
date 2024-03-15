@@ -1,0 +1,29 @@
+#!/bin/fish
+
+if test (count $argv) -lt 1
+    echo "usage: $(basename (status -f)) functions_dir"
+    return 1
+end
+
+set -l files (rg -vliF -d 1 'security definer' "$argv[1]")
+
+set -l nofix "$argv[1]/non_fixable"
+set -l fixed "$argv[1]/fixed"
+
+if test ! -d $nofix
+    mkdir $nofix
+end
+if test ! -d $fixed
+    mkdir $fixed
+end
+
+for file in $files
+    if cat $file | rg -i 'security definer' &>/dev/null
+        : # Nothing to do
+    else if cat $file | rg -i 'language plpgsql' &>/dev/null
+        sd -f ei '\n(\s*)(language plpgsql)' '\n$1$2\n${1}VOLATILE SECURITY DEFINER' "$file"
+        mv "$file" "$fixed"
+    else
+        mv "$file" "$nofix"
+    end
+end

@@ -1,0 +1,4 @@
+#!/bin/fish
+
+echo "available scripts:"
+fd -t f -d 1 . ~/.local/scripts | rg -v "shortpath|$(basename (status -f))\$" | xargs -d '\n' -n 1 sh -c 'printf "  %s\n" $(basename "$0")'

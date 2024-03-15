@@ -1,0 +1,58 @@
+#!/bin/fish
+
+if test (count $argv) -lt 3
+    echo "usage: $(basename (status -f)) functions_dir owner execute"
+    return 1
+end
+
+set -l owner (echo "$argv[2]" | awk '{print(tolower($0))}')
+set -l execute (echo "$argv[3]" | awk '{print(tolower($0))}')
+set -l files (fd -t f -e sql -d 1 . "$argv[1]")
+
+set -l nofix "$argv[1]/non_fixable"
+set -l fixed "$argv[1]/fixed"
+set -l added "$argv[1]/added"
+
+if test ! -d $nofix
+    mkdir $nofix
+end
+if test ! -d $fixed
+    mkdir $fixed
+end
+if test ! -d $added
+    mkdir $added
+end
+
+
+for file in $files
+    set -l data (cat "$file" | rg -i '^\s*alter function' | sd -f i '^\s*alter function (.+) owner to (\w+).*' '$1\n$2' | awk '{print(tolower($0))}')
+    set -l execs (cat "$file" | rg -i '^\s*grant execute' | sd -f i '^\s*grant execute on function .+ to (\w+).*' '$1' | awk '{print(tolower($0))}')
+    set -l output "$fixed"
+    if test "$data[2]" = "$owner"
+        if not contains "$execute" $execs &>/dev/null
+            if test -n (tail $file -c 1)
+                echo "" >>$file
+            end
+            echo "GRANT EXECUTE ON FUNCTION $data[1] TO $execute;" >>"$file"
+        end
+    else
+        sd -f i '^(\s*alter function .+ owner to )\w+(.*)' "\${1}$owner\${2}" "$file"
+        if test -n (tail "$file" -c 1)
+            echo "" >>"$file"
+        end
+        if test "$data[2]" = "$execute"
+            if not contains "$execute" $execs &>/dev/null
+                echo "GRANT EXECUTE ON FUNCTION $data[1] TO $execute;" >>"$file"
+            end
+        else
+            if not contains "$data[2]" $execs &>/dev/null
+                echo "GRANT EXECUTE ON FUNCTION $data[1] TO $data[2];" >>"$file"
+            end
+            if not contains "$execute" $execs &>/dev/null
+                echo "GRANT EXECUTE ON FUNCTION $data[1] TO $execute;" >>"$file"
+                set output "$added"
+            end
+        end
+    end
+    mv "$file" "$output"
+end

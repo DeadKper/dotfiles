@@ -1,0 +1,29 @@
+#!/bin/fish
+
+if test (count $argv) -lt 1
+    echo "usage: $(basename (status -f)) functions_dir"
+    return 1
+end
+
+set -l files (fd -t f -e sql -d 1 . "$argv[1]")
+
+set -l nofix "$argv[1]/non_fixable"
+set -l fixed "$argv[1]/fixed"
+
+if test ! -d $nofix
+    mkdir $nofix
+end
+if test ! -d $fixed
+    mkdir $fixed
+end
+
+for file in $files
+    set -l create (cat $file | rg -i '^\s*create (or replace )?function')
+
+    if test -z "$create"
+        mv "$file" "$nofix"
+    else if test (echo $create | rg -i '^\s*create function')
+        sd -f i 'create function' 'CREATE OR REPLACE FUNCTION' "$file"
+        mv "$file" "$fixed"
+    end
+end
