@@ -1,0 +1,12 @@
+#!/bin/fish
+
+if test (count $argv) -lt 2
+    echo "usage: $(basename (status -f)) file_to_check file_to_compare_to"
+    return 1
+end
+
+cat "$argv[1]" | while read -l func
+    if not cat "$argv[2]" | rg -li "^$func\$" &>/dev/null
+        echo $func
+    end
+end

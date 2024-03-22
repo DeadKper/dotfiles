@@ -1,0 +1,23 @@
+#!/bin/fish
+
+if test (count $argv) -lt 2
+    echo "usage: $(basename (status -f)) clones_dir commit_message"
+    return 1
+end
+
+set -l inis (fd -t f '^desktop\.ini$' "$argv[1]")
+
+for ini in $inis
+    rm "$ini"
+end
+
+set -l proyects (fd -t d -FIH '.git' "$argv[1]" | xargs -d '\n' -n 1 dirname)
+
+printf '%s\n' $proyects | while read -l git
+    if test -z "$(git -C "$git" status -s)"
+        continue
+    end
+    git -C "$git" add -A
+    git -C "$git" commit -m "$argv[2]"
+    git -C "$git" push
+end
