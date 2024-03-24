@@ -11,6 +11,7 @@ if not set -q FISH_INIT_CONFIG; and count ~/.config/fish/conf.d/profile/*.fish &
     if test -d /usr/share/kde-settings/kde-profile/default/share
         set -p XDG_DATA_DIRS /usr/share/kde-settings/kde-profile/default/share
     end
+    set -p XDG_DATA_DIRS "$XDG_DATA_HOME"
 
     set -x --path XDG_CONFIG_DIRS /etc/xdg
     if test -d ~/.config/kdedefaults
