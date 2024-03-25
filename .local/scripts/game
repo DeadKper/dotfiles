@@ -1,10 +1,26 @@
 #!/bin/fish
 
+set -l known flags g e
 set -l flags
+set -l remove
 
-set -l i (contains -i -- -e $argv)
-if test -n "$i"
-    set -a flags -e
+for i in (seq (count $argv))
+    if echo -- $argv[$i] | rg -q -- '^-'
+        if test "$argv[$i]" = --
+            break
+        end
+        echo -- $argv[$i] | sd -- '^-' '' | string split '' | while read -l letter
+            if contains $letter $known
+                set -a flags $letter
+                if not contains $i $remove
+                    set -a remove $i
+                end
+            end
+        end
+    end
+end
+
+for i in (seq (count $remove) -1 1)
     set -e argv[$i]
 end
 
@@ -14,9 +30,9 @@ if type gamemoderun &>/dev/null
     set command gamemoderun $command
 end
 
-if type gamescope &>/dev/null
+if contains g $flags; and type gamescope &>/dev/null
     set -l opt_flag
-    if contains -- -e $flags
+    if contains e $flags
         set -a opt_flag -e
     end
 
@@ -25,8 +41,8 @@ if type gamescope &>/dev/null
     set command gamescope $opt_flag -W "$res[1]" -H "$res[2]" -b -o 5 --force-grab-cursor $command
 end
 
-if not count $argv &>/dev/null
-    echo $command
-else
+if echo -- "$argv" | rg -qv '^\s*$'
     $command
+else
+    echo -- $command
 end
