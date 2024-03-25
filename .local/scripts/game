@@ -1,10 +1,32 @@
 #!/bin/fish
 
-set -e opt_flag
-if echo $argv | rg -i 'steam' &> /dev/null
-	set -f opt_flag "-e"
+set -l flags
+
+set -l i (contains -i -- -e $argv)
+if test -n "$i"
+    set -a flags -e
+    set -e argv[$i]
 end
 
-set -l res (xrandr | rg -F '*+' | sd '^\s+|\s+$|\*\+' '' | sd '\s+|x' '\n')
+set -l command $argv
 
-gamemoderun gamescope $opt_flag -W "$res[1]" -H "$res[2]" -b -o 5 --force-grab-cursor $argv
+if type gamemoderun &>/dev/null
+    set command gamemoderun $command
+end
+
+if type gamescope &>/dev/null
+    set -l opt_flag
+    if contains -- -e $flags
+        set -a opt_flag -e
+    end
+
+    set -l res (xrandr | rg -F '*+' | sd '^\s+|\s+$|\*\+' '' | sd '\s+|x' '\n')
+
+    set command gamescope $opt_flag -W "$res[1]" -H "$res[2]" -b -o 5 --force-grab-cursor $command
+end
+
+if not count $argv &>/dev/null
+    echo $command
+else
+    $command
+end
