@@ -1,17 +1,29 @@
 #!/bin/fish
 
-set -l known flags g e
+set -l known flags g e w h
 set -l flags
 set -l remove
+set -l gs
+set -l skip 0
 
 for i in (seq (count $argv))
+    if test $skip -gt 0
+        set skip (math $skip - 1)
+        continue
+    end
     if echo -- $argv[$i] | rg -q -- '^-'
         if test "$argv[$i]" = --
             break
         end
         echo -- $argv[$i] | sd -- '^-' '' | string split '' | while read -l letter
             if contains $letter $known
-                set -a flags $letter
+                if test $letter = w -o $letter = h
+                    set -a gs "-$letter" "$argv["$(math $i + 1)"]"
+                    set -a remove (math $i + 1)
+                    set skip 1
+                else
+                    set -a flags $letter
+                end
                 if not contains $i $remove
                     set -a remove $i
                 end
@@ -38,7 +50,7 @@ if contains g $flags; and type gamescope &>/dev/null
 
     set -l res (xrandr | rg -F '*+' | sd '^\s+|\s+$|\*\+' '' | sd '\s+|x' '\n')
 
-    set command gamescope $opt_flag -W "$res[1]" -H "$res[2]" -b -o 5 --force-grab-cursor $command
+    set command gamescope $opt_flag -W "$res[1]" -H "$res[2]" $gs -b -o 5 --force-grab-cursor $command
 end
 
 if echo -- "$argv" | rg -qv '^\s*$'
