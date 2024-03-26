@@ -1,0 +1,38 @@
+#!/bin/fish
+
+if test (count $argv) -eq 0
+    echo "usage: $(basename (status -f)) COMMAND"
+    set -l commands (ls "$(status -f).d" | sort)
+    printf '  %s\n' $commands
+    return 1
+end
+
+set -l script "$(status -f).d"
+set -l commands
+
+for i in (seq (count $argv))
+    if test -d "$script/$argv[$i]"
+        set -a commands "$argv[$i]"
+        set script "$script/$argv[$i]"
+    else if test -e "$script/$argv[$i]"
+        set -a commands "$argv[$i]"
+        set script "$script/$argv[$i]"
+        break
+    else
+        break
+    end
+end
+
+if test -d "$script" -a -z "$argv[$i..]"
+    echo "usage: $(basename (status -f))" $commands
+    set -l commands (ls "$script" | sort)
+    printf '  %s\n' $commands
+    return 1
+else if test -f "$script"
+    $script
+else
+    echo "usage: $(basename (status -f)) COMMAND"
+    set -l commands (ls "$(status -f).d" | sort)
+    printf '  %s\n' $commands
+    return 1
+end

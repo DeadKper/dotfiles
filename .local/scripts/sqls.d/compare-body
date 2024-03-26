@@ -43,7 +43,7 @@ get_sql_func_name "$argv[1]" | while read -l data
     set -l cut2 (cat "$found[3]" | rg -in '^\s*declare;?\s*$' | head -n 1 | sd ':.*$' '')
     set -a cut2 (cat "$found[3]" | rg -in '^\s*end;?\s*$'     | tail -n 1 | sd ':.*$' '')
 
-    sed -n "$cut1[1],$cut1[2]p;$cut1[2]q"  "$data[3]" | sd '\s*$' '' >test1.tmp
+    sed -n "$cut1[1],$cut1[2]p;$cut1[2]q" "$data[3]" | sd '\s*$' '' >test1.tmp
     sed -n "$cut2[1],$cut2[2]p;$cut2[2]q" "$found[3]" | sd '\s*$' '' >test2.tmp
 
     nvim --headless +"set nobomb | set fenc=utf8 | x" test1.tmp &>/dev/null
