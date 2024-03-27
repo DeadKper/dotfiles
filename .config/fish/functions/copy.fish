@@ -1,3 +1,3 @@
-function copy --wraps='rsync -ah --info=progress2' --description 'alias copy=rsync -ah --info=progress2'
-  rsync -ah --info=progress2 $argv
+function copy --wraps='rsync -ahAHSX --info=progress2' --description 'alias copy=rsync -ahAHSX --info=progress2'
+    rsync -ahAHSX --info=progress2 $argv
 end
