@@ -46,8 +46,8 @@ get_sql_func_name "$argv[1]" | while read -l data
     sed -n "$cut1[1],$cut1[2]p;$cut1[2]q" "$data[3]" | sd '\s*$' '' >test1.tmp
     sed -n "$cut2[1],$cut2[2]p;$cut2[2]q" "$found[3]" | sd '\s*$' '' >test2.tmp
 
-    nvim --headless +"set nobomb | set fenc=utf8 | x" test1.tmp &>/dev/null
-    nvim --headless +"set nobomb | set fenc=utf8 | x" test2.tmp &>/dev/null
+    nvim --headless +"set nobomb | set fileformat=unix | set fileencoding=utf-8 | x" test1.tmp &>/dev/null
+    nvim --headless +"set nobomb | set fileformat=unix | set fileencoding=utf-8 | x" test2.tmp &>/dev/null
 
     cat test1.tmp | sd -f e '\n+$' '' >test1.tmp
     cat test2.tmp | sd -f e '\n+$' '' >test2.tmp
