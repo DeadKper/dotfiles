@@ -1,4 +1,10 @@
 function proton-update
+    if test -n "$XDG_DATA_HOME"
+        set -f steam "$XDG_DATA_HOME/Steam/compatibilitytools.d"
+    else
+        set -f steam "$HOME/.local/share/Steam/compatibilitytools.d"
+    end
+
     if not type -q protonup
         echo protonup not installed 1>&2
         return 1
@@ -6,8 +12,9 @@ function proton-update
 
     set -l newest (protonup --releases | tail -n 1)
 
-    if not test -f "$HOME/.local/share/Steam/compatibilitytools.d/GE-Latest/compatibilitytool.vdf"
-        mkdir -p "$HOME/.local/share/Steam/compatibilitytools.d/GE-Latest"
+    if not test -f "$steam/GE-Latest/compatibilitytool.vdf"
+        protonup -d "$steam"
+        mkdir -p "$steam/GE-Latest"
         set -l print '"compatibilitytools"'
         set -a print '{'
         set -a print '  "compat_tools"'
@@ -26,12 +33,12 @@ function proton-update
         set -a print '    }'
         set -a print '  }'
         set -a print '}'
-        printf '%s\n' $print >"$HOME/.local/share/Steam/compatibilitytools.d/GE-Latest/compatibilitytool.vdf"
+        printf '%s\n' $print >"$steam/GE-Latest/compatibilitytool.vdf"
     end
 
     if not protonup -l | rg -F "$newest" &>/dev/null
         protonup -t "$newest" -y
 
-        cat "$HOME/.local/share/Steam/compatibilitytools.d/GE-Latest/compatibilitytool.vdf" | sd '("install_path") .*' '$1 "../'$newest'"' >"$HOME/.local/share/Steam/compatibilitytools.d/GE-Latest/compatibilitytool.vdf"
+        cat "$steam/GE-Latest/compatibilitytool.vdf" | sd '("install_path") .*' '$1 "../'$newest'"' >"$steam/GE-Latest/compatibilitytool.vdf"
     end
 end
