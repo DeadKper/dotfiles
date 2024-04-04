@@ -6,7 +6,7 @@ if [ "$EUID" -eq 0 ]; then
 fi
 
 if [ -z $@ ]; then
-	curl -sL url.deadkper.com/install > /tmp/install.sh
+	curl -sL https://raw.githubusercontent.com/DeadKper/dotfiles/main/.local/share/deadkper/setup.sh > /tmp/install.sh
 	chmod +x /tmp/install.sh
 	/tmp/install.sh
 	exit
