@@ -6,15 +6,15 @@ if [ "$EUID" -eq 0 ]; then
 fi
 
 if [ -z $@ ]; then
-	curl -sL https://raw.githubusercontent.com/DeadKper/dotfiles/main/.local/share/deadkper/setup.sh > /tmp/install.sh
-	chmod +x /tmp/install.sh
-	/tmp/install.sh
+	curl -sL https://raw.githubusercontent.com/DeadKper/dotfiles/main/.local/share/deadkper/setup.sh > /tmp/setup.sh
+	chmod +x /tmp/setup.sh
+	/tmp/setup.sh y
 	exit
 fi
 
 if type yadm &> /dev/null; then
 	echo yadm instalation detected, stopping install
-	echo if you need help with something, just use \'cat /tmp/install.sh\'
+	echo if you need help with something, just use \'cat /tmp/setup.sh\'
 	exit
 fi
 
