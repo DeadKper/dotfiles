@@ -14,7 +14,6 @@ fi
 
 if type yadm &> /dev/null; then
 	echo yadm instalation detected, stopping install
-	echo if you need help with something, just use \'cat /tmp/setup.sh\'
 	exit
 fi
 
