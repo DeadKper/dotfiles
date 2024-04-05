@@ -5,6 +5,8 @@ function update
         return 1
     end
 
+    sh -c 'while [ true ]; do sudo -nv &> /dev/null && sleep 1 || exit; done' &
+
     function update_func
         echo "[ --- Updating $argv[1] --- ]"
         eval "$argv[2]"
@@ -48,4 +50,6 @@ function update
         update_func nix-env "nix-env -f '<nixpkgs>' -uA"
         nix-collect-garbage --delete-older-than 30d
     end
+
+    sudo -k
 end
