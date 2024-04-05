@@ -1,13 +1,13 @@
-if type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/tmux-init-conf.fish"
-    source "$HOME/.config/tmux-init-conf.fish"
+if type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/deadkper/tmux.fish"
+    source "$HOME/.config/deadkper/tmux.fish"
 
     if test -n "$tmux_session_home_name"
         set -x TMUX_HOME "$tmux_session_home_name"
     else
-        set -x TMUX_HOME 'home'
+        set -x TMUX_HOME home
     end
 
-    if not tmux list-sessions &> /dev/null; and test "$tmux_session_home_create" = "y"
+    if not tmux list-sessions &>/dev/null; and test "$tmux_session_home_create" = y
         tmux new-session -s "$TMUX_HOME" -c "$HOME" -d
 
         set -f cnt (seq (math (count $tmux_window_names)))
@@ -15,7 +15,7 @@ if type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/tmux-init-conf.
         sleep 0.1 # wait for session to be created
 
         for i in $cnt
-            if test "$i" != '1'
+            if test "$i" != 1
                 if test -z "$tmux_window_names[$i]"
                     tmux new-window -t "$TMUX_HOME" -s "$tmux_window_names[$i]"
                 else
@@ -38,7 +38,7 @@ if type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/tmux-init-conf.
         end
     end
 
-    if not tmux info &> /dev/null; and tmux has-session -t "$TMUX_HOME" &> /dev/null; and test "$tmux_session_home_attach" = "y"
+    if not tmux info &>/dev/null; and tmux has-session -t "$TMUX_HOME" &>/dev/null; and test "$tmux_session_home_attach" = y
         tmux attach-session -t "$TMUX_HOME"
     end
 end
