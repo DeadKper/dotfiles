@@ -1,7 +1,12 @@
 function ex --description "Expand or extract bundled & compressed files" --argument file dir
-    set --local ext (echo $file | awk -F. '{print $NF}')
+    if test (count $argv) -gt 2
+        echo 'more than 2 args given, only FILE and OUTPUT_DIR where expected'
+        return 1
+    end
 
-    if test (echo $file | awk -F. '{print $(NF-1)}') = tar
+    set --local ext (echo $file | awk -F . '{print $NF}')
+
+    if test (echo $file | awk -F . '{print $(NF-1)}') = tar
         set ext tar.{$ext}
     end
 
@@ -11,17 +16,17 @@ function ex --description "Expand or extract bundled & compressed files" --argum
 
     mkdir -p "$dir"
 
-    set -l pwd (pwd)
+    set -f pwd (pwd)
     mv "$file" "$dir"
     cd "$dir"
 
     switch $ext
         case tar.gz or tgz
-            tar -zxvf $file
+            tar -xvfz $file
         case tar.bz2 or tbz2
-            tar -jxvf $file
+            tar -xvfj $file
         case tar.xz
-            tar -Jxvf $file
+            tar -xvfJ $file
         case tar # non-compressed, just bundled
             tar -xvf $file
         case gz
@@ -29,17 +34,30 @@ function ex --description "Expand or extract bundled & compressed files" --argum
         case bz2
             bunzip2 $file
         case rar
-            unrar x $file
+            unrar -x $file
         case zip or crx
             unzip $file
         case Z
             uncompress $file
         case 7z
-            7z x $file
+            7za x $file
         case '*'
             echo "Unknown compressed extension '."$ext"'"
     end
 
     mv "$file" "$pwd"
     cd "$pwd"
+
+    set -l files (fd -t d -H -d 1 . "$dir")
+
+    if test (count $files) -eq 1
+        if test (basename "$files") = (dirname "$files")
+            mv "$dir" "$dir-tmp"
+            mv "$dir-tmp/$dir" .
+            rm -r "$dir-tmp"
+        else
+            mv "$files" .
+            rm -r "$dir"
+        end
+    end
 end
