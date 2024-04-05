@@ -36,7 +36,7 @@ fi
 echo installing development utils
 sudo dnf copr enable -y atim/starship &> /dev/null
 sudo dnf update -y
-sudo dnf install -y git fish parallel tmux neovim gcc zlib-ng cmake zoxide ripgrep sd fd-find fzf starship
+sudo dnf install -y git fish parallel tmux neovim gcc zlib-ng cmake zoxide ripgrep sd fd-find fzf starship p7zip unrar bzip2 ncompress
 sudo dnf groupinstall -y "Development Tools" "Development Libraries"
 sudo chsh -s $(which fish) "$USER"
 
