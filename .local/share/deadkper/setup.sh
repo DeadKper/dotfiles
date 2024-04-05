@@ -2,7 +2,7 @@
 
 if [ "$EUID" -eq 0 ]; then
 	echo 'needs to be run as the user'
-	return 1
+	exit
 fi
 
 if [ -z $@ ]; then
