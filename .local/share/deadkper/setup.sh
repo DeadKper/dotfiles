@@ -59,6 +59,7 @@ else
 	echo installing steam tinker launch...
 	sudo dnf copr enable -y capucho/steamtinkerlaunch &> /dev/null
 	sudo dnf install -y steamtinkerlaunch
+	steamtinkerlaunch compat add
 
 	echo cloning dotfiles...
 	$yadm clone 'git@github.com:DeadKper/dotfiles.git'
