@@ -1,5 +1,5 @@
-if type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/tmux-init-conf.fish"
-    source "$HOME/.config/tmux-init-conf.fish"
+if type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/deadkper/tmux.fish"
+    source "$HOME/.config/deadkper/tmux.fish"
 
     if test -n "$tmux_session_home_name"
         set -x TMUX_HOME "$tmux_session_home_name"

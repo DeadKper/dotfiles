@@ -35,7 +35,7 @@ function ps
                 printf '%s\n' 'usage: ps [flags] [query...]'
                 printf '%s\t%s\n' '-t --type' 'select type to open proyect, \'s\' for a new tmux session, \'w\' for a new tmux window and \'t\' (default) for current terminal'
                 printf '%s\t%s\n' '-c --cmd' 'command to execute on the selected proyect folder, defaults to \'nvim .\' if installed, or vim/vi'
-                printf '%s\t%s\n' '--conf  ' 'config file to use, defaults to \'~/.config/proyect-selector.fish\', config file should \'set -f cmd <command with args>\' if not already set, and \'set -f proyects <array of proyect folders>\''
+                printf '%s\t%s\n' '--conf  ' 'config file to use, defaults to \'~/.config/deadkper/proyect-selector.fish\', config file should \'set -f cmd <command with args>\' if not already set, and \'set -f proyects <array of proyect folders>\''
                 printf '%s\t%s\n' '-h --help' 'prints help message'
                 printf '%s\t%s\n' '[query...]' 'querys to match with \'grep -i\' on the proyects'
                 return 0
@@ -46,7 +46,7 @@ function ps
     end
 
     if not set -q conf_file
-        set -f conf_file "$HOME/.config/proyect-selector.fish"
+        set -f conf_file "$HOME/.config/deadkper/proyect-selector.fish"
     end
 
     if test -f "$conf_file"
@@ -76,8 +76,8 @@ function ps
     end
 
     if not set -q TMUX
-        if test -f "$HOME/.config/tmux-init-conf.fish"
-            source "$HOME/.config/tmux-init-conf.fish"
+        if test -f "$HOME/.config/deadkper/tmux.fish"
+            source "$HOME/.config/deadkper/tmux.fish"
         end
 
         if test -n "$tmux_session_home_name"
