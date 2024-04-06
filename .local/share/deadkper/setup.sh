@@ -56,6 +56,10 @@ if [ $wsl = y ]; then
 	$yadm clone -b work 'https://github.com/DeadKper/dotfiles'
 	$yadm submodule update --init --recursive
 else
+	echo installing steam tinker launch...
+	sudo dnf copr enable -y capucho/steamtinkerlaunch &> /dev/null
+	sudo dnf install -y steamtinkerlaunch
+
 	echo cloning dotfiles...
 	$yadm clone 'git@github.com:DeadKper/dotfiles.git'
 	$yadm submodule update --init --recursive
@@ -82,6 +86,14 @@ else
 	flatpak install -yu org.kde.kdenlive
 	flatpak install -yu org.kde.krita
 	flatpak install -yu io.gitlab.librewolf-community
+
+	flatpak override --user --filesystem=xdg-data/icons:ro
+	flatpak override com.usebottles.bottles --user --filesystem=xdg-data/applications
+	flatpak override com.usebottles.bottles --user --filesystem=xdg-data/share/Steam
+	flatpak override com.usebottles.bottles --user --filesystem=~/.var/app/com.valvesoftware.Steam/data/Steam
+	flatpak override io.github.spacingbat3.webcord --user --filesystem=home:ro
+	flatpak override io.gitlab.librewolf-community --user --filesystem=xdg-data/icons
+	flatpak override io.gitlab.librewolf-community --user --filesystem=xdg-data/applications
 
 	echo installing protonup
 	pipx install protonup
