@@ -4,9 +4,7 @@ if type -q telnet.exe
             echo 'usage: telnet IP PORT <TIME>'
             return 1
         end
-        if test -z "$time"
-            timeout 5s telnet.exe "$ip" "$port"
-        else if test "$time" -eq 0
+        if test -z "$time" -o "$time" -eq 0
             telnet.exe "$ip" "$port"
         else
             timeout {$time}s telnet.exe "$ip" "$port"
