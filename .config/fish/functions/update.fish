@@ -5,7 +5,7 @@ function update
         return 1
     end
 
-    sh -c 'while [ true ]; do sudo -nv &> /dev/null && sleep 1 || exit; done' &
+    sh -c '(while [ true ]; do sudo -nv &> /dev/null && sleep 1 || exit; done &)'
 
     function update_func
         echo "[ --- Updating $argv[1] --- ]"

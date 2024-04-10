@@ -5,7 +5,7 @@ function add-path --no-scope-shadowing
         set -e argv[$flag]
         set flag $tmp
     else
-        set flag '-p'
+        set flag -p
     end
 
     set -l name $argv[1]
@@ -17,7 +17,7 @@ function add-path --no-scope-shadowing
         end
     end
 
-    if count $to_add &> /dev/null
+    if count $to_add &>/dev/null
         set $flag $name $to_add
     end
 end
