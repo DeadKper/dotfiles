@@ -25,11 +25,11 @@ function matrix
         o=a[x];                       # get previous
         a[x]=a[x]+1;                  # increment previous and store
         if (f[x] == 0) {
-          printf "\033[%s;%sH\033[2;32m%s",o,x,letter;
+          printf "\033[%s;%sH\033[1;32m%s",o,x,letter;
           printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,letter;
         }
         else {
-          printf "\033[%s;%sH\033[2;32m%s",o,x," ";
+          printf "\033[%s;%sH\033[1;32m%s",o,x," ";
           printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x," ";
         }
         if (a[x] >= $1) {
