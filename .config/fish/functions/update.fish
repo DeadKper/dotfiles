@@ -8,12 +8,14 @@ function update
     sh -c 'while [ true ]; do sudo -nv &> /dev/null && sleep 1 || exit; done' &
 
     function update_func
+        echo ""
         echo "[ --- Updating $argv[1] --- ]"
         eval "$argv[2]"
         echo ""
     end
 
     if type -q yadm
+        echo ""
         echo "[ --- Updating yadm --- ]"
         echo "fetching new info..."
         git -C "$HOME/.local/share/yadm-project" fetch &>/dev/null
