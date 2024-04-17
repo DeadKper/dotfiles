@@ -1,9 +1,7 @@
 function matrix
     set -l chars "゠ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶヷヸヹヺ・ーヽヾヿ"
 
-    echo -e "\e[1;40m"
     tput civis
-
     clear
 
     bash -c '
@@ -14,7 +12,7 @@ function matrix
     trap cleanup EXIT
     while :; do
       echo $0 $1 $(( $RANDOM % $1 )) $(( $RANDOM % $2 ))
-      sleep 0.05
+      sleep 0.04
     done | awk \'{
       characters="'$chars'";
       c=$4;                           # random index
