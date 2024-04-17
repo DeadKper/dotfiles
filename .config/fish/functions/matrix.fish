@@ -11,24 +11,22 @@ function matrix
 
     trap cleanup EXIT
     while :; do
-      echo $0 $1 $(( $RANDOM % $1 )) $(( $RANDOM % $2 ))
+      echo $0 $1 $(( $RANDOM % $1 )) $(( $RANDOM % $2 )) $(( $RANDOM % $2 ))
       sleep 0.04
     done | awk \'{
       characters="'$chars'";
-      c=$4;                           # random index
-      letter=substr(characters,c,1);  # random letter
       a[$3]=0;                        # array to store row index
       f[$3]=0;                        # flag to store show/erase
       for (x in a) {
         o=a[x];                       # get previous
         a[x]=a[x]+1;                  # increment previous and store
         if (f[x] == 0) {
-          printf "\033[%s;%sH\033[1;32m%s",o,x,letter;
-          printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,letter;
+          printf "\033[%s;%sH\033[1;32m%s",o,x,substr(characters,$4,1);
+          printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,substr(characters,$5,1);
         }
         else {
-          printf "\033[%s;%sH\033[1;32m%s",o,x," ";
-          printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x," ";
+          printf "\033[%s;%sH%s",o,x," ";
+          printf "\033[%s;%sH%s\033[0;0H",a[x],x," ";
         }
         if (a[x] >= $1) {
           a[x]=0;
