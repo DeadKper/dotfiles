@@ -1,5 +1,6 @@
 function matrix
     set -l chars "゠ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶヷヸヹヺ・ーヽヾヿ"
+    # set -l chars 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()/'
 
     tput civis
     clear
@@ -11,7 +12,7 @@ function matrix
 
     trap cleanup EXIT
     while :; do
-      echo $0 $1 $(( $RANDOM % $1 )) $(( $RANDOM % $2 )) $(( $RANDOM % $2 ))
+      echo $0 $1 $(( $RANDOM % $1 )) $(( $RANDOM % $2 ))
       sleep 0.04
     done | awk \'{
       characters="'$chars'";
@@ -20,9 +21,10 @@ function matrix
       for (x in a) {
         o=a[x];                       # get previous
         a[x]=a[x]+1;                  # increment previous and store
+        chars[a[x] "," x] = substr(characters,$4,1)
         if (f[x] == 0) {
-          printf "\033[%s;%sH\033[1;32m%s",o,x,substr(characters,$4,1);
-          printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,substr(characters,$5,1);
+          printf "\033[%s;%sH\033[1;32m%s",o,x,chars[o "," x];
+          printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,chars[a[x] "," x];
         }
         else {
           printf "\033[%s;%sH%s",o,x," ";
