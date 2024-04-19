@@ -14,8 +14,8 @@ end
 
 echo 'parsing data...'
 set -l data (rg -ni '^create (or replace )?function' "$argv[1]" | awk -F : '{print $1}')
-set -l size (wc -l < "$argv[1]")
-set -l last (lines "$argv[1]" (math $data[(count $data)] + 1) $size | rg -ni -m 1 '^create' | sd '^(\d+).*' '$1')
+set -l name (lines "$argv[1]" "$data[$(count $data)]" | sd -f i '^create (or replace )?function (public\.)?([^(]+)\(([^(]*)\).*' '$3\n$4')
+set -l last (lines "$argv[1]" "$data[$(count $data)]" (wc -l < "$argv[1]") | rg -ni --column -m 1 "^alter function (public\.)?$name[1]\($name[2]\)" | awk -F : '{print $1}')
 set -a data (math $data[(count $data)] + $last)
 
 set -l date_timestamp (date '+%Y-%m-%d_%H:%M:%S')
@@ -23,11 +23,10 @@ set -l tmp_funcs "/tmp/scheme_funcs_$date_timestamp"
 set -l tmp_grant "/tmp/scheme_grant_$date_timestamp"
 lines "$argv[1]" $data[1] $data[(count $data)] >"$tmp_funcs"
 rg -i '^grant (execute|all) on function' "$argv[1]" >"$tmp_grant"
-set -l data (rg -ni '^create (or replace )?function' "$tmp_funcs" | awk -F : '{print $1}')
+set data (rg -ni '^create (or replace )?function' "$tmp_funcs" | awk -F : '{print $1}')
 set -l size (count $data)
-set -a data (wc -l < "$tmp_funcs")
+set -a data (math (wc -l < "$tmp_funcs") + 1 )
 set -l output
-set -l name
 
 echo printing functions...
 for i in (seq $size)
@@ -38,8 +37,8 @@ for i in (seq $size)
         set output $argv[2]'/'$name[1]'_'$i'.sql'
     end
 
-    set end (lines "$tmp_funcs" $data[$i] (math $data[(math $i + 1)] - 1) | rg -i --column '^ALTER FUNCTION' | tail -n 1 | awk -F : '{print $1}')
-    lines "$tmp_funcs" $data[$i] (math $data[$i] + $end) | sd -f e '\n+$' '\n' >"$output"
+    set end (lines "$tmp_funcs" $data[$i] (math $data[(math $i + 1)] - 1) | rg -i --column "^alter function (public\.)?$name[1]\($name[2]\)" | tail -n 1 | awk -F : '{print $1}')
+    lines "$tmp_funcs" $data[$i] (math $data[$i] + $end) >"$output"
     rg -i "\b$name[1]\($name[2]\)" "$tmp_grant" | sd -f i '^grant all' 'GRANT EXECUTE' >>"$output"
     if test (math $i % 250) -eq 0
         printf 'printed: %06.2f%s\n' (math $i x 100 / $size) %
