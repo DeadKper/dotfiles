@@ -12,37 +12,40 @@ else
     return 1
 end
 
-echo 'parsing data...'
-set -l data (rg -ni '^create (or replace )?function' "$argv[1]" | awk -F : '{print $1}')
-set -l name (lines "$argv[1]" "$data[$(count $data)]" | sd -f i '^create (or replace )?function (public\.)?([^(]+)\(([^(]*)\).*' '$3\n$4')
-set -l last (lines "$argv[1]" "$data[$(count $data)]" (wc -l < "$argv[1]") | rg -ni --column -m 1 "^alter function (public\.)?$name[1]\($name[2]\)" | awk -F : '{print $1}')
+set -l regex_name '^create (or replace )?function (public\.)?([^(]+)\(([^(]*)\).*'
+set -l regex_altr '^alter function (public\.)?'
+set -l regex_crte '^create (or replace )?function'
+set -l regex_grnt '^grant (execute|all) on function'
+
+echo parsing data...
+set -l data (rg -ni $regex_crte "$argv[1]" | awk -F : '{print $1}')
+set -l name (lines "$argv[1]" "$data[$(count $data)]" | sd -f i $regex_name '$3\n$4')
+set -l last (lines "$argv[1]" "$data[$(count $data)]" (wc -l < "$argv[1]") | rg -ni --column -m 1 "$regex_altr$name[1]\($name[2]\)" | awk -F : '{print $1}')
 set -a data (math $data[(count $data)] + $last)
 
 set -l date_timestamp (date '+%Y-%m-%d_%H:%M:%S')
 set -l tmp_funcs "/tmp/scheme_funcs_$date_timestamp"
 set -l tmp_grant "/tmp/scheme_grant_$date_timestamp"
 lines "$argv[1]" $data[1] $data[(count $data)] >"$tmp_funcs"
-rg -i '^grant (execute|all) on function' "$argv[1]" >"$tmp_grant"
-set data (rg -ni '^create (or replace )?function' "$tmp_funcs" | awk -F : '{print $1}')
+rg -i $regex_grnt "$argv[1]" >"$tmp_grant"
+set data (rg -ni $regex_crte "$tmp_funcs" | awk -F : '{print $1}')
 set -l size (count $data)
-set -a data (math (wc -l < "$tmp_funcs") + 1 )
+set -a data (wc -l < "$tmp_funcs")
 set -l output
 
 echo printing functions...
 for i in (seq $size)
-    set name (lines "$tmp_funcs" "$data[$i]" | sd -f i '^create (or replace )?function (public\.)?([^(]+)\(([^(]*)\).*' '$3\n$4')
+    set name (lines "$tmp_funcs" "$data[$i]" | sd -f i $regex_name '$3\n$4')
     set output "$argv[2]/$name[1].sql"
 
     if test -f "$output"
         set output $argv[2]'/'$name[1]'_'$i'.sql'
     end
 
-    set end (lines "$tmp_funcs" $data[$i] (math $data[(math $i + 1)] - 1) | rg -i --column "^alter function (public\.)?$name[1]\($name[2]\)" | tail -n 1 | awk -F : '{print $1}')
-    lines "$tmp_funcs" $data[$i] (math $data[$i] + $end) >"$output"
+    set end (lines "$tmp_funcs" $data[$i] (math $data[(math $i + 1)]) | rg -i --column "$regex_altr$name[1]\($name[2]\)" | tail -n 1 | awk -F : '{print $1}')
+    lines "$tmp_funcs" $data[$i] (math $data[$i] + $end - 1) >"$output"
     rg -i "\b$name[1]\($name[2]\)" "$tmp_grant" | sd -f i '^grant all' 'GRANT EXECUTE' >>"$output"
     if test (math $i % 250) -eq 0
         printf 'printed: %06.2f%s\n' (math $i x 100 / $size) %
     end
 end
-
-printf '\nlast function: %s\n' (basename $output)
