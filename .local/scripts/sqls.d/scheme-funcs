@@ -13,23 +13,22 @@ else
 end
 
 echo 'parsing data...'
-set -l data (rg -ni '^\s*create (or replace )?function' "$argv[1]" | awk -F : '{print $1}')
+set -l data (rg -ni '^create (or replace )?function' "$argv[1]" | awk -F : '{print $1}')
 set -l size (wc -l < "$argv[1]")
-set -l last (lines "$argv[1]" (math $data[(count $data)] + 1) $size | rg -ni -m 1 '^\s*create' | sd '^(\d+).*' '$1')
+set -l last (lines "$argv[1]" (math $data[(count $data)] + 1) $size | rg -ni -m 1 '^create' | sd '^(\d+).*' '$1')
 set -a data (math $data[(count $data)] + $last)
 
 set -l tmp_scheme "/tmp/scheme_funcs_$(date '+%Y-%m-%d_%H:%M:%S')"
-sed -n $data[1]','$data[(count $data)]'p;'$data[(count $data)]'q' "$argv[1]" >"$tmp_scheme"
-set -l data (rg -ni '^\s*create (or replace )?function' "$tmp_scheme" | awk -F : '{print $1}')
+lines "$argv[1]" $data[1] $data[(count $data)] >"$tmp_scheme"
+set -l data (rg -ni '^create (or replace )?function' "$tmp_scheme" | awk -F : '{print $1}')
 set -l size (count $data)
 set -a data (wc -l < "$tmp_scheme")
 set -l output
 set -l name
 
-echo ''
 echo printing functions...
 for i in (seq $size)
-    set name (lines "$tmp_scheme" "$data[$i]" | sd -f i '^\s*create (or replace )?function (public\.)?([^(]+).*' '$3')
+    set name (lines "$tmp_scheme" "$data[$i]" | sd -f i '^create (or replace )?function (public\.)?([^(]+).*' '$3')
     set output "$argv[2]/$name.sql"
 
     if test -f "$output"
