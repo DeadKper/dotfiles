@@ -5,56 +5,42 @@ if test (count $argv) -lt 2
     return 1
 end
 
-set -l data (rg -ni '^\s*create (or replace )?function' "$argv[1]" | sd ':.*$' '')
+if not test -d "$argv[2]"
+    mkdir "$argv[2]"
+else
+    echo output dir already exists, please remove it or give a different output folder
+    return 1
+end
+
+echo 'parsing data...'
+set -l data (rg -ni '^\s*create (or replace )?function' "$argv[1]" | awk -F : '{print $1}')
 set -l size (wc -l < "$argv[1]")
 set -l last (lines "$argv[1]" (math $data[(count $data)] + 1) $size | rg -ni -m 1 '^\s*create' | sd '^(\d+).*' '$1')
 set -a data (math $data[(count $data)] + $last)
 
-if not test -d "$argv[2]"
-    mkdir "$argv[2]"
-end
-
-set -l starts
-set -l guess_inc 10
-set -l guess
-set -l code
-set -l create_start
-set -l line
+set -l tmp_scheme "/tmp/scheme_funcs_$(date '+%Y-%m-%d_%H:%M:%S')"
+sed -n $data[1]','$data[(count $data)]'p;'$data[(count $data)]'q' "$argv[1]" >"$tmp_scheme"
+set -l data (rg -ni '^\s*create (or replace )?function' "$tmp_scheme" | awk -F : '{print $1}')
 set -l size (count $data)
-for i in (seq $size)
-    set line "$data[$i]"
-    set guess $guess_inc
-    set code (lines "$argv[1]" (math $line - $guess) (math $line - 1) | rg -v --column '^\s*(--.*)?$' | tail -n 1)
-    while test -z "$code"
-        set guess (math $guess + $guess_inc)
-        set code (lines "$argv[1]" (math $line - $guess) (math $line - $guess + $guess_inc - 1) \
-            | rg -v --column '^\s*(--.*)?$' | tail -n 1)
-    end
-    set create_start (math $guess - (echo $code | awk -F : '{print $1}'))
-    set -a starts (math $line - $create_start)
-
-    if test (math $i % 200) -eq 0
-        printf '%s: %s%s\n' parsed (math $i / $size x 100) %
-    end
-end
-
-set -l tmp "tmp_$(date -d '2023-02-13 17:16:00' +%s).sql"
-set -l size (count $starts)
-set -l name
+set -a data (wc -l < "$tmp_scheme")
 set -l output
-for i in (seq (math $size - 1))
-    set name (lines "$argv[1]" "$data[$i]" | sd -f i '^\s*create (or replace )?function (public\.)?([^(]+).*' '$3')
+set -l name
 
-    set output "$argv[2]/$name[1].sql"
+echo ''
+echo printing functions...
+for i in (seq $size)
+    set name (lines "$tmp_scheme" "$data[$i]" | sd -f i '^\s*create (or replace )?function (public\.)?([^(]+).*' '$3')
+    set output "$argv[2]/$name.sql"
+
     if test -f "$output"
-        set output "$argv[2]/$name[1]_$i.sql"
+        set output $argv[2]'/'$name'_'$i'.sql'
     end
 
-    lines $argv[1] $starts[$i] (math $starts[(math $i + 1)] - 1) | sd -f e '^\n+|\n+$' '' >"$output"
-
-    if test (math $i % 200) -eq 0
-        printf '%s: %s%s\n' printed (math $i / \($size - 1\) x 100) %
+    set end (lines "$tmp_scheme" $data[$i] (math $data[(math $i + 1)] - 1) | rg -v --column '^\s*(--.*)?$' | tail -n 1 | awk -F : '{print $1}')
+    lines "$tmp_scheme" $data[$i] (math $data[$i] + $end) | sd -f e '\n+$' '\n' >"$output"
+    if test (math $i % 250) -eq 0
+        printf 'printed: %06.2f%s\n' (math $i x 100 / $size) %
     end
 end
 
-printf '\n\nlast function: %s\n' $name
+printf '\nlast function: %s\n' $name
