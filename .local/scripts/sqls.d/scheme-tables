@@ -1,0 +1,51 @@
+#!/bin/fish
+
+if test (count $argv) -lt 2
+    echo "usage: $(basename (status -f)) scheme output-folder"
+    return 1
+end
+
+if not test -d "$argv[2]"
+    mkdir "$argv[2]"
+else
+    echo output dir already exists, please remove it or give a different output folder
+    return 1
+end
+
+set -l regex_name '^create table (public\.)?([^\s(]+).*'
+set -l regex_altr '^alter table (public\.)?'
+set -l regex_crte '^create table'
+set -l regex_grnt '^grant \w+ on table'
+
+echo parsing data...
+set -l data (rg -ni $regex_crte "$argv[1]" | awk -F : '{print $1}')
+set -l name (lines "$argv[1]" "$data[$(count $data)]" | sd -f i $regex_name '$2')
+set -l last (lines "$argv[1]" "$data[$(count $data)]" (wc -l < "$argv[1]") | rg -ni --column -m 1 "$regex_altr$name\b" | awk -F : '{print $1}')
+set -a data (math $data[(count $data)] + $last)
+
+set -l date_timestamp (date '+%Y-%m-%d_%H:%M:%S')
+set -l tmp_table "/tmp/scheme_table_$date_timestamp"
+set -l tmp_grant "/tmp/scheme_grant_$date_timestamp"
+lines "$argv[1]" $data[1] $data[(count $data)] >"$tmp_table"
+rg -i $regex_grnt "$argv[1]" >"$tmp_grant"
+set data (rg -ni $regex_crte "$tmp_table" | awk -F : '{print $1}')
+set -l size (count $data)
+set -a data (wc -l < "$tmp_table")
+set -l output
+
+echo printing tables...
+for i in (seq $size)
+    set name (lines "$tmp_table" "$data[$i]" | sd -f i $regex_name '$2')
+    set output "$argv[2]/$name.sql"
+
+    if test -f "$output"
+        set output $argv[2]'/'$name'_'$i'.sql'
+    end
+
+    set end (lines "$tmp_table" $data[$i] (math $data[(math $i + 1)]) | rg -i --column "$regex_altr$name\b" | tail -n 1 | awk -F : '{print $1}')
+    lines "$tmp_table" $data[$i] (math $data[$i] + $end - 1) >"$output"
+    rg -i "\b$name\b" "$tmp_grant" >>"$output"
+    if test (math $i % 250) -eq 0
+        printf 'printed: %06.2f%s\n' (math $i x 100 / $size) %
+    end
+end
