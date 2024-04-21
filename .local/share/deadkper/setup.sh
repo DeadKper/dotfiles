@@ -24,7 +24,7 @@ while [ true ]; do
 	sudo printf "" && break
 done
 
-sh -c 'while [ true ]; do sudo -nv &> /dev/null && sleep 5 || exit; done' &
+sh -c '(while [ true ]; do sudo -nv &> /dev/null && sleep 1 || exit; done &)'
 
 wsl=$(type wsl.exe &> /dev/null && echo y || echo n)
 
