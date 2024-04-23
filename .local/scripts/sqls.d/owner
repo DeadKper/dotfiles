@@ -1,7 +1,7 @@
 #!/bin/fish
 
 if test (count $argv) -lt 3
-    echo "usage: $(basename (status -f)) functions_dir owner execute"
+    echo "usage: $(basename (status -f)) functions_dir owner <execute>"
     return 1
 end
 
@@ -28,30 +28,20 @@ for file in $files
     set -l data (cat "$file" | rg -i '^\s*alter function' | sd -f i '^\s*alter function (.+) owner to (\w+).*' '$1\n$2' | awk '{print(tolower($0))}')
     set -l execs (cat "$file" | rg -i '^\s*grant execute' | sd -f i '^\s*grant execute on function .+ to (\w+).*' '$1' | awk '{print(tolower($0))}')
     set -l output "$fixed"
-    if test "$data[2]" = "$owner"
-        if not contains "$execute" $execs &>/dev/null
-            if test -n (tail $file -c 1)
-                echo "" >>$file
-            end
-            echo "GRANT EXECUTE ON FUNCTION $data[1] TO $execute;" >>"$file"
-        end
+    if test -z "$data[1]" -o -z "$data[2]"
+        set output "$nofix"
     else
-        sd -f i '^(\s*alter function .+ owner to )\w+(.*)' "\${1}$owner\${2}" "$file"
-        if test -n (tail "$file" -c 1)
-            echo "" >>"$file"
+        if test -n (tail $file -c 1)
+            echo "" >>$file
         end
-        if test "$data[2]" = "$execute"
-            if not contains "$execute" $execs &>/dev/null
-                echo "GRANT EXECUTE ON FUNCTION $data[1] TO $execute;" >>"$file"
-            end
-        else
-            if not contains "$data[2]" $execs &>/dev/null
-                echo "GRANT EXECUTE ON FUNCTION $data[1] TO $data[2];" >>"$file"
-            end
-            if not contains "$execute" $execs &>/dev/null
-                echo "GRANT EXECUTE ON FUNCTION $data[1] TO $execute;" >>"$file"
-                set output "$added"
-            end
+        if test "$data[2]" != "$owner"
+            sd -f i '^(\s*alter function .+ owner to )\w+(.*)' "\${1}$owner\${2}" "$file"
+            echo "GRANT EXECUTE ON FUNCTION $data[1] TO $data[2];" >>"$file"
+            set -a execs "$data[2]"
+        end
+        if test -n "$execute"; and not contains "$execute" $execs &>/dev/null
+            echo "GRANT EXECUTE ON FUNCTION $data[1] TO $execute;" >>"$file"
+            set output "$added"
         end
     end
     mv "$file" "$output"
