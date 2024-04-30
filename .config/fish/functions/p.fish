@@ -1,4 +1,4 @@
-function ps
+function p
     set -l positional
     getopts $argv | while read -l key value
         switch $key
@@ -32,7 +32,7 @@ function ps
                     end
                 end
             case h help
-                printf '%s\n' 'usage: ps [flags] [query...]'
+                printf '%s\n' 'usage: p [flags] [query...]'
                 printf '%s\t%s\n' '-t --type' 'select type to open proyect, \'s\' for a new tmux session, \'w\' for a new tmux window and \'t\' (default) for current terminal'
                 printf '%s\t%s\n' '-c --cmd' 'command to execute on the selected proyect folder, defaults to \'nvim .\' if installed, or vim/vi'
                 printf '%s\t%s\n' '--conf  ' 'config file to use, defaults to \'~/.config/proyect-selector.fish\', config file should \'set -f cmd <command with args>\' if not already set, and \'set -f proyects <array of proyect folders>\''
@@ -116,18 +116,14 @@ function ps
         end
     end
 
-    if not set -q XDG_CACHE_HOME
-        set -f XDG_CACHE_HOME "$HOME/.cache"
-    end
-
-    printf '%s\n' $proyects | string replace -r "^$HOME" '~' | sort >"$XDG_CACHE_HOME/ps_proyects"
+    printf '%s\n' $proyects | string replace -r "^$HOME" '~' | sort >/tmp/__p_proyects
 
     set -f curr_session (tmux display-message -p '#S')
 
     switch $type
         case t
             if test -z "$selected"
-                set -f selected (cat "$XDG_CACHE_HOME/ps_proyects" | sk | string replace -r '^~' "$HOME")
+                set -f selected (cat "/tmp/__p_proyects" | sk | string replace -r '^~' "$HOME")
             end
             if test -n "$selected"
                 cd "$selected"
@@ -135,18 +131,20 @@ function ps
             end
         case s w
             if test -z "$selected"
-                tmux new-window -t "$curr_session:0" -n sessionizer "cat '$XDG_CACHE_HOME/ps_proyects' | sk | string replace -r '^~' '$HOME' > '$XDG_CACHE_HOME/ps_selected'"
+                tmux new-window -t "$curr_session:0" -n sessionizer "cat '/tmp/__p_proyects' | sk | string replace -r '^~' '$HOME' > '/tmp/__p_selected'"
                 while tmux list-windows | rg -e '^0: sessionizer' &>/dev/null
                     sleep 0.1
                 end
-                set -f selected (cat "$XDG_CACHE_HOME/ps_selected")
-                rm "$XDG_CACHE_HOME/ps_selected"
+                set -f selected (cat "/tmp/__p_selected")
+                rm /tmp/__p_*
             end
             if test "$type" = s
                 set -f session (basename "$selected")
                 if not tmux has-session -t "$session" 2>/dev/null
                     tmux new-session -d -s "$session" -c "$selected"
-                    sleep 0.3 # Wait for fish to load
+                    sleep 0.1 # Wait for session to be created
+                    tmux switch-client -t "$curr_session"
+                    sleep 0.4 # Wait for fish to load
                     tmux send-keys -t "$session:" "$cmd" Enter
                 end
                 tmux switch-client -t "$session"
@@ -158,7 +156,7 @@ function ps
                         set -f window "$curr_session:$i"
                     end
                 end
-                sleep 0.3 # Wait for fish to load
+                sleep 0.5 # Wait for fish to load
                 tmux send-keys -t "$window" "$cmd" Enter
                 tmux select-window -t "$window"
             end
