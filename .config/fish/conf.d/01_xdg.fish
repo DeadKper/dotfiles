@@ -1,6 +1,4 @@
-if not set -q FISH_INIT_CONFIG; and count ~/.config/fish/conf.d/profile/*.fish &>/dev/null
-    set -x FISH_INIT_CONFIG
-
+if status is-login; or not set -q XDG_DATA_HOME
     # Config xdg dirs
     set -x XDG_CONFIG_HOME ~/.config
     set -x XDG_CACHE_HOME ~/.cache
@@ -21,21 +19,7 @@ if not set -q FISH_INIT_CONFIG; and count ~/.config/fish/conf.d/profile/*.fish &
         set -a XDG_CONFIG_DIRS /usr/share/kde-settings/kde-profile/default/xdg
     end
 
+    # Add default paths just in case
     set -x --path PATH $PATH
-
-    for src in ~/.config/fish/conf.d/profile/*.fish
-        source "$src"
-    end
-
-    if test -d ~/.local/bin
-        add-path PATH ~/.local/bin
-    end
-
-    if test -d ~/.local/scripts
-        add-path PATH ~/.local/scripts
-    end
-
     add-path -a PATH /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
-
-    set -e src
 end

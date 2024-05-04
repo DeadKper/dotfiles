@@ -123,7 +123,7 @@ function p
     switch $type
         case t
             if test -z "$selected"
-                set -f selected (cat "/tmp/__p_proyects" | sk | string replace -r '^~' "$HOME")
+                set -f selected (cat "/tmp/__p_proyects" | fzf | string replace -r '^~' "$HOME")
             end
             if test -n "$selected"
                 cd "$selected"
@@ -131,7 +131,7 @@ function p
             end
         case s w
             if test -z "$selected"
-                tmux new-window -t "$curr_session:0" -n sessionizer "cat '/tmp/__p_proyects' | sk | string replace -r '^~' '$HOME' > '/tmp/__p_selected'"
+                tmux new-window -t "$curr_session:0" -n sessionizer "cat '/tmp/__p_proyects' | fzf | string replace -r '^~' '$HOME' > '/tmp/__p_selected'"
                 while tmux list-windows | rg -e '^0: sessionizer' &>/dev/null
                     sleep 0.1
                 end

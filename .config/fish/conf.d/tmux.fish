@@ -1,4 +1,4 @@
-if type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/deadkper/tmux.fish"
+if status is-interactive; and type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/deadkper/tmux.fish"
     source "$HOME/.config/deadkper/tmux.fish"
 
     if test -n "$tmux_session_home_name"
