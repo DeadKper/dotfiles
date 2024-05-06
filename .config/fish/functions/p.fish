@@ -144,7 +144,7 @@ function p
                     tmux new-session -d -s "$session" -c "$selected"
                     sleep 0.1 # Wait for session to be created
                     tmux switch-client -t "$curr_session"
-                    sleep 0.4 # Wait for fish to load
+                    sleep 0.75 # Wait for fish to load
                     tmux send-keys -t "$session:" "$cmd" Enter
                 end
                 tmux switch-client -t "$session"
@@ -156,7 +156,7 @@ function p
                         set -f window "$curr_session:$i"
                     end
                 end
-                sleep 0.5 # Wait for fish to load
+                sleep 0.85 # Wait for fish to load
                 tmux send-keys -t "$window" "$cmd" Enter
                 tmux select-window -t "$window"
             end
