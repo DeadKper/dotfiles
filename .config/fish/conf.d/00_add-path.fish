@@ -5,19 +5,19 @@ function add-path --no-scope-shadowing
         set -e argv[$flag]
         set flag $tmp
     else
-        set flag '-p'
+        set flag -p
     end
 
     set -l name $argv[1]
     set -l to_add
 
     for path in $argv[2..]
-        if test -e "$path"; and not contains "$path" $to_add $$name
+        if not contains "$path" $to_add $$name
             set -a to_add $path
         end
     end
 
-    if count $to_add &> /dev/null
+    if count $to_add &>/dev/null
         set $flag $name $to_add
     end
 end
