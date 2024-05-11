@@ -18,8 +18,4 @@ if status is-login; or not set -q XDG_DATA_HOME
     if test -d /usr/share/kde-settings/kde-profile/default/xdg
         set -a XDG_CONFIG_DIRS /usr/share/kde-settings/kde-profile/default/xdg
     end
-
-    # Add default paths just in case
-    set -x --path PATH $PATH
-    add-path -a PATH /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 end
