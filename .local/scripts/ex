@@ -31,11 +31,11 @@ cd "$dir"
 
 switch $ext
     case tar.gz or tgz
-        tar -xvfz $file
+        tar -xvf $file
     case tar.bz2 or tbz2
-        tar -xvfj $file
+        tar -xvf $file
     case tar.xz
-        tar -xvfJ $file
+        tar -xvf $file
     case tar # non-compressed, just bundled
         tar -xvf $file
     case gz
