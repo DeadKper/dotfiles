@@ -46,4 +46,10 @@ if test $tmux_enable = y; and status is-interactive; and type -q tmux; and not s
     if not tmux info &>/dev/null; and tmux has-session -t "$TMUX_HOME" &>/dev/null; and test "$tmux_session_home_attach" = y
         tmux attach-session -t "$TMUX_HOME"
     end
+
+    if not tmux has-session -t popup &>/dev/null
+        tmux new -s popup -d
+        sleep 0.5
+        tmux send-keys -t "popup:1" "tmux set status off && clear" Enter
+    end
 end
