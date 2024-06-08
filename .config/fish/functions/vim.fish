@@ -11,11 +11,6 @@ function vim --argument-names file
         return 1
     end
 
-    # check if it's a wslpath
-    if type -q wslpath; and wslpath "$file" &>/dev/null
-        set -f file (wslpath "$file")
-    end
-
     command $vim $argv
     return $status
 end
