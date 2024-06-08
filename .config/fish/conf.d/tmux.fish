@@ -1,5 +1,5 @@
-set tmux_enable n
-if test tmux_enable = y; and status is-interactive; and type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/deadkper/tmux.fish"
+set tmux_enable y
+if test $tmux_enable = y; and status is-interactive; and type -q tmux; and not set -q TMUX; and test -e "$HOME/.config/deadkper/tmux.fish"
     source "$HOME/.config/deadkper/tmux.fish"
 
     if test -n "$tmux_session_home_name"
