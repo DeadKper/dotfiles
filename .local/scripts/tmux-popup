@@ -13,5 +13,5 @@ fi
 if test "$(tmux display-message -p -F "#{session_name}")" = "$session"; then
 	tmux detach-client
 else
-	tmux "$session" -d '#{pane_current_path}' -xC -yC -w"$width" -h"$height" -E "tmux attach -t '$session'"
+	tmux popup -d '#{pane_current_path}' -xC -yC -w"$width" -h"$height" -E "tmux attach -t '$session'"
 fi
