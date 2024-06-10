@@ -31,7 +31,7 @@ style = "white"
 format = "[$time]($style)"
 
 [container]
-format = ' [$symbol ]($style)'
+format = ' [$symbol \[$name\]]($style)'
 
 [directory]
 style = "bright-blue"
