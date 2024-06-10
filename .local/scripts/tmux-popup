@@ -5,9 +5,8 @@ height=${2:-80%}
 session=popup
 
 if test -n "$(tmux has-session -t "$session" 2>&1)"; then
-	tmux new -s $session -d
-	sleep 0.2
-	tmux send-keys -t "$session" "tmux set status-right ' #[fg=#e0e0e0]#{=17:#(\$HOME/.local/scripts/shortpath \"#{pane_current_path}\" \"3\")} ' && clear" Enter
+	tmux new -s "$session" -d
+	tmux set -t "$session" status-right ' #[fg=#e0e0e0]#{=17:#(~/.local/scripts/shortpath "#{pane_current_path}" "3")} '
 fi
 
 if test "$(tmux display-message -p -F "#{session_name}")" = "$session"; then
