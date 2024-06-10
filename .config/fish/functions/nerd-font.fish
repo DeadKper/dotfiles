@@ -1,17 +1,20 @@
-function nerd-font
+function nerd-font --argument font
     set -l pwd "$(pwd)"
-
-    if test -d "$XDG_DATA_HOME/fonts/SourceCodePro"
-        rm -rf "$XDG_DATA_HOME/fonts/SourceCodePro"
+    if test -z "$font"
+        set font SourceCodePro
     end
 
-    mkdir -p "$XDG_DATA_HOME/fonts/SourceCodePro"
-    cd "$XDG_DATA_HOME/fonts/SourceCodePro"
+    if test -d "$XDG_DATA_HOME/fonts/$font"
+        rm -rf "$XDG_DATA_HOME/fonts/$font"
+    end
 
-    curl -OL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SourceCodePro.tar.xz
+    mkdir -p "$XDG_DATA_HOME/fonts/$font"
+    cd "$XDG_DATA_HOME/fonts/$font"
 
-    tar -Jxvf SourceCodePro.tar.xz
-    rm SourceCodePro.tar.xz
+    curl -OL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/$font.tar.xz
+
+    tar -Jxf $font.tar.xz
+    rm $font.tar.xz
 
     cd "$pwd"
 end
