@@ -6,14 +6,14 @@ local M = {}
 M.disable_default_key_bindings = true
 
 M.leader = {
-	key = "a",
+	key = ".",
 	mods = "CTRL",
 	timeout_milliseconds = 900, -- Close enough to update interval
 }
 
 M.keys = {
-	-- Send C-a when pressing C-a twice
-	{ key = "a", mods = "LEADER|CTRL", action = act.SendKey({ key = "a", mods = "CTRL" }) },
+	-- Send C-. when pressing C-. twice
+	{ key = M.leader.key, mods = "LEADER|CTRL", action = act.SendKey({ key = M.leader.key, mods = "CTRL" }) },
 	{ key = "m", mods = "LEADER", action = act.ActivateCopyMode },
 	{ key = "phys:Space", mods = "LEADER", action = act.ActivateCommandPalette },
 
@@ -24,7 +24,7 @@ M.keys = {
 	{ key = "j", mods = "LEADER", action = act.ActivatePaneDirection("Down") },
 	{ key = "k", mods = "LEADER", action = act.ActivatePaneDirection("Up") },
 	{ key = "l", mods = "LEADER", action = act.ActivatePaneDirection("Right") },
-	{ key = "q", mods = "LEADER", action = act.CloseCurrentPane({ confirm = true }) },
+	{ key = "q", mods = "LEADER", action = act.CloseCurrentPane({ confirm = false }) },
 	{ key = "z", mods = "LEADER", action = act.TogglePaneZoomState },
 	{ key = "o", mods = "LEADER", action = act.RotatePanes("Clockwise") },
 	{
@@ -60,7 +60,7 @@ M.keys = {
 	{ action = act.DecreaseFontSize, mods = "CTRL", key = "-" },
 	{ action = act.ResetFontSize, mods = "CTRL", key = "0" },
 
-	{ action = act.Nop, mods = "ALT", key = "Enter" },
+	-- { action = act.Nop, mods = "ALT", key = "Enter" },
 	{ action = act.ToggleFullScreen, key = "F11" },
 }
 

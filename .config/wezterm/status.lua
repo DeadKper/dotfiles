@@ -4,8 +4,8 @@ local krbon = require("palette")
 local M = {}
 
 wezterm.on("update-status", function(window, pane)
-	-- Workspace name
-	local stat = window:active_workspace()
+	-- Domain/Workspace name
+	local stat = pane:get_domain_name() or window:active_workspace()
 	local stat_color = krbon.lavender
 	-- It's a little silly to have workspace name all the time
 	-- Utilize this to display LDR or current key table name
@@ -86,29 +86,28 @@ wezterm.on("update-status", function(window, pane)
 		right[#right + 1] = "ResetAttributes"
 	end
 
-	right[#right + 1] = { Background = { Color = krbon.bg0 } }
-	right[#right + 1] = { Foreground = { Color = krbon.bg0 } }
-	right[#right + 1] = { Text = "_" }
+	right[#right + 1] = { Text = " " }
 	right[#right + 1] = { Foreground = { Color = krbon.bg2 } }
 	right[#right + 1] = { Text = wezterm.nerdfonts.pl_right_hard_divider }
 	right[#right + 1] = { Background = { Color = krbon.bg2 } }
-	right[#right + 1] = { Text = "_" }
+	right[#right + 1] = { Text = " " }
 	right[#right + 1] = { Foreground = { Color = stat_color } }
 	right[#right + 1] = { Text = date .. (use_icons and " " .. wezterm.nerdfonts.md_calendar .. " " or "") }
 	right[#right + 1] = "ResetAttributes"
 
 	right[#right + 1] = { Background = { Color = krbon.bg2 } }
 	right[#right + 1] = { Foreground = { Color = krbon.bg2 } }
-	right[#right + 1] = { Text = "_" }
+	right[#right + 1] = { Text = " " }
 	right[#right + 1] = { Foreground = { Color = stat_color } }
 	right[#right + 1] = { Text = wezterm.nerdfonts.pl_right_hard_divider }
 	right[#right + 1] = { Background = { Color = stat_color } }
-	right[#right + 1] = { Text = "_" }
+	right[#right + 1] = { Text = " " }
 	right[#right + 1] = { Foreground = { Color = krbon.bg2 } }
 	right[#right + 1] = { Text = time .. (use_icons and " " .. wezterm.nerdfonts.md_clock .. " " or "") }
+	right[#right + 1] = { Text = " " }
 
 	-- Right status
-	window:set_right_status(wezterm.format(right))
+	-- window:set_right_status(wezterm.format(right))
 end)
 
 return M

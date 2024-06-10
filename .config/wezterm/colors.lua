@@ -4,6 +4,7 @@ local M = {}
 
 -- config.color_scheme = "Tokyo Night"
 M.window_background_opacity = 0.9
+
 M.force_reverse_video_cursor = true
 M.inactive_pane_hsb = {
 	saturation = 0.25,
