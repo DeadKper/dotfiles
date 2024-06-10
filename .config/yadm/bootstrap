@@ -1,0 +1,15 @@
+#!/bin/sh
+
+pwd=$(pwd)
+cd || exit 1
+
+echo "Init submodules..."
+yadm submodule update --recursive --init
+
+if type wsl.exe > /dev/null 2>&1; then
+	echo "Copying wezterm config to windows..."
+	wuser=$(powershell.exe "\$env:UserName" | sed -E 's,(\S+).*,\1,g')
+	cp -r ~/.config/wezterm/ "/mnt/c/Users/$wuser/.config"
+fi
+
+cd "$pwd" || exit 1
