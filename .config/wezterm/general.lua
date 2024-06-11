@@ -12,7 +12,7 @@ wezterm.on("gui-attached", function(domain) ---@diagnostic disable-line:unused-l
 end)
 
 local M = {}
--- ---
+
 M.audible_bell = "Disabled"
 M.adjust_window_size_when_changing_font_size = false
 M.font = wezterm.font_with_fallback({
