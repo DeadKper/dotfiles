@@ -11,6 +11,10 @@ function vim --argument-names file
         return 1
     end
 
-    command $vim $argv
+    if cat /etc/os-release | rg -q '^NAME=NixOS'
+        command steam-run $vim $argv
+    else
+        command $vim $argv
+    end
     return $status
 end

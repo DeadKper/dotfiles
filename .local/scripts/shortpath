@@ -1,4 +1,4 @@
-#!/bin/fish
+#!/usr/bin/env fish
 
 set -f path $argv[1]
 set -f depth $argv[2]
@@ -14,8 +14,8 @@ if test "$path" = "$HOME"
     echo '~'
     return
 end
-if test "$path" = "/"
-    echo '/'
+if test "$path" = /
+    echo /
     return
 end
 
@@ -25,14 +25,14 @@ set depth (math $depth - 1)
 set -f out_path (basename "$path")
 set path (dirname "$path")
 
-while test "$depth" != "0" -a "$path" != "/" -a "$path" != "$HOME"
+while test "$depth" != 0 -a "$path" != / -a "$path" != "$HOME"
     set depth (math $depth - 1)
     set out_path "$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
     set path (dirname "$path")
 end
 
 # avoid shortening if only one folder up is left
-if test "$(dirname "$path")" = "/" -o "$(dirname "$path")" = "$HOME"
+if test "$(dirname "$path")" = / -o "$(dirname "$path")" = "$HOME"
     set out_path "$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
     set path (dirname "$path")
 end
