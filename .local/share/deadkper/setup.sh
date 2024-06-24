@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [ "$EUID" -eq 0 ]; then
 	echo 'needs to be run as the user'
 	exit
 fi
 
-if [ -z $@ ]; then
+if test -z "$@"; then
 	curl -sL https://raw.githubusercontent.com/DeadKper/dotfiles/main/.local/share/deadkper/setup.sh > /tmp/setup.sh
 	chmod +x /tmp/setup.sh
 	/tmp/setup.sh y
@@ -19,7 +19,7 @@ fi
 
 echo sudo permission needed, press ctrl+c to cancel
 
-while [ true ]; do
+while true; do
 	sleep 5
 	sudo printf "" && break
 done
@@ -28,7 +28,7 @@ sh -c '(while [ true ]; do sudo -nv &> /dev/null && sleep 1 || exit; done &)'
 
 wsl=$(type wsl.exe &> /dev/null && echo y || echo n)
 
-if [ $wsl = y ]; then
+if [ "$wsl" = y ]; then
 	echo wsl container detected!
 	echo cmd.exe /c "fedora config --default-user '$USER'" 2> /dev/null
 fi
@@ -37,9 +37,9 @@ echo installing development utils
 sudo dnf copr enable -y atim/starship &> /dev/null
 sudo dnf copr enable -y agriffis/neovim-nightly &> /dev/null
 sudo dnf update -y
-sudo dnf install -y git fish parallel tmux neovim gcc zlib-ng cmake zoxide ripgrep sd fd-find fzf starship p7zip unrar bzip2 ncompress
+sudo dnf install -y git fish parallel tmux neovim gcc zlib-ng cmake zoxide ripgrep sd fd-find fzf starship p7zip unrar bzip2 ncompress dbus daemonize
 sudo dnf groupinstall -y "Development Tools" "Development Libraries"
-sudo chsh -s $(which fish) "$USER"
+sudo chsh -s "$(which fish)" "$USER"
 
 # setting up folders
 mkdir -p "$HOME/.local/scripts"
@@ -50,12 +50,24 @@ mkdir -p "$HOME/.config"
 echo cloning yadm...
 yadm=/tmp/yadm/yadm
 git clone https://github.com/TheLocehiliosan/yadm.git /tmp/yadm &> /dev/null
-git checkout $(git -C /tmp/yadm ls-remote -qt --sort=committerdate | tail -n 1 | sed -En 's,.*refs/tags/(.*).*,\1,p') &> /dev/null
+git checkout "$(git -C /tmp/yadm ls-remote -qt --sort=committerdate | tail -n 1 | sed -En 's,.*refs/tags/(.*).*,\1,p')" &> /dev/null
 
-if [ $wsl = y ]; then
+if [ "$wsl" = y ]; then
 	echo cloning work dotfiles...
 	$yadm clone -b work 'https://github.com/DeadKper/dotfiles'
 	$yadm submodule update --init --recursive
+
+	sudo cp ./wsl2systemd.sh /usr/local/bin/wsl2systemd
+	sudo sed -F "s/{WSL_USER}/$USER/g" /usr/local/bin/wsl2systemd -i
+
+	if ! grep -qF "/wsl2systemd" /root/.bashrc; then
+		{
+			echo ""
+			echo "/usr/local/bin/wsl2systemd"
+		} | sudo tee -a "/root/.bashrc" >/dev/null
+	fi
+	
+	fedora.exe config --default-user root
 else
 	echo installing steam tinker launch...
 	sudo dnf install -y steamtinkerlaunch
