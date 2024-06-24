@@ -2,15 +2,28 @@
 
 width=${2:-80%}
 height=${2:-80%}
-session=popup
+# session=popup
+#
+# if test -n "$(tmux has-session -t "$session" 2>&1)"; then
+# 	tmux new -s "$session" -d
+# 	tmux set -t "$session" status-right ' #[fg=#e0e0e0]#{=17:#(~/.local/scripts/shortpath "#{pane_current_path}" "3")} '
+# fi
+#
+# if test "$(tmux display-message -p -F "#{session_name}")" = "$session"; then
+# 	tmux detach-client
+# else
+# 	tmux popup -d '#{pane_current_path}' -xC -yC -w"$width" -h"$height" -E "tmux attach -t '$session'"
+# fi
 
-if test -n "$(tmux has-session -t "$session" 2>&1)"; then
-	tmux new -s "$session" -d
-	tmux set -t "$session" status-right ' #[fg=#e0e0e0]#{=17:#(~/.local/scripts/shortpath "#{pane_current_path}" "3")} '
+session="_popup_$(tmux display -p '#S')"
+
+if ! tmux has -t "$session" 2> /dev/null; then
+	session_id="$(tmux new-session -dP -s "$session" -F '#{session_id}')"
+	tmux set -s -t "$session_id" key-table popup
+	tmux set -s -t "$session_id" status off
+	tmux set -s -t "$session_id" prefix None
+	# tmux set -s -t "$session_id" status-right ' #[fg=#e0e0e0]#{=17:#(~/.local/scripts/shortpath "#{pane_current_path}" "3")} '
+	session="$session_id"
 fi
 
-if test "$(tmux display-message -p -F "#{session_name}")" = "$session"; then
-	tmux detach-client
-else
-	tmux popup -d '#{pane_current_path}' -xC -yC -w"$width" -h"$height" -E "tmux attach -t '$session'"
-fi
+tmux popup -d '#{pane_current_path}' -xC -yC -w"$width" -h"$height" -E "tmux attach -t '$session'" > /dev/null
