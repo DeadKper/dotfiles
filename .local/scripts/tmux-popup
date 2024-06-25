@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
-width=${2:-80%}
-height=${2:-80%}
-
 session="_popup_$(tmux display -p '#S')"
 
 if ! tmux has -t "$session" 2> /dev/null; then
-	session_id="$(tmux new-session -dP -s "$session" -F '#{session_id}')"
+	parent_session="$(tmux display -p '#{session_id}')"
+	session_id="$(tmux new-session -dP -s "$session" -F '#{session_id}' -e TMUX_PARENT_SESSION="$parent_session" -c "$HOME")"
 	tmux set -s -t "$session_id" key-table popup
 	tmux set -s -t "$session_id" status off
 	tmux set -s -t "$session_id" prefix None
 	session="$session_id"
 fi
 
-tmux popup -d '#{pane_current_path}' -xC -yC -w"$width" -h"$height" -E "tmux attach -t '$session'" > /dev/null
+tmux attach -t "$session" > /dev/null
