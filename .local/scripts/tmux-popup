@@ -8,6 +8,7 @@ if ! tmux has -t "$session" 2> /dev/null; then
 	tmux set -s -t "$session_id" key-table popup
 	tmux set -s -t "$session_id" status off
 	tmux set -s -t "$session_id" prefix None
+	tmux unbind -t "$session_id" Escape
 	session="$session_id"
 fi
 
