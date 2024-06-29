@@ -1,6 +1,7 @@
 set -x fish_greeting
 set -x EDITOR nvim
 set -x VISUAL nvim
+set -x YDOTOOL_SOCKET "$HOME/.local/run/ydotool"
 
 if type -q setxkbmap; and test -z "$WAYLAND_DISPLAY"
     set -x XKB_DEFAULT_LAYOUT (setxkbmap -query | grep layout | sed -r "s/^layout:\t* *(.*)/\1/g")
