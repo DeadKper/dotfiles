@@ -12,4 +12,9 @@ if type wsl.exe > /dev/null 2>&1; then
 	cp -rf ~/.config/wezterm/ "/mnt/c/Users/$wuser/.config"
 fi
 
+sudo mkdir -p /root/.config
+sudo mkdir -p /root/.local/share
+sudo ln -s $HOME/.config/nvim/ /root/.config
+sudo ln -s $HOME/.local/share/nvim/ /root/.local/share
+
 cd "$pwd" || exit 1
