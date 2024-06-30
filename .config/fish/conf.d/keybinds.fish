@@ -17,6 +17,9 @@ if status is-interactive
     bind -M insert \e\[1\;5D backward-bigword
     bind -M insert \e\[1\;5C forward-bigword
 
+    # reverse i-search
+    bind -M insert \cR history-pager
+
     # closest I can get to visual line
     bind -M default -m visual V beginning-of-buffer begin-selection end-of-buffer
 
