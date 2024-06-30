@@ -1,3 +1,3 @@
 function visudo --description 'alias visudo EDITOR=nvim command visudo'
-  EDITOR=nvim command visudo $argv;
+    sudo EDITOR="$(which nvim)" command visudo $argv
 end
