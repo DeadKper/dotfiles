@@ -16,7 +16,7 @@ function matrix
     trap cleanup EXIT
     while :; do
       echo $0 $1 $(( $RANDOM % $1 )) $(( $RANDOM % $2 ))
-      sleep 0.04
+      sleep 0.06
     done | awk \'{
       characters="'$chars'";
       a[$3]=0;                        # array to store row index
