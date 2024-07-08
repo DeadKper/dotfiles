@@ -1,41 +1,49 @@
-#!/usr/bin/env fish
+#!/usr/bin/env bash
 
-set -f path $argv[1]
-set -f depth $argv[2]
+path=$1
+depth=$2
+max_chars=$3
 
-if test -z "$path"
-    set path "$PWD"
-end
-if test -z "$depth"
-    set depth 5
-end
+if test -z "$path"; then
+    path="$PWD"
+fi
+if test -z "$depth"; then
+    depth=5
+fi
+if test -z "$max_chars"; then
+    max_chars=30
+fi
 
-if test "$path" = "$HOME"
+if test "$path" = "$HOME"; then
     echo '~'
-    return
-end
-if test "$path" = /
+    exit 0
+fi
+if test "$path" = /; then
     echo /
-    return
-end
+    exit 0
+fi
 
-set path (realpath -s "$path" 2>&1 | sed -E 's,realpath: (.+): No such file or directory,\1,g;s,\'(.*)\',\1,g')
+path="$(realpath -s "$path" 2>&1 | sed -E 's,realpath: (.+): No such file or directory,\1,g;s,'"'"'(.*)'"'"',\1,g')"
 
-set depth (math $depth - 1)
-set -f out_path (basename "$path")
-set path (dirname "$path")
+depth=$(bc <<< "$depth - 1")
+out_path="$(basename "$path")"
+path=$(dirname "$path")
 
-while test "$depth" != 0 -a "$path" != / -a "$path" != "$HOME"
-    set depth (math $depth - 1)
-    set out_path "$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
-    set path (dirname "$path")
-end
+while test "$depth" != 0 -a "$path" != / -a "$path" != "$HOME"; do
+    depth=$(bc <<< "$depth - 1")
+    out_path="$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
+    path=$(dirname "$path")
+done
 
 # avoid shortening if only one folder up is left
-if test "$(dirname "$path")" = / -o "$(dirname "$path")" = "$HOME"
-    set out_path "$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
-    set path (dirname "$path")
-end
-set out_path "$(echo $path | sed -E "s,^$HOME,~/," | sed -E "s,(~?/).+,\1…/,")$out_path"
+if test "$(dirname "$path")" = / -o "$(dirname "$path")" = "$HOME"; then
+    out_path="$(basename "$path" | sed -E 's,^(\.?.).*,\1,g')/$out_path"
+    path=$(dirname "$path")
+fi
+out_path="$(echo $path | sed -E "s,^$HOME,~/," | sed -E "s,(~?/).+,\1…/,")$out_path"
 
-echo $out_path
+if test "${#out_path}" -gt "$max_chars"; then
+	echo "$(cut -c "1-$((max_chars-1))" <<< "$out_path")…"
+else
+	echo $out_path
+fi
