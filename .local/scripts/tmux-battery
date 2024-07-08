@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+battery="/sys/class/power_supply/$(ls /sys/class/power_supply/ | rg -i bat | tail -1 2>/dev/null)"
+power="/sys/class/power_supply/$(ls /sys/class/power_supply/ | rg -i ac | tail -1 2>/dev/null)"
+
+if ! rg -q '/sys/class/power_supply/\S+' <<< $battery; then
+	exit 0
+fi
+
+capacity=$(cat "$battery/capacity")
+
+if test "$(cat "$power/online")" = 1; then
+	if test "$capacity" -lt 5; then
+		symbol='󰢟'
+	elif test "$capacity" -lt 15; then
+		symbol='󰢜'
+	elif test "$capacity" -lt 25; then
+		symbol='󰂆'
+	elif test "$capacity" -lt 35; then
+		symbol='󰂇'
+	elif test "$capacity" -lt 45; then
+		symbol='󰂈'
+	elif test "$capacity" -lt 55; then
+		symbol='󰢝'
+	elif test "$capacity" -lt 65; then
+		symbol='󰂉'
+	elif test "$capacity" -lt 75; then
+		symbol='󰢞'
+	elif test "$capacity" -lt 85; then
+		symbol='󰂊'
+	elif test "$capacity" -lt 95; then
+		symbol='󰂋'
+	else
+		symbol='󰂅'
+	fi
+else
+	if test "$capacity" -lt 5; then
+		symbol='󰂎'
+	elif test "$capacity" -lt 15; then
+		symbol='󰁺'
+	elif test "$capacity" -lt 25; then
+		symbol='󰁻'
+	elif test "$capacity" -lt 35; then
+		symbol='󰁼'
+	elif test "$capacity" -lt 45; then
+		symbol='󰁽'
+	elif test "$capacity" -lt 55; then
+		symbol='󰁾'
+	elif test "$capacity" -lt 65; then
+		symbol='󰁿'
+	elif test "$capacity" -lt 75; then
+		symbol='󰂀'
+	elif test "$capacity" -lt 85; then
+		symbol='󰂁'
+	elif test "$capacity" -lt 95; then
+		symbol='󰂂'
+	else
+		symbol='󰁹'
+	fi
+fi
+
+echo " $symbol $capacity%" "$@"
