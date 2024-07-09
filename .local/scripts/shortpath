@@ -43,7 +43,7 @@ fi
 out_path="$(echo $path | sed -E "s,^$HOME,~/," | sed -E "s,(~?/).+,\1…/,")$out_path"
 
 if test "${#out_path}" -gt "$max_chars"; then
-	echo "$(cut -c "1-$((max_chars-1))" <<< "$out_path")…"
+    echo "$(cut -c "1-$((max_chars-1))" <<< "$out_path")…"
 else
-	echo $out_path
+    echo $out_path
 fi
