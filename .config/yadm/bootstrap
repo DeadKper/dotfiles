@@ -14,12 +14,18 @@ fi
 
 if type fish 2>&1 >/dev/null; then
 	fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"
-	fish -c "fisher list | xargs -d '\n' -n 1 echo fisher install"
 fi
 
-sudo mkdir -p /root/.config
-sudo mkdir -p /root/.local/share
-sudo ln -s $HOME/.config/nvim/ /root/.config
-sudo ln -s $HOME/.local/share/nvim/ /root/.local/share
+if sudo echo -n ''; then
+	sudo mkdir -p /root/.config
+	sudo mkdir -p /root/.local/share
+	sudo ln -s $HOME/.config/nvim/ /root/.config
+	sudo ln -s $HOME/.local/share/nvim/ /root/.local/share
+fi
 
 cd "$pwd" || exit 1
+
+if type fish 2>&1 >/dev/null; then
+	echo to finish installing fish plugins run 'fisher install'
+	echo to configure tide use: "tide configure --auto --style=Lean --prompt_colors='True color' --show_time='24-hour format' --lean_prompt_height='One line' --prompt_spacing=Compact --icons='Few icons' --transient=No"
+fi
