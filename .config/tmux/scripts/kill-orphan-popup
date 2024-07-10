@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -e
 
 session="$(tmux display -p '#S')"
 
@@ -11,5 +11,3 @@ done
 if rg -q '_popup_' <<< "$session" && test "$(tmux list-sessions 2>/dev/null | wc -l)" -gt 1; then
 	tmux switch-client -t $(tmux list-sessions | rg -v '^_popup_' | sd '([^:]+).*' '$1' | sort | head -1)
 fi
-
-exit 0
