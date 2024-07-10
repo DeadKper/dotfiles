@@ -4,31 +4,17 @@ file="$(mktemp)"
 trap "rm '$file' && trap - exit && exit 0" exit hup kill term int
 
 {
-	echo # remove current options
-	while read -r line; do
-		echo unbind $line
-	done <<< $(tmux list-keys | sed -E 's/^\S+\s+(-r\s)?\s*(-T)\s+(\S+)\s+(\S+).*/\1\2 \3 \4/')
-	while read -r line; do
-		echo set -us $line
-	done <<< $(tmux show-options -s | awk '{print($1)}')
-	while read -r line; do
-		echo set -ug $line
-	done <<< $(tmux show-options -g | awk '{print($1)}')
-	while read -r line; do
-		echo set -ugw $line
-	done <<< $(tmux show-options -gw | awk '{print($1)}')
+	echo '# remove current options'
+	tmux list-keys        | sed -E 's/^\S+\s+(-r\s)?\s*(-T)\s+(\S+)\s+(\S+).*/unbind \2 \3 \4/'
+	tmux show-options -s  | awk '{print("set -us "$1)}'
+	tmux show-options -g  | awk '{print("set -ug "$1)}'
+	tmux show-options -gw | awk '{print("set -ugw "$1)}'
 
-	echo # print default options
+	echo '# set default options'
 	tmux -L unconfigured -f /dev/null start-server \; list-keys
-	while read -r line; do
-		echo set -s $line
-	done <<< $(tmux -L unconfigured -f /dev/null start-server \; show-options -s)
-	while read -r line; do
-		echo set -g $line
-	done <<< $(tmux -L unconfigured -f /dev/null start-server \; show-options -g)
-	while read -r line; do
-		echo set -gw $line
-	done <<< $(tmux -L unconfigured -f /dev/null start-server \; show-options -gw)
+	tmux -L unconfigured -f /dev/null start-server \; show-options -s  | awk '{print("set -s "$N)}'
+	tmux -L unconfigured -f /dev/null start-server \; show-options -g  | awk '{print("set -g "$N)}'
+	tmux -L unconfigured -f /dev/null start-server \; show-options -gw | awk '{print("set -gw "$N)}'
 } > "$file"
 
 tmux source "$file" 2>/dev/null
