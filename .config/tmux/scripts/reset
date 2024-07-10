@@ -9,14 +9,14 @@ trap "rm '$file' && trap - exit && exit 0" exit hup kill term int
 		echo unbind $line
 	done <<< $(tmux list-keys | sed -E 's/^\S+\s+(-r\s)?\s*(-T)\s+(\S+)\s+(\S+).*/\1\2 \3 \4/')
 	while read -r line; do
-		echo set -us $(awk '{print($1)}' <<< "$line")
-	done <<< $(tmux show-options -s)
+		echo set -us $line
+	done <<< $(tmux show-options -s | awk '{print($1)}')
 	while read -r line; do
-		echo set -ug $(awk '{print($1)}' <<< "$line")
-	done <<< $(tmux show-options -g)
+		echo set -ug $line
+	done <<< $(tmux show-options -g | awk '{print($1)}')
 	while read -r line; do
-		echo set -ugw $(awk '{print($1)}' <<< "$line")
-	done <<< $(tmux show-options -gw)
+		echo set -ugw $line
+	done <<< $(tmux show-options -gw | awk '{print($1)}')
 
 	echo # print default options
 	tmux -L unconfigured -f /dev/null start-server \; list-keys
