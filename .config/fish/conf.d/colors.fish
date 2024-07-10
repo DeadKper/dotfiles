@@ -23,7 +23,7 @@ if status is-interactive; and not set -q __env_colors
     set -gx fish_color_command $pink
     set -gx fish_color_redirection $fg0 --bold
     set -gx fish_color_quote $lavender
-    set -gx fish_color_error $magenta --italics
+    set -gx fish_color_error $fg0
     set -gx fish_color_param $fg0
     set -gx fish_color_comment $fg2 --italics
     set -gx fish_color_autosuggestion $fg2
