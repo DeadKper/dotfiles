@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+uptime="$(cat /proc/uptime | cut -d ' ' -f 1)"
+hours="$(bc <<< "$uptime/3600")"
+mins="$(bc <<< "($uptime-$hours*3600)/60")"
+# secs="$(bc <<< "($uptime-$hours*3600-$mins*60)")"
+
+echo "${hours}h ${mins}m"
