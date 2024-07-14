@@ -15,7 +15,7 @@ shift
 if which zypper >/dev/null 2>&1; then
 	add="sudo zypper install"
 	remove="sudo zypper remove"
-	sync="sudo zupper refresh"
+	sync="sudo zypper refresh"
 	upgrade="sudo zypper update --best-effort"
 fi
 
