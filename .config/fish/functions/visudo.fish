@@ -1,3 +1,3 @@
-function visudo --description 'alias visudo EDITOR=nvim command visudo'
-    sudo EDITOR="$(which nvim)" command visudo $argv
+function visudo --wraps='sudo sudoedit' --description 'alias visudo=\'sudo EDITOR="$(which nvim)" visudo\''
+    sudo EDITOR="$(which nvim)" visudo $argv
 end
