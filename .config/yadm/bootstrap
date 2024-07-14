@@ -16,14 +16,6 @@ if type fish 2>&1 >/dev/null; then
 	fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"
 fi
 
-if sudo echo -n ''; then
-	sudo mkdir -p /root/.config
-	sudo mkdir -p /root/.local/share
-	sudo ln -s $HOME/.config/nvim/ /root/.config
-	sudo ln -s $HOME/.config/fish/ /root/.config
-	sudo ln -s $HOME/.local/share/nvim/ /root/.local/share
-fi
-
 cd "$pwd" || exit 1
 
 if type fish 2>&1 >/dev/null; then
