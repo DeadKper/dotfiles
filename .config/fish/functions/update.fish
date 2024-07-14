@@ -21,6 +21,7 @@ function update
 
     if type -q zypper
         update_func zypper "sudo zypper update --best-effort -y"
+        sudo zypper rm $(zypper pa --unneeded | rg '^i ' | cut -d \| -f 3 | sd '\s*(\S+)\s*' '$1\n')
     end
 
     if type -q paru
