@@ -38,10 +38,6 @@ end
 
 set -l command $argv
 
-if type gamemoderun &>/dev/null
-    set command gamemoderun $command
-end
-
 if contains g $flags; and type gamescope &>/dev/null
     set -l opt_flag
     if contains e $flags
@@ -50,11 +46,16 @@ if contains g $flags; and type gamescope &>/dev/null
 
     set -l res (xrandr | rg -F '*+' | sd '^\s+|\s+$|\*\+' '' | sd '\s+|x' '\n')
 
-    set command gamescope $opt_flag -W "$res[1]" -H "$res[2]" $gs -b -o 5 --force-grab-cursor $command
+    set command MANGOHUD=0 "MANGOHUD_CONFIG=\"$(cat "$HOME/.config/MangoHud/MangoHud.conf" | rg '\S' | rg -v '^#|^legacy_layout|^pci_dev|,' | sd '\n' ',' | sd ',$' '')\"" gamescope $opt_flag -W "$res[1]" -H "$res[2]" $gs -b -o 5 --backend=sdl --force-grab-cursor --mangoapp $command
+end
+
+if type gamemoderun &>/dev/null
+    set command gamemoderun $command
 end
 
 if echo -- "$argv" | rg -qv '^\s*$'
-    $command
+    # printf '\'%s\' ' $command | sd ' $' '' >>~/.cache/game
+    eval $(printf '\'%s\' ' $command)
 else
     echo -- $command
 end
