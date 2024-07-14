@@ -16,6 +16,5 @@ items = [
 	"org.gimp.GIMP",
 	"org.prismlauncher.PrismLauncher",
 	"com.github.maoschanz.drawing",
-	"org.gimp.GIMP",
 	"org.kde.krita",
 ]
