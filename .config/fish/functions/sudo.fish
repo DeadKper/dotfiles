@@ -7,12 +7,15 @@ function sudo --wraps="sudo" --description 'alias sudo=sudo'
     set -f flags
     set -f count 0
     for arg in $argv
-        if test "$arg" = --; or echo -- "$arg" | rg -q '^[^-]'
+        if test "$arg" = --
+            set -e argv[$count]
             break
-        else
+        else if echo -- "$arg" | rg -q '^-'
             set count (math "$count+1")
             set -a flags "$arg"
             set -e argv[$count]
+        else
+            break
         end
     end
     if test "$USER" != root
