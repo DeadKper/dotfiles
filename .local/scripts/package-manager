@@ -7,7 +7,7 @@ fi
 
 trap "trap - hup kill term int exit; pkill -P '$$'; exit 1" hup kill term int
 trap "trap - hup kill term int exit; pkill -P '$$'; exit 0" exit
-while [ true ]; do sudo -nv &> /dev/null && sleep 1 || exit; done &
+while [ true ]; do sudo -nv &> /dev/null && sleep 30 || exit; done &
 
 action="$1"
 shift
