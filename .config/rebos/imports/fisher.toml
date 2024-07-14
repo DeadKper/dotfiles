@@ -1,0 +1,7 @@
+[managers.fisher]
+items = [
+	"jorgebucaran/fisher",
+	"jorgebucaran/autopair.fish",
+	"ilancosman/tide@v6",
+	"nickeb96/puffer-fish",
+]

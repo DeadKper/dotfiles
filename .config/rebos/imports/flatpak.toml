@@ -1,0 +1,21 @@
+[managers.flatpak]
+items = [
+	"com.bitwarden.desktop",
+	"com.github.tchx84.Flatseal",
+	"com.github.wwmm.easyeffects",
+	"com.nextcloud.desktopclient.nextcloud",
+	"com.usebottles.bottles",
+	"com.vysp3r.ProtonPlus",
+	"io.freetubeapp.FreeTube",
+	"io.github.spacingbat3.webcord",
+	"io.gitlab.librewolf-community",
+	"org.telegram.desktop",
+	"com.brave.Browser",
+	"it.mijorus.gearlever",
+	"net.agalwood.Motrix",
+	"org.gimp.GIMP",
+	"org.prismlauncher.PrismLauncher",
+	"com.github.maoschanz.drawing",
+	"org.gimp.GIMP",
+	"org.kde.krita",
+]

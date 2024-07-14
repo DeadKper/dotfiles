@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+
+if ! sudo echo -n; then
+	echo Root privileges are required to run this command.
+	exit 1
+fi
+
+trap "trap - hup kill term int exit; pkill -P '$$'; exit 1" hup kill term int
+trap "trap - hup kill term int exit; pkill -P '$$'; exit 0" exit
+while [ true ]; do sudo -nv &> /dev/null && sleep 1 || exit; done &
+
+action="$1"
+shift
+
+if which zypper >/dev/null 2>&1; then
+	add="sudo zypper install"
+	remove="sudo zypper remove"
+	sync="sudo zupper refresh"
+	upgrade="sudo zypper update --best-effort"
+fi
+
+case "$action" in
+	add)
+		$add "$@"
+		;;
+	remove)
+		$remove "$@"
+		;;
+	sync)
+		$sync "$@"
+		;;
+	upgrade)
+		$upgrade "$@"
+		;;
+	*)
+		echo Invalid action >&2
+		exit 1
+	;;
+esac
