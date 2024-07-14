@@ -1,11 +1,26 @@
 function sudo --wraps="sudo" --description 'alias sudo=sudo'
-    if test "$USER" != root
-        if command -q doas; and not command -q sudo
-            set -f sudo doas
+    if command -q doas; and not command -q sudo
+        set -f sudo doas
+    else
+        set -f sudo sudo
+    end
+    set -f flags
+    set -f count 0
+    for arg in $argv
+        if test "$arg" = --; or echo -- "$arg" | rg -q '^[^-]'
+            break
         else
-            set -f sudo sudo
+            set count (math "$count+1")
+            set -a flags "$arg"
+            set -e argv[$count]
         end
-        command $sudo VISUAL="$VISUAL" EDITOR="$EDITOR" XDG_DATA_HOME="$XDG_DATA_HOME" XDG_CONFIG_HOME="$XDG_CONFIG_HOME" TMUX="$TMUX" PATH="$PATH" fish -c "$(printf '\'%s\' ' $argv)"
+    end
+    if test "$USER" != root
+        if echo "$argv" | rg -q '\S'
+            command $sudo VISUAL="$VISUAL" EDITOR="$EDITOR" XDG_DATA_HOME="$XDG_DATA_HOME" XDG_CONFIG_HOME="$XDG_CONFIG_HOME" TMUX="$TMUX" PATH="$PATH" $flags fish -c "$(printf '\'%s\' ' $argv)"
+        else
+            command $sudo $flags
+        end
     else
         command $argv
     end
