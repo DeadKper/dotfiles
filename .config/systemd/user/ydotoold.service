@@ -1,0 +1,13 @@
+[Unit]
+Description=ydotool daemon service
+Documentation=man:ydotoold(8)
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/sh -c 'sudo -b "$(which ydotoold)" -p "$HOME/.local/state/ydotool.socket" -o "$(id -u):$(id -g)"'
+KillMode=control-group
+
+RestartSec=2
+
+[Install]
+WantedBy=default.target
