@@ -1,3 +1,3 @@
-function edit --wraps='sudo sudoedit' --description 'alias edit=\'sudo EDITOR="$(which nvim)" sudoedit\''
-    sudo EDITOR="$(which nvim)" sudoedit $argv
+function edit --wraps='sudoedit' --description 'alias edit=\'command sudoedit\''
+    command sudoedit $argv
 end
