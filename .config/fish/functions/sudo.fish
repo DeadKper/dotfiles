@@ -4,5 +4,5 @@ function sudo --wraps="sudo" --description 'alias sudo=sudo'
     else
         set -f sudo sudo
     end
-    command $sudo XDG_DATA_HOME="$XDG_DATA_HOME" XDG_CONFIG_HOME="$XDG_CONFIG_HOME" TMUX="$TMUX" fish -c "$(printf '\'%s\' ' $argv)"
+    command $sudo VISUAL="$VISUAL" EDITOR="$EDITOR" XDG_DATA_HOME="$XDG_DATA_HOME" XDG_CONFIG_HOME="$XDG_CONFIG_HOME" TMUX="$TMUX" fish -c "$(printf '\'%s\' ' $argv)"
 end
