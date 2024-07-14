@@ -20,6 +20,7 @@ if sudo echo -n ''; then
 	sudo mkdir -p /root/.config
 	sudo mkdir -p /root/.local/share
 	sudo ln -s $HOME/.config/nvim/ /root/.config
+	sudo ln -s $HOME/.config/fish/ /root/.config
 	sudo ln -s $HOME/.local/share/nvim/ /root/.local/share
 fi
 
