@@ -27,6 +27,8 @@ items = [
 	"gamescope",
 	"gcc",
 	"git",
+	"google-noto-sans-jp-fonts",
+	"google-noto-sans-jp-mono-fonts",
 	"goverlay",
 	"gstreamer",
 	"gstreamer-plugins-libav",
