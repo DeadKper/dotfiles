@@ -25,6 +25,6 @@ function sudo --wraps="sudo" --description 'alias sudo=sudo'
             command $sudo $flags
         end
     else
-        command $argv
+        command $sudo $flags $argv
     end
 end
