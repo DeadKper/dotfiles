@@ -17,10 +17,10 @@ unset rebos_manager
 many_args="true"
 
 if which zypper >/dev/null 2>&1; then
-	add="sudo zypper install #:?"
-	remove="sudo zypper remove #:?"
+	add="sudo zypper install -yl --recommends #:?"
+	remove="sudo zypper remove -yu #:?"
 	sync="sudo zypper refresh"
-	upgrade="sudo zypper update --best-effort"
+	upgrade="sudo zypper dist-upgrade --recommends --allow-downgrade -yl"
 	rebos_manager=y
 fi
 
