@@ -8,6 +8,14 @@ if status is-interactive
     bind \ck up-or-search
     bind \f forward-char # this is \cl for some reason
 
+    # vim-like work jump
+    bind \cB backward-bigword
+    bind \cF forward-bigword
+
+    # kill words with alt
+    bind \el kill-bigword
+    bind \eh backward-kill-bigword
+
     # ctrl + left/right
     bind \e\[1\;5D backward-bigword
     bind \e\[1\;5C forward-bigword
