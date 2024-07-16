@@ -1,0 +1,13 @@
+[Unit]
+Description=kdeconnect daemon
+Documentation=
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/sh -c 'kdeconnectd --replace &'
+KillMode=control-group
+
+RestartSec=2
+
+[Install]
+WantedBy=default.target
