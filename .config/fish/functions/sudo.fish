@@ -4,27 +4,27 @@ function sudo --wraps="sudo" --description 'alias sudo=sudo'
     else
         set -f sudo sudo
     end
-    set -f flags
-    set -f count 0
-    for arg in $argv
-        if test "$arg" = --
-            set -e argv[$count]
-            break
-        else if echo -- "$arg" | rg -q '^-'
-            set count (math "$count+1")
-            set -a flags "$arg"
-            set -e argv[$count]
-        else
-            break
+    if test "$XDG_CONFIG_HOME" = y
+        command $sudo $argv
+    else
+        set -f flags
+        set -f count 0
+        for arg in $argv
+            if test "$arg" = --
+                set -e argv[$count]
+                break
+            else if echo -- "$arg" | rg -q '^-'
+                set count (math "$count+1")
+                set -a flags "$arg"
+                set -e argv[$count]
+            else
+                break
+            end
         end
-    end
-    if test "$USER" != root
         if echo "$argv" | rg -q '\S'
-            command $sudo VISUAL="$VISUAL" EDITOR="$EDITOR" XDG_DATA_HOME="$XDG_DATA_HOME" XDG_CONFIG_HOME="$XDG_CONFIG_HOME" TMUX="$TMUX" PATH="$PATH" $flags fish -c "$(printf '\'%s\' ' $argv)"
+            command $sudo SUDO_ENV="y" VISUAL="$VISUAL" EDITOR="$EDITOR" XDG_DATA_HOME="$XDG_DATA_HOME" XDG_CONFIG_HOME="$XDG_CONFIG_HOME" TMUX="$TMUX" PATH="$PATH" $flags fish -c "$(printf '\'%s\' ' $argv)"
         else
             command $sudo $flags
         end
-    else
-        command $sudo $flags $argv
     end
 end
