@@ -49,6 +49,8 @@ items = [
 	"kdeconnect-kde",
 	"libopenssl-devel",
 	"libreoffice",
+	"libusb-0_1-4",
+	"libusb-0_1-4-32bit",
 	"make",
 	"mangoapp",
 	"mangohud",
