@@ -131,6 +131,11 @@ if ! test -f "$setup_file"; then
 	rebos setup
 	rebos config init
 
+	if test -n "$hostname" -a "$hostname" != "$(hostname)"; then
+		rm "$HOME/.config/rebos/machines/$(hostname)/gen.toml"
+		ln -sr "$HOME/.config/rebos/machines/$hostname/gen.toml" "$HOME/.config/rebos/machines/$(hostname)/gen.toml"
+	fi
+
 	if test -z "$rebos_manager"; then
 		add=""
 		remove=""
@@ -169,8 +174,10 @@ if ! test -f "$setup_file"; then
 		echo "many_args = $many_args"
 	} > "$HOME/.config/rebos/managers/system.toml"
 
-	rebos gen commit 'initial install'
-	rebos gen current build
+	if test -n "$rebos_manager"; then
+		rebos gen commit 'initial install'
+		rebos gen current build
+	fi
 
 	echo Base instalation finished, creating setup file
 	mkdir -p "$(dirname "$setup_file")"
@@ -201,6 +208,7 @@ fi
 if test "$wsl" = y; then
 	echo "Setting up windows..."
 	wuser=$(powershell.exe "\$env:UserName" | sed -E 's,(\S+).*,\1,g')
+	mkdir -p "/mnt/c/Users/$wuser/.config"
 	cp -rf ~/.config/wezterm/ "/mnt/c/Users/$wuser/.config"
 fi
 
