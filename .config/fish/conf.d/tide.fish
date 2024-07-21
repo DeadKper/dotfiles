@@ -1,4 +1,4 @@
-if status is-interactive; and not set -q __env_tide; and rg -q '/tide\b' ~/.config/fish/fish_plugins
+if status is-interactive; and not set -q __env_tide; and grep -qE '/tide(\W|$)' ~/.config/fish/fish_plugins
     set -gx __env_tide
 
     set -l bg0 0b0b0b
