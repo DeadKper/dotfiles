@@ -10,7 +10,29 @@ imports = [
 # Packages to be installed via the native package manager.
 [managers.system]
 items = [
-    # "git",
+    "automake",
+    "bash",
+    "bzip2",
+    "cmake",
+    "fish",
+    "fzf",
+    "gcc",
+    "git",
+    "gzip",
+    "java-21-openjdk-headless",
+    "jq",
+    "make",
+    "ncompress",
+    "neovim",
+    "nodejs",
+    "ripgrep",
+    "rustup",
+    "sd",
+    "tmux",
+    "unzip",
+    "wget",
+    "zip",
+    "zoxide",
 ]
 
 # Packages to be installed via Flatpak.
@@ -19,8 +41,17 @@ items = [
     # "com.github.tchx84.Flatseal",
 ]
 
+[managers.fisher]
+items = [
+    "ilancosman/tide@v6",
+    "jorgebucaran/autopair.fish",
+    "jorgebucaran/fisher",
+    "nickeb96/puffer-fish",
+]
+
 # Packages to be installed via Cargo.
 [managers.cargo]
 items = [
-    # "bacon",
+    "cargo-update",
+    "rebos",
 ]

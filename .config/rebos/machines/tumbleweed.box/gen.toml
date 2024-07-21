@@ -1,0 +1,23 @@
+# --------------------- #
+#    Generation File    #
+# --------------------- #
+
+# Other generation files to import. (Example: intensive_apps -> ~/.config/rebos/imports/intensive_apps.toml)
+imports = ["flatpak-base"]
+
+# Packages to be installed via the native package manager.
+[managers.system]
+items = [
+	"7zip",
+	"fastfetch",
+	"fd",
+	"libopenssl-devel",
+	"trash-cli",
+	"unrar",
+	"yadm",
+]
+
+[managers.zypper-obs]
+items = [
+	"obs://home:our-obo-ros",
+]
