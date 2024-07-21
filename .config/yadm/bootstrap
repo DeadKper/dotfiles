@@ -3,72 +3,8 @@
 echo "Init submodules..."
 yadm -C "$HOME" submodule update --recursive --init
 
-if type wslpath > /dev/null 2>&1; then
-	echo "Copying wezterm config to windows..."
-	wuser=$(powershell.exe "\$env:UserName" | sed -E 's,(\S+).*,\1,g')
-	cp -rf ~/.config/wezterm/ "/mnt/c/Users/$wuser/.config"
-fi
-
-unset add
-unset remove
-unset sync
-unset upgrade
-unset rebos_manager
-many_args="true"
-
-if which zypper >/dev/null 2>&1; then
-	add="sudo zypper install -yl --recommends #:?"
-	remove="sudo zypper remove -yu #:?"
-	sync="sudo zypper refresh"
-	upgrade="sudo zypper dist-upgrade --recommends --allow-downgrade -yl"
-	rebos_manager=y
-fi
-
-if test -z "$rebos_manager"; then
-	add=""
-	remove=""
-	sync=""
-	upgrade=""
-	echo 'rebos needs manual config for current package manager (~/.config/rebos/managers/system.toml)'
-fi
-
-{
-	echo '# --------------------------- #'
-	echo '#    Manager Configuration    #'
-	echo '# --------------------------- #'
-	echo ''
-	echo '# Make sure to enter the exact command you use as the normal user!'
-	echo "# That means including 'sudo' or 'doas' or whatever if the command needs it."
-	echo "# Where you would put items, enter '#:?'."
-	echo ''
-	echo '# Example: add = "sudo apt install #:?"'
-	echo ''
-	test -n "${add+x}"		&& echo "add = \"$add\" # Example: sudo apt install #:?"
-	test -n "${remove+x}"	&& echo "remove = \"$remove\" # Example: sudo apt remove #:?"
-	test -n "${sync+x}"		&& echo "sync = \"$sync\" # Example: sudo apt update"
-	test -n "${upgrade+x}"	&& echo "upgrade = \"$upgrade\" # Example: sudo apt upgrade"
-	echo ''
-	echo 'plural_name = "system packages"'
-	echo ''
-	echo 'hook_name = "system_packages" # This is used in hooks. (Example: post_system_packages_add)'
-	echo ''
-	echo '# ------------------------------- #'
-	echo '#    Additional configuration.    #'
-	echo '# ------------------------------- #'
-	echo ''
-	echo "# many_args = BOOL: Can you supply many items as an argument? Example: 'sudo apt install git vim wget'"
-	echo ''
-	echo '[config]'
-	echo "many_args = $many_args"
-} > "$HOME/.config/rebos/managers/system.toml"
-
-if type fish 2>&1 >/dev/null; then
-	fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"
-	echo to finish installing fish plugins run 'fisher install'
-	echo to configure tide use: "tide configure --auto --style=Lean --prompt_colors='True color' --show_time='24-hour format' --lean_prompt_height='One line' --prompt_spacing=Compact --icons='Few icons' --transient=No"
-fi
-
-if type flatpak 2>&1 >/dev/null; then
-	flatpak remote-delete flathub
-	flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+if test -f "$HOME/.ssh/id_ed25519" -o -f "$HOME/.ssh/id_rsa"; then
+	echo "Changing remotes to ssh..."
+	yadm -C "$HOME" remote set-url origin git@github.com:DeadKper/dotfiles.git
+	git -C "$HOME/.config/nvim" remote set-url origin git@github.com:DeadKper/nvim.git
 fi
