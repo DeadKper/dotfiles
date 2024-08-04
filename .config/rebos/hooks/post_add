@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+kill $(ps aux | grep -wF $(basename "$0" | sed 's/^post/pre/') | grep -vwF grep | awk '{print($2)}')
