@@ -104,16 +104,21 @@ if ! test -f "$setup_file"; then
 		echo Setting up flatpak...
 		eval $flatpak
 
+		override() {
+			flatpak override --user "$@"
+			sudo flatpak override "$@"
+		}
+
 		flatpak remote-delete flathub -y
 		flatpak remote-delete flathub-beta -y
 		flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-		flatpak override --user --filesystem=/usr/share/icons:ro
-		flatpak override --user --filesystem=xdg-data/icons:ro
-		flatpak override --user com.usebottles.bottles --filesystem=xdg-data/applications
-		flatpak override --user com.usebottles.bottles --filesystem=xdg-data/share/Steam
-		flatpak override --user com.usebottles.bottles --filesystem=~/.var/app/com.valvesoftware.Steam/data/Steam
-		flatpak override --user io.github.spacingbat3.webcord --filesystem=home:ro
+		override --filesystem=/usr/share/icons:ro
+		override --filesystem=xdg-data/icons:ro
+		override com.usebottles.bottles --filesystem=xdg-data/applications
+		override com.usebottles.bottles --filesystem=xdg-data/share/Steam
+		override com.usebottles.bottles --filesystem=~/.var/app/com.valvesoftware.Steam/data/Steam
+		override io.github.spacingbat3.webcord --filesystem=home:ro
 	fi
 
 	echo Setting up fish...
