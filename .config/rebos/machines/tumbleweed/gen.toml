@@ -10,6 +10,7 @@ imports = ["flatpak-base", "flatpak"]
 items = [
 	"7zip",
 	"acl",
+	"autokey-gtk",
 	"btop",
 	"distrobox",
 	"fastfetch",
@@ -60,4 +61,5 @@ items = [
 	"obs://home:Hoog",
 	"obs://home:lighthomo",
 	"obs://home:our-obo-ros",
+	"obs://home:Simmphonie:python"
 ]
