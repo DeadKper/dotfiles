@@ -3,7 +3,7 @@
 # --------------------- #
 
 # Other generation files to import. (Example: intensive_apps -> ~/.config/rebos/imports/intensive_apps.toml)
-imports = ["flatpak-base"]
+imports = []
 
 # Packages to be installed via the native package manager.
 [managers.system]
