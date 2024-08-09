@@ -8,3 +8,7 @@ if test -f "$HOME/.ssh/id_ed25519" -o -f "$HOME/.ssh/id_rsa"; then
 	yadm -C "$HOME" remote set-url origin git@github.com:DeadKper/dotfiles.git
 	git -C "$HOME/.config/nvim" remote set-url origin git@github.com:DeadKper/nvim.git
 fi
+
+if test -f "$HOME/.config/tmux/plugins/tpm/bin/install_plugins"; then
+	~/.config/tmux/plugins/tpm/bin/install_plugins
+fi
