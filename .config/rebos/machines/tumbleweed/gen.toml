@@ -27,6 +27,7 @@ items = [
 	"gstreamer-plugin-openh264",
 	"gstreamer-plugins-libav",
 	"kdeconnect-kde",
+	"klassy",
 	"libopenssl-devel",
 	"libreoffice",
 	"libusb-0_1-4",
@@ -61,5 +62,6 @@ items = [
 	"obs://home:Hoog",
 	"obs://home:lighthomo",
 	"obs://home:our-obo-ros",
-	"obs://home:Simmphonie:python"
+	"obs://home:Simmphonie:python",
+	"obs://home:paul4us",
 ]
