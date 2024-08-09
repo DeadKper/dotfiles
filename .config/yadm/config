@@ -1,5 +1,5 @@
 [pull]
-	rebase = false
+	rebase = true
 [push]
 	recurseSubmodules = check
 [diff]
