@@ -9,10 +9,10 @@ if status is-interactive
     bind \f forward-char # this is \cl for some reason
 
     # word jumpinp
-    bind \cb backward-word
-    bind \eB backward-bigword
-    bind \cf forward-word
-    bind \eF forward-bigword
+    bind \cB backward-word
+    bind \eb backward-bigword
+    bind \cF forward-word
+    bind \ef forward-bigword
 
     # kill words with alt
     bind \el kill-word
