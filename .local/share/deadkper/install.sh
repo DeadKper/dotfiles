@@ -198,13 +198,13 @@ if test "$wsl" != y -a "$box" != y; then
 	)
 	for ver in "${kde[@]}"; do
 		if type "kwriteconfig${ver}" >/dev/null 2>&1; then
-			eval "kwriteconfig${ver}" --file ~/.config/kwinrc --group Windows --key BorderlessMaximizedWindows true
+			# eval "kwriteconfig${ver}" --file ~/.config/kwinrc --group Windows --key BorderlessMaximizedWindows true
 			break
 		fi
 	done
 	for ver in "${kde[@]}"; do
 		if type "qdbus${ver}" >/dev/null 2>&1; then
-			eval "qdbus${ver}" org.kde.KWin /KWin reconfigure
+			# eval "qdbus${ver}" org.kde.KWin /KWin reconfigure
 			break
 		fi
 	done
