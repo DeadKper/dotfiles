@@ -12,6 +12,7 @@ items = [
 	"fastfetch",
 	"fd",
 	"libopenssl-devel",
+	"lsd",
 	"sshpass",
 	"trash-cli",
 	"unrar",
