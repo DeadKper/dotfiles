@@ -7,3 +7,9 @@ if type -q wslpath
         end
     end
 end
+
+if test -f /run/.containerenv
+    set -x --path PATH $PATH
+    add-path -p PATH /usr/container
+    add-path -p PATH ~/.local/container
+end
