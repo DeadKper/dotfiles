@@ -16,7 +16,6 @@ function sudo --wraps="sudo" --description 'alias sudo=sudo'
     if type distrobox-host-exec &>/dev/null && echo "$(which $argv[1])" | grep -qF "/container/$(basename "$argv[1]")"
         distrobox-host-exec sudo $flags $argv
     else
-        echo command sudo $flags $argv
         command sudo $flags $argv
     end
 end
