@@ -65,3 +65,8 @@ items = [
 	"obs://home:Simmphonie:python",
 	"obs://home:paul4us",
 ]
+
+[managers.cargo]
+items = [
+    "kanata",
+]
