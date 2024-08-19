@@ -1,0 +1,243 @@
+#!/usr/bin/env -S bash
+
+main() {
+	python_argparse "$@"
+	config
+	# TODO: main logic
+	exit 0
+}
+
+python_argparse() {
+	if which argparse.bash >/dev/null 2>&1; then
+		source "$(which argparse.bash)" || exit 1
+	else
+		source "$(dirname "$0")/argparse.bash" || exit 1
+	fi
+
+	argparse "$@" << EOF || exit 1
+parser.add_argument('remote')
+parser.add_argument('-c', '--cmds', nargs='+', help='commands list to execute remotely')
+parser.add_argument('-x', '--exec', metavar='FILE', type=pathlib.Path, help='path to script or steps directory to execute remotely')
+parser.add_argument('-d', '--download', metavar='FILE', nargs='+', type=pathlib.Path, help='files to download from the remote')
+parser.add_argument('-u', '--upload', metavar='FILE', nargs='+', type=pathlib.Path, help='files to upload to the remote')
+parser.add_argument('-z', '--dry-run', action='store_true', help='only check connectivity and password validity')
+parser.add_argument('-p', '--ppal', action='store_true', help='treat remote as a PPAL store number')
+parser.add_argument('-s', '--sop', action='store_true', help='treat remote as SOP store number')
+parser.add_argument('-f', '--force', action='store_true', help='force renewal of credentials for the remote with the given login user')
+parser.add_argument('-a', '--args', nargs='+', help='args to pass to a remotely executed script')
+parser.add_argument('-q', '--quiet', action='store_true', help='send -q to the internal ssh/sftp commandd')
+parser.add_argument('-v', '--verbose', action='store_true', help='send -v to the internal ssh/sftp command')
+parser.add_argument('-t', '--target', metavar='FILE', type=pathlib.Path, help='target path for the download/upload')
+parser.add_argument('-l', '--login', metavar='USER', type=ascii, help='login user to use for the ssh/sftp connection')
+parser.add_argument('-o', dest='opts', action='append', help='options to send to the internat ssh/sftp command')
+parser.add_argument('--print', action='store_true', help='print saved password to stdout and exit')
+parser.add_argument('--create-passfile', action='store_true', help='configure gpg if not done already and create passfile')
+parser.add_argument('-A', '--ask-pass', action='store_true', help='ask for password instead of getting it from the credentials dir')
+parser.add_argument('-P', '--port', default=22, type=int, help='send "-o Port=NUMBER" to the intertnal ssh/sftp command')
+EOF
+}
+
+config() {
+	if test -f "$HOME/.config/asd.sh"; then
+		source "$HOME/.config/asd.sh"
+	else
+		cat << EOF > "$HOME/.config/asd.sh"|| exit 1
+LOGIN_USER=sysadmin
+TARGET_UPLOAD=/tmp
+TARGET_DOWNLOAD="\$HOME/\$(ls -1 ~ | grep -E '^Down|^Desc')/\$REMOTE"
+STATE_DIR="\$HOME/.local/state/asd"
+CREDENTIALS_DIR="\$STATE_DIR/credentials"
+SAVED_DIR="\$STATE_DIR/saved"
+PASSPHRASE_FILE="\$STATE_DIR/passphrase.gpg"
+VERBOSITY="default"
+ASK_PASSWORD="yes"
+GPG_CMD=(gpg)
+SSH_OPTS=(BatchMode=no Compression=yes ConnectionAttempts=1 ConnectTimeout=5s NumberOfPasswordPrompts=1 PasswordAuthentication=yes PreferredAuthentications=password StrictHostKeyChecking=no UserKnownHostsFile=/dev/null)
+EOF
+	fi
+
+	test -z "$LOGIN_USER" && LOGIN_USER=sysadmin
+	test -z "$TARGET_UPLOAD" && TARGET_UPLOAD=/tmp
+	test -z "$TARGET_DOWNLOAD" && TARGET_DOWNLOAD="$HOME/$(ls -1 ~ | grep -E '^Down|^Desc')/$REMOTE"
+	test -z "$STATE_DIR" && STATE_DIR="$HOME/.local/state/asd"
+	test -z "$CREDENTIALS_DIR" && CREDENTIALS_DIR="$STATE_DIR/credentials"
+	test -z "$SAVED_DIR" && SAVED_DIR="$STATE_DIR/saved"
+	test -z "$PASSPHARSE_FILE" && PASSPHARSE_FILE="$STATE_DIR/passphrase.gpg"
+	test -z "$VERBOSITY" && VERBOSITY="default"
+	test -z "$ASK_PASSWORD" && ASK_PASSWORD="yes"
+	test -z "$GPG_CMD" && GPG_CMD=("gpg")
+	test -z "$SSH_OPTS" && SSH_OPTS=(BatchMode=no Compression=yes ConnectionAttempts=1 ConnectTimeout=5s NumberOfPasswordPrompts=1 PasswordAuthentication=yes PreferredAuthentications=password StrictHostKeyChecking=no UserKnownHostsFile=/dev/null)
+}
+
+cache_pass() {
+	if test -f "$PASSPHARSE_FILE"; then
+		return 1
+	fi
+
+	PASSPHRASE="$("${GPG_CMD[@]}" -d "$PASSPHARSE_FILE" 2>/dev/null)"
+
+	if test -z "$PASSPHRASE"; then
+		error "$("${GPG_CMD[@]}" --batch -d "$PASSPHARSE_FILE" 2>&1)"
+	fi
+}
+
+decrypt() {
+	cache_pass || return 1
+	"${GPG_CMD[@]}" --batch --passphrase "$PASSPHRASE" -d "$1"
+}
+
+encrypt() {
+	cache_pass || return 1
+	"${GPG_CMD[@]}" --batch --passphrase "$PASSPHRASE" -c "$1"
+	mv -f "${1}.gpg" "$1"
+}
+
+rtty() {
+	if test -z "$PASSWORD"; then
+		local pass="$1"
+		shift
+	fi
+	passh -p "$pass" ssh $(printf -- '-o%s ' "${SSH_OPTS[@]}") -oPort=$PORT "$@"
+}
+
+rfs() {
+	if test -z "$PASSWORD"; then
+		local pass="$1"
+		shift
+	fi
+	local conn="$1"
+	shift
+	passh -p "$pass" sftp $(printf -- '-o%s ' "${SSH_OPTS[@]}") -o BatchMode=no -oPort=$PORT -b <(printf '%s\n' "$@") "$conn"
+}
+
+error() {
+	if grep -q '^[1-9][0-9]*$' <<< "$1"; then
+		local error=$1
+		shift
+	fi
+	printf '%s\n' "$@" >&2
+	exit $error
+}
+
+create_passfile() {
+	if ! test -f ~/.gnupg/gpg-agent.conf; then
+		cat << EOF > ~/.gnupg/gpg-agent.conf
+default-cache-ttl 36000
+max-cache-ttl 36000
+EOF
+	fi
+
+	if ! test -f "$PASSPHARSE_FILE"; then
+		gpgconf --kill gpg-agent >/dev/null 2>&1
+		gpg-agent --daemon --use-standard-socket >/dev/null 2>&1
+
+		local file="$(sed 's/\.gpg$//' <<< "$PASSPHARSE_FILE")"
+		trap "test -f '$file' && rm -f '$file'" kill term hup int exit
+		echo $(LANG=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 128) > "$file"
+		"${GPG_CMD[@]}" -c "$file"
+		rm -f "$file"
+		trap - kill term hup int exit
+	fi
+}
+
+check_flags() {
+	local count=0
+	test -n "$CMDS" && count="$((count+1))"
+	test -n "$EXEC" && count="$((count+1))"
+	test -n "$DRY_RUN" && count="$((count+1))"
+	test -n "$DOWNLOAD" && count="$((count+1))"
+	test -n "$UPLOAD" && count="$((count+1))"
+	test "$count" -gt 1 && error 'usage of exclusive flags (--cmds --exec --dry-run --download --upload) is not allowed'
+	count=0
+	test -n "$PPAL" && count="$((count+1))"
+	test -n "$SOP" && count="$((count+1))"
+	test "$count" -gt 1 && error 'usage of exclusive flags (--ppal --sop) is not allowed'
+	count=0
+	test -n "$QUIET" && count="$((count+1))"
+	test -n "$VERBOSE" && count="$((count+1))"
+	test "$count" -gt 1 && error 'usage of exclusive flags (--quiet --verbose) is not allowed'
+}
+
+set_variables() {
+	# TODO: get ppal/sop remote ip
+
+	if test -n "$DOWNLOAD" -a -z "$TARGET"; then
+		TARGET="$TARGET_DOWNLOAD"
+	fi
+
+	if test -n "$UPLOAD" -a -z "$TARGET"; then
+		TARGET="$TARGET_UPLOAD"
+	fi
+
+	if test -n "$ASK_PASS" -o ! -f "$PASSPHARSE_FILE"; then
+		PASSWORD="$(passwd)"
+		if test -f "$PASSPHARSE_FILE"; then
+			cache_pass || return 1
+			install -m 600 -Z <(echo "$PASSWORD") "$SAVED_DIR/$LOGIN@$REMOTE:$PORT"
+			encrypt "$SAVED_DIR/$LOGIN@$REMOTE:$PORT"
+		fi
+	else
+		set_password
+	fi
+}
+
+set_password() {
+	if test -d "$SAVED_DIR"; then
+		readarray -t SAVED < <(ls -1 | grep -F "@$REMOTE:")
+	fi
+
+	if test "${#SAVED[@]}" -eq 0; then
+		gen_credentials
+	elif test -z "$LOGIN"; then
+		local default="$(printf '%s\n' "${SAVED[@]}" | grep -q "^${LOGIN_USER}@" | sort -V | head -1)"
+
+		if test -n "$default"; then
+			SAVED="$default"
+		else
+			SAVED="$SAVED"
+		fi
+	else
+		local saved_file="$(printf '%s\n' "${SAVED[@]}" | grep -q "^${LOGIN}@" | sort -V | head -1)"
+
+		if test -z "$saved_file"; then
+			gen_credentials
+		else
+			SAVED="$saved_file"
+		fi
+	fi
+
+	PASSWORD="$(decrypt "$SAVED")"
+	PORT="$(echo "$SAVED" | cut -d : -f 2)"
+}
+
+gen_credentials() {
+	if ! test -f "$CREDENTIALS_DIR/$LOGIN"; then
+		error "cannot generate credentials for user $LOGIN since it doesn't have a credentials file"
+	fi
+
+	readarray -t passwords < <(decrypt "$CREDENTIALS_DIR/$LOGIN")
+
+	output="$(mktemp -t 'asd.XXXXXXXXXX')"
+	error="$(mktemp -t 'asd.XXXXXXXXXX')"
+
+	trap "pkill -P $$; exit 1" kill term hup int
+	trap "rm -f '$output' '$error'" exit
+
+	rtty "" -q "$LOGIN@$REMOTE" -T 'exit 0' 2>&1 > "$error" &
+	for i in $(seq 0 $(bc <<< "${#passwords[@]}-1")); do
+		rtty "${passwords[$i]}" "$LOGIN@$REMOTE" -T 'exit 0' >/dev/null 2>&1 && echo $i > "$output" && pkill -P $$ &
+	done
+	wait
+
+	if test -z "$output"; then
+		error "$(cat "$error")"
+	else
+		install -m 600 -Z <(echo "${passwords[$(cat "$output")]}") "$SAVED_DIR/$LOGIN@$REMOTE:$PORT"
+		encrypt "$SAVED_DIR/$LOGIN@$REMOTE:$PORT"
+		SAVED="$LOGIN@$REMOTE:$PORT"
+		rm -f "$output" "$error"
+		trap - kill term hup int exit
+	fi
+}
+
+main "$@"
