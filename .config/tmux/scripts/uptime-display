@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
-printf '%(%Hh %Mm)T' "$(cat /proc/uptime | cut -d ' ' -f 1)" 2>/dev/null || exit 0
+seconds="$(cat /proc/uptime | cut -d ' ' -f 1 | sed 's/\..*//')"
+hours="$((seconds/3600))"
+minutes="$((seconds-hours*3600))"
+minutes="$((minutes/60))"
+echo "${hours}h ${minutes}m"
