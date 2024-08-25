@@ -8,7 +8,7 @@ if status is-interactive; and not set -q TMUX_LOADED; and type -q tmux; and not 
     end
 
     if not tmux info &>/dev/null; and tmux has-session -t "$TMUX_HOME" &>/dev/null
-        tmux attach-session -t "$TMUX_HOME"
+        tmux attach-session -t "$TMUX_HOME" -c "$HOME"
     else
         tmux
     end
