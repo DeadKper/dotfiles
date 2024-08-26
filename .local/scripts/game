@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set -l known flags g e w h
+set -l known g e w h m
 set -l flags
 set -l remove
 set -l gs
@@ -37,8 +37,11 @@ for i in (seq (count $remove) -1 1)
 end
 
 set -l command $argv
+set -l gamescope_flag
 
 if contains g $flags; and type gamescope &>/dev/null
+    set gamescope_flag yes
+
     set -l opt_flag
     if contains e $flags
         set -a opt_flag -e
@@ -46,11 +49,22 @@ if contains g $flags; and type gamescope &>/dev/null
 
     set -l res (xrandr | rg -F '*+' | sd '^\s+|\s+$|\*\+' '' | sd '\s+|x' '\n')
 
-    set command MANGOHUD=0 "MANGOHUD_CONFIG=\"$(cat "$HOME/.config/MangoHud/MangoHud.conf" | rg '\S' | rg -v '^#|^legacy_layout|^pci_dev|,' | sd '\n' ',' | sd ',$' '')\"" gamescope $opt_flag -W "$res[1]" -H "$res[2]" $gs -b -o 5 --backend=sdl --force-grab-cursor --mangoapp $command
+    set -l prefix gamescope $opt_flag -W "$res[1]" -H "$res[2]" $gs -b -o 5 --backend=wayland --force-grab-cursor --adaptive-sync
+
+    if contains m $flags; and type mangoapp &>/dev/null
+        # set command MANGOHUD=0 "MANGOHUD_CONFIG=\"$(cat "$HOME/.config/MangoHud/MangoHud.conf" | rg '\S' | rg -v '^#|^legacy_layout|^pci_dev|,' | sd '\n' ',' | sd ',$' '')\"" $prefix --mangoapp $command
+        set command MANGOHUD=0 $prefix --mangoapp $command
+    else
+        set command $prefix $command
+    end
 end
 
 if type gamemoderun &>/dev/null
     set command gamemoderun $command
+end
+
+if contains m $flags; and type mangohud &>/dev/null; and test -z "$gamescope_flag"
+    set command MANGOHUD=1 $command
 end
 
 if echo -- "$argv" | rg -qv '^\s*$'
