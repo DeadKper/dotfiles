@@ -53,7 +53,7 @@ if contains g $flags; and type gamescope &>/dev/null
 
     if contains m $flags; and type mangoapp &>/dev/null
         # set command MANGOHUD=0 "MANGOHUD_CONFIG=\"$(cat "$HOME/.config/MangoHud/MangoHud.conf" | rg '\S' | rg -v '^#|^legacy_layout|^pci_dev|,' | sd '\n' ',' | sd ',$' '')\"" $prefix --mangoapp $command
-        set command MANGOHUD=0 $prefix --mangoapp $command
+        set command env MANGOHUD=0 $prefix --mangoapp $command
     else
         set command $prefix $command
     end
@@ -64,7 +64,7 @@ if type gamemoderun &>/dev/null
 end
 
 if contains m $flags; and type mangohud &>/dev/null; and test -z "$gamescope_flag"
-    set command MANGOHUD=1 $command
+    set command env MANGOHUD=1 $command
 end
 
 if echo -- "$argv" | rg -qv '^\s*$'
