@@ -115,7 +115,8 @@ Documentation=
 
 [Service]
 Type=simple
-ExecStart=$SHELL -c '$(which sleep) 5 && $(which flatpak) run com.github.wwmm.easyeffects --gapplication-service'
+ExecStartPre=/bin/sleep 10
+ExecStart=$(which flatpak) run com.github.wwmm.easyeffects --gapplication-service
 ExecStop=/usr/bin/pkill easyeffects
 KillMode=control-group
 
