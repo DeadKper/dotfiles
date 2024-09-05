@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set -l known g e w h m
+set -l known g e w h m v
 set -l flags
 set -l remove
 set -l gs
@@ -53,7 +53,7 @@ if contains g $flags; and type gamescope &>/dev/null
 
     if contains m $flags; and type mangoapp &>/dev/null
         # set command MANGOHUD=0 "MANGOHUD_CONFIG=\"$(cat "$HOME/.config/MangoHud/MangoHud.conf" | rg '\S' | rg -v '^#|^legacy_layout|^pci_dev|,' | sd '\n' ',' | sd ',$' '')\"" $prefix --mangoapp $command
-        set command env MANGOHUD=0 $prefix --mangoapp $command
+        set command $prefix --mangoapp $command
     else
         set command $prefix $command
     end
@@ -63,12 +63,28 @@ if type gamemoderun &>/dev/null
     set command gamemoderun $command
 end
 
-if contains m $flags; and type mangohud &>/dev/null; and test -z "$gamescope_flag"
-    set command env MANGOHUD=1 $command
+set env_set
+
+if contains m $flags; and type mangohud &>/dev/null
+    set env_set yes
+    if and test -z "$gamescope_flag"
+        set command MANGOHUD=1 $command
+    else
+        set command MANGOHUD=0 $command
+    end
+end
+
+if contains v $flags
+    set env_set yes
+    set command DXVK_ASYNC=1 WINEDLLOVERRIDES="dinput8=n,b" $command
+end
+
+if test "$env_set" = yes
+    set command env $command
 end
 
 if echo -- "$argv" | rg -qv '^\s*$'
-    # printf '\'%s\' ' $command | sd ' $' '' >>~/.cache/game
+    printf '\'%s\' ' $command | sd ' $' '' >~/.cache/game
     eval $(printf '\'%s\' ' $command)
 else
     echo -- $command
