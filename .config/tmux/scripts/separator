@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+win=$1
+sep=$2
+first=$(tmux list-w | head -1 | grep -o '^[0-9]*')
+active=$(tmux display -p '#I')
+
+test "$win" -gt "$first" -a "$(($win-1))" -ne "$active" && echo "$sep"
