@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+{
+	echo '# set keys'
+	tmux -L unconfigured -f /dev/null start-server \; list-keys
+	echo '# session options'
+	tmux -L unconfigured -f /dev/null start-server \; show-options -s  | awk '{print("set -s "$N)}'
+	echo '# global options'
+	tmux -L unconfigured -f /dev/null start-server \; show-options -g  | awk '{print("set -g "$N)}'
+	echo '# window options'
+	tmux -L unconfigured -f /dev/null start-server \; show-options -gw | awk '{print("set -gw "$N)}'
+} >~/.config/tmux/defaults.conf
