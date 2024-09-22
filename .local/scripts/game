@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set -l known g e w h m v
+set -l known g e w h m v d
 set -l flags
 set -l remove
 set -l gs
@@ -74,9 +74,14 @@ if contains m $flags; and type mangohud &>/dev/null
     end
 end
 
+if contains d $flags
+    set env_set yes
+    set command 'WINEDLLOVERRIDES="dinput8=n,b"' $command
+end
+
 if contains v $flags
     set env_set yes
-    set command DXVK_ASYNC=1 WINEDLLOVERRIDES="dinput8=n,b" $command
+    set command DXVK_ASYNC=1 $command
 end
 
 if test "$env_set" = yes
