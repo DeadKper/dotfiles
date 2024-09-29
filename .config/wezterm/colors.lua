@@ -1,42 +1,26 @@
-local krbon = require("palette")
+local palette = require("palette")
 
-local M = {}
-
--- config.color_scheme = "Tokyo Night"
-M.window_background_opacity = 0.9
-
-M.force_reverse_video_cursor = true
-M.inactive_pane_hsb = {
-	saturation = 0.25,
-	brightness = 0.5,
-}
-
-M.colors = {
-	tab_bar = {
-		background = krbon.none,
-		active_tab = {
-			bg_color = krbon.none,
-			fg_color = krbon.fg0,
-		},
-		inactive_tab = {
-			bg_color = krbon.none,
-			fg_color = krbon.fg2,
-		},
-		inactive_tab_hover = {
-			bg_color = krbon.none,
-			fg_color = krbon.fg1,
-			italic = true,
-		},
-		new_tab = {
-			bg_color = krbon.none,
-			fg_color = krbon.fg2,
-		},
-		new_tab_hover = {
-			bg_color = krbon.none,
-			fg_color = krbon.fg1,
-			italic = true,
+local config = {
+	color_scheme = "Oxocarbon Dark (Gogh)",
+	window_background_opacity = 1,
+	force_reverse_video_cursor = true,
+	inactive_pane_hsb = {
+		saturation = 0.6,
+		brightness = 0.6,
+	},
+	colors = {
+		tab_bar = {
+			background = palette.none,
+			new_tab = {
+				bg_color = palette.none,
+				fg_color = palette.fg1,
+			},
+			new_tab_hover = {
+				bg_color = palette.fg1,
+				fg_color = palette.none,
+			},
 		},
 	},
 }
 
-return M
+return config
