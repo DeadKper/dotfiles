@@ -5,7 +5,7 @@ pane_command=$(ps -t $pane_tty -o command= | tail -1)
 
 if grep -qwF 'ssh' <<< "$pane_command"; then
 	ssh_host=$(printf '%s\n' $pane_command | grep -F '@' || printf '%s\n' $pane_command | tail -1)
-	ssh -G $ssh_host 2>/dev/null | awk '/^hostname / { print $2; exit }'
+	ssh -G $ssh_host 2>/dev/null | awk '/^hostname / { print $2; exit }' | grep -v '^[0-9]*$' | grep '\S' || hostname
 else
 	hostname
 fi
