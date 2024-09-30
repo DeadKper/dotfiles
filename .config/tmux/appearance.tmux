@@ -37,10 +37,10 @@ set -ag status-right " #[bg=$none fg=$bg3,bold]#[bg=$bg3 fg=terminal,bold]$st
 set -ag status-right " #[bg=$bg3]$status_color_fg#[fg=$bg3,bold]$status_color_bg #(#{SRC}/hostname | #{SRC}/cuttxt 16) "
 
 # windows
-active=$sky
-set -g window-status-style "bg=$none,fg=$fg2"
+active=$pink
+set -g window-status-style "bg=$none,fg=$fg3"
 set -g window-status-separator ""
-set -g window-status-format "#[default,bold,reverse]#{?window_flags,#[bg=$active],#[bg=$bg0]} #I:#W #[default]"
+set -g window-status-format "#[default,bold,reverse]#{?window_flags,#[bg=$fg0],#[bg=$bg0]} #I:#W #[default]"
 set -g window-status-current-format "#[fg=$active,bg=default,reverse,bold]#[bg=$bg0] #I:#W #[default,fg=$active]"
 
 # message area
