@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
 
-socket="$HOME/.cache/tmux_popup.socket"
-conf="$HOME/.cache/tmux_popup.conf"
 session="$(tmux display -p '#S')"
 
-if ! tmux -S "$socket" has -t "$session" 2> /dev/null; then
-    cat ~/.config/tmux/tmux.conf | grep -vwF 'tmux-plugins/tmux-resurrect' | grep -vwF 'tmux-plugins/tmux-continuum' > "$conf"
+stmx() {
+    tmux -S "${XDG_CACHE_HOME:-$HOME/.cache}/tmux_popup.socket" "$@"
+}
+
+if ! stmx has -t "$session" 2> /dev/null; then
     parent_session="$(tmux display -p '#{session_id}')"
     parent_path="$(tmux display -p '#{session_path}')"
-    session_id="$(tmux -S "$socket" -f "$conf" new-session -dP -s "$session" -F '#{session_id}' -e TMUX_PARENT_SESSION="$parent_session" -c "$parent_path")"
-    tmux -S "$socket" set -s -t "$session_id" key-table popup
-    tmux -S "$socket" set -s -t "$session_id" status off
-    tmux -S "$socket" set -s -t "$session_id" prefix None
-    tmux -S "$socket" unbind -t "$session_id" Escape
-    session="$session_id"
+    session="$(stmx -f <(grep -vwF 'tmux-plugins/tmux-resurrect' ~/.config/tmux/tmux.conf | grep -vwF 'tmux-plugins/tmux-continuum') \
+        new-session -dP -s "$session" -F '#{session_id}' -c "$parent_path" \
+        -e TMUX_PARENT_SESSION="$parent_session" \
+        -e fish_private_mode='yes' \
+        -e HISTIGNORE='*')"
+    stmx set -s -t "$session" key-table popup
+    stmx set -s -t "$session" status off
+    stmx set -s -t "$session" prefix None
+    sleep 0.2
+    stmx send "cd '$(tmux display -p '#{pane_current_path}')'; clear" Enter
 fi
 
-tmux -S "$socket" attach -t "$session" > /dev/null
+stmx attach -t "$session" > /dev/null
