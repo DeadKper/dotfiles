@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
 
-tmux source <(
+file="$(mktemp)"
+trap "rm '$file' && trap - exit && exit 0" exit hup kill term int
+
+{
 	# remove current options
 	tmux list-keys        | sed -E 's/^\S+\s+(-r\s)?\s*(-T)\s+(\S+)\s+(\S+).*/unbind \2 \3 \4/' # current bindings
 	tmux show-options -s  | awk '{print("set -us  "$1)}'                                        # current server options
 	tmux show-options -g  | awk '{print("set -ug  "$1)}'                                        # current global session options
 	tmux show-options -gw | awk '{print("set -ugw "$1)}'                                        # current global window options
-	tmux show-options -w  | awk '{print("set -uw  "$1)}'                                        # current window options
-	tmux show-options     | awk '{print("set -u   "$1)}'                                        # current session options
 
 	# set default options
 	tmux -L unconfigured -f /dev/null start-server \; list-keys
 	tmux -L unconfigured -f /dev/null start-server \; show-options -s  | awk '{print("set -s  "$N)}'
 	tmux -L unconfigured -f /dev/null start-server \; show-options -g  | awk '{print("set -g  "$N)}'
 	tmux -L unconfigured -f /dev/null start-server \; show-options -gw | awk '{print("set -gw "$N)}'
-	tmux -L unconfigured -f /dev/null start-server \; show-options -w  | awk '{print("set -w  "$N)}'
-	tmux -L unconfigured -f /dev/null start-server \; show-options     | awk '{print("set     "$N)}'
-) 2>/dev/null
+} > "$file"
+
+tmux source "$file" 2>/dev/null
