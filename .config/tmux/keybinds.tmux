@@ -54,7 +54,10 @@ bind -T copy-mode-vi v		send -X begin-selection
 bind -T copy-mode-vi C-v	send -X begin-selection \; send -X rectangle-toggle
 bind -T copy-mode-vi Escape send -X clear-selection
 bind -T copy-mode-vi C-c	send -X cancel
+bind v						copy-mode
 bind C-u					copy-mode \; send -X halfpage-up
+bind C-b					copy-mode \; send -X page-up
+bind C-y					copy-mode \; send -X scroll-up
 
 # popup
 bind C-Space run "tmux display-popup -xC -yC -w90% -h90% -E '#{SRC}/popup-toggle'"
