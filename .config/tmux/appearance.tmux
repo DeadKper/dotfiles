@@ -30,9 +30,8 @@ set -g status-left-length 150
 set -g status-right-length 150
 set -g status-left "#[fg=$bg3,bold]$status_color_bg  #(#{SRC}/cuttxt '#{session_name}' 16) #[bg=$bg3]$status_color_fg"
 set -ag status-left "#[bg=$bg3 fg=bold]$status_color_fg  #(#{SRC}/uptime-display) #[bg=$none fg=$bg3,bold]"
-set -g status-right "#[fg=$fg0 bg=$none]#(battery-display '')"
-set -ag status-right " %H:%M "
-set -ag status-right " %d %b"
+set -g status-right "#[fg=$fg0 bg=$none]#(#{SRC}/battery-display '')"
+set -ag status-right " #(date +'%%H:%%M  %%d %%b')"
 set -ag status-right " #[bg=$none fg=$bg3,bold]#[bg=$bg3 fg=terminal,bold]$status_color_fg #(#{SRC}/username | #{SRC}/cuttxt 16)"
 set -ag status-right " #[bg=$bg3]$status_color_fg#[fg=$bg3,bold]$status_color_bg #(#{SRC}/hostname | #{SRC}/cuttxt 16) "
 
