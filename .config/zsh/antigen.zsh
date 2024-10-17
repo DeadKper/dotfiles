@@ -1,33 +1,53 @@
 # Bootstrap antigen
-PLUGIN="$(dirname "$0")/.antigen.zsh"
-test -f "$PLUGIN" || curl -L git.io/antigen > "$PLUGIN"
 
-if test -f "$PLUGIN"; then
-	# Load antigen
+local CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/antigen"
+PLUGIN="$CACHE/antigen.zsh"
+RC="$CACHE/antigenrc"
+ANTIGEN_COMPDUMP="$CACHE/zcompdump"
+ANTIGEN_CACHE="$CACHE/init.zsh"
+
+ADOTDIR="${XDG_DATA_HOME:-$HOME/.local/share}/antigen"
+
+test -d "$ADOTDIR" || mkdir -p "$ADOTDIR"
+test -d "$CACHE" || mkdir -p "$CACHE"
+
+if ! test -f "$PLUGIN"; then
+	curl -q -L git.io/antigen > "$PLUGIN"
+fi
+
+if ! test -f "$RC"; then
+	theme=romkatv/powerlevel10k
+
+	bundles=(
+		command-not-found
+		git
+		git-flow
+		history
+		npm
+		pip
+		python
+		rsync
+
+		zsh-users/zsh-autosuggestions
+		"zsh-users/zsh-completions src"
+		"zsh-users/zsh-history-substring-search ./zsh-history-substring-search.zsh"
+		zsh-users/zsh-syntax-highlighting
+
+		olets/zsh-abbr@main
+		hlissner/zsh-autopair
+	)
+
+	{
+		echo "antigen use oh-my-zsh"
+		echo "antigen bundles <<EOF"
+		printf '\t%s\n' "${bundles[@]}"
+		echo "EOF"
+		echo "antigen theme $theme"
+		echo "antigen apply"
+	} > "$RC"
+fi
+
+if test -f "$PLUGIN" -a -f "$RC"; then
 	source "$PLUGIN"
-
-	# Load the oh-my-zsh's library.
-	antigen use oh-my-zsh
-
-	# Bundles from the default repo (robbyrussell's oh-my-zsh).
-	antigen bundle command-not-found
-	antigen bundle git
-	antigen bundle git-flow
-	antigen bundle history
-	antigen bundle npm
-	antigen bundle pip
-	antigen bundle python
-	antigen bundle rsync
-
-	antigen bundle zsh-users/zsh-autosuggestions
-	antigen bundle zsh-users/zsh-completions src
-	antigen bundle zsh-users/zsh-history-substring-search ./zsh-history-substring-search.zsh
-	antigen bundle zsh-users/zsh-syntax-highlighting
-
-	antigen bundle olets/zsh-abbr@main
-	antigen bundle hlissner/zsh-autopair
-
-	antigen theme romkatv/powerlevel10k
-
-	antigen apply
+	antigen init "$RC"
 fi
