@@ -7,28 +7,3 @@
 [submodule ".local/share/yadm-git"]
 	path = .local/share/yadm-git
 	url = https://github.com/TheLocehiliosan/yadm
-
-[submodule ".local/share/oh-my-zsh"]
-	path = .local/share/oh-my-zsh
-	url = https://github.com/ohmyzsh/ohmyzsh
-[submodule ".local/share/oh-my-zsh.custom/themes/powerlevel10k"]
-	path = .local/share/oh-my-zsh.custom/themes/powerlevel10k
-	url = https://github.com/romkatv/powerlevel10k
-[submodule ".local/share/oh-my-zsh.custom/plugins/zsh-abbr"]
-	path = .local/share/oh-my-zsh.custom/plugins/zsh-abbr
-	url = https://github.com/olets/zsh-abbr
-[submodule ".local/share/oh-my-zsh.custom/plugins/zsh-autopair"]
-	path = .local/share/oh-my-zsh.custom/plugins/zsh-autopair
-	url = https://github.com/hlissner/zsh-autopair
-[submodule ".local/share/oh-my-zsh.custom/plugins/zsh-autosuggestions"]
-	path = .local/share/oh-my-zsh.custom/plugins/zsh-autosuggestions
-	url = https://github.com/zsh-users/zsh-autosuggestions
-[submodule ".local/share/oh-my-zsh.custom/plugins/zsh-completions"]
-	path = .local/share/oh-my-zsh.custom/plugins/zsh-completions
-	url = https://github.com/zsh-users/zsh-completions
-[submodule ".local/share/oh-my-zsh.custom/plugins/zsh-history-substring-search"]
-	path = .local/share/oh-my-zsh.custom/plugins/zsh-history-substring-search
-	url = https://github.com/zsh-users/zsh-history-substring-search
-[submodule ".local/share/oh-my-zsh.custom/plugins/zsh-syntax-highlighting"]
-	path = .local/share/oh-my-zsh.custom/plugins/zsh-syntax-highlighting
-	url = https://github.com/zsh-users/zsh-syntax-highlighting

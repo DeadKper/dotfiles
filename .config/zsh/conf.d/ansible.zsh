@@ -1,4 +1,4 @@
-if type ansible &>/dev/null && ! type apl &>/dev/null; then
+if type ansible &>/dev/null && ! type apl &>/dev/null && type abbr &>/dev/null; then
   local list="$(abbr list)"
   add() {
     name="$1"
