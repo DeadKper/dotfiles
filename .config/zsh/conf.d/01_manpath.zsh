@@ -1,1 +1,1 @@
-add_path MANPATH "$(manpath)"
+test -n "$MANPATH" || export MANPATH="$(manpath)"
