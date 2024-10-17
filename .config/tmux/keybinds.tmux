@@ -7,22 +7,22 @@ unbind C-b
 bind R run "#{SRC}/reset; exit 0" \; source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded..."
 
 # general
-bind C-w kill-window
-bind C-x kill-pane \; refresh-client -S
-bind C-c new-window -c "#{session_path}" \; refresh-client -S
-bind c new-window \; refresh-client -S
-bind C command-prompt -p "(new-session)" "new-session -A -s '%%' -c '#{pane_current_path}'" \; refresh-client -S
-bind \; command-prompt -p "(rename-session)" -I "#{session_name}" "rename-session '%%'" \; refresh-client -S
+bind    C-w kill-window
+bind    C-x kill-pane \; refresh-client -S
+bind    C-c new-window -c "#{session_path}" \; refresh-client -S
+bind    c   new-window \; refresh-client -S
+bind    C   command-prompt -p "(new-session)" "new-session -A -s '%%' -c '#{pane_current_path}'" \; refresh-client -S
+bind    \   command-prompt -p "(rename-session)" -I "#{session_name}" "rename-session '%%'" \; refresh-client -S
 bind -n M-q confirm -p 'Kill this tmux session? (y/n)' kill-session
 bind -n F11 resize-pane -Z
 
 # windows
-bind	p   previous-window \; refresh-client -S
-bind    n	next-window     \; refresh-client -S
-bind -r C-p previous-window \; refresh-client -S
-bind -r C-n next-window     \; refresh-client -S
-bind -r P	swap-window -t -1\; select-window -t -1
-bind -r N	swap-window -t +1\; select-window -t +1
+bind    p   previous-window   \; refresh-client -S
+bind    n   next-window       \; refresh-client -S
+bind -r C-p previous-window   \; refresh-client -S
+bind -r C-n next-window       \; refresh-client -S
+bind -r P   swap-window -t -1 \; select-window -t -1
+bind -r N   swap-window -t +1 \; select-window -t +1
 
 bind C-o last-window
 
@@ -50,19 +50,20 @@ bind -r C-l select-pane -R
 bind S setw synchronize-panes
 
 # copy-mode
-bind -T copy-mode-vi v		send -X begin-selection
-bind -T copy-mode-vi C-v	send -X begin-selection \; send -X rectangle-toggle
+bind -T copy-mode-vi v      send -X begin-selection
+bind -T copy-mode-vi C-v    send -X begin-selection \; send -X rectangle-toggle
 bind -T copy-mode-vi Escape send -X clear-selection
-bind -T copy-mode-vi C-c	send -X cancel
+bind -T copy-mode-vi C-c    send -X cancel
 bind -T copy-mode-vi C-y    send -X copy-pipe
-bind v						copy-mode
-bind C-u					copy-mode \; send -X halfpage-up
-bind C-b					copy-mode \; send -X page-up
-bind C-y					copy-mode \; send -X scroll-up
+bind v                      copy-mode
+bind C-u                    copy-mode \; send -X halfpage-up
+bind C-b                    copy-mode \; send -X page-up
+bind C-y                    copy-mode \; send -X scroll-up
 
 # popup
-bind C-Space run "tmux display-popup -xC -yC -w90% -h90% -E '#{SRC}/popup-toggle'"
+bind C-Space run "tmux display-popup -xC -yC -w90% -h90% -E '#{SRC}/popup-toggle' || exit 0"
 
 bind -T popup C-Space detach
-bind -T popup M-[ copy-mode
-bind -T popup M-q confirm -p 'Kill this tmux session? (y/n)' { kill-session ; detach }
+bind -T popup M-v     copy-mode
+bind -T popup M-[     copy-mode
+bind -T popup M-q     confirm -p 'Kill this tmux session? (y/n)' { kill-session ; detach }
