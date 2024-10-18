@@ -12,7 +12,7 @@ bind    C-x kill-pane \; refresh-client -S
 bind    C-c new-window -c "#{session_path}" \; refresh-client -S
 bind    c   new-window \; refresh-client -S
 bind    C   command-prompt -p "(new-session)" "new-session -A -s '%%' -c '#{pane_current_path}'" \; refresh-client -S
-bind    \   command-prompt -p "(rename-session)" -I "#{session_name}" "rename-session '%%'" \; refresh-client -S
+bind    \;  command-prompt -p "(rename-session)" -I "#{session_name}" "rename-session '%%'" \; refresh-client -S
 bind -n M-q confirm -p 'Kill this tmux session? (y/n)' kill-session
 bind -n F11 resize-pane -Z
 
