@@ -11,7 +11,8 @@ $time\
 $status\
 $container\
 $line_break\
-$character"""
+$character\
+"""
 
 add_newline = false
 
@@ -23,11 +24,11 @@ disabled = false
 symbol = " "
 
 [character]
-success_symbol = "[❯](#9134cc)"
+success_symbol = "[❯](bold green)"
 
 [time]
 disabled = false
-style = "white"
+style = "dark-grey"
 format = "[$time]($style)"
 
 [container]
@@ -35,6 +36,9 @@ format = ' [$symbol \[$name\]]($style)'
 
 [directory]
 style = "bright-blue"
+truncation_length = 10
+truncate_to_repo = false
+repo_root_style = "bold bright-blue"
 
 [shell]
 disabled = false

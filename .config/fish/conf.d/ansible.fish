@@ -1,4 +1,4 @@
-if type -q ansible
+if status is-interactive; and type -q ansible
     abbr apl ansible-playbook
     abbr apv ansible-playbook --extra-vars
     abbr apa ansible-playbook asd.yaml -i
