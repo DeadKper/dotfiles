@@ -13,7 +13,7 @@ if status is-interactive
     alias lla="ls -lA"
 
     if type -q fzf
-        alias cf='cd "$(fzf)"'
-        alias zf='z "$(fzf)"'
+        alias cf='set -l __path "$(fzf)"; test -n "$__path"; and cd "$__path"'
+        alias zf='set -l __path "$(fzf)"; test -n "$__path"; and z "$__path"'
     end
 end
