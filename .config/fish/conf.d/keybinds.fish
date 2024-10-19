@@ -39,8 +39,4 @@ if status is-interactive
 
     # fix delete key
     bind -k dc delete-char
-
-    if type -q fzf
-        fzf --fish | source
-    end
 end
