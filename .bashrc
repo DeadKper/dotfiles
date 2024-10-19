@@ -19,6 +19,8 @@ if type zoxide &>/dev/null; then
 	eval "$(zoxide init bash)"
 fi
 
+eval "$(fzf --bash)"
+
 alias ll='ls -l'
 alias la='ls -A'
 alias lla='ls -lA'
