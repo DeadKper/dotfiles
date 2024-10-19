@@ -39,7 +39,7 @@ style = "bright-blue"
 truncation_length = 10
 truncate_to_repo = false
 repo_root_style = "bold bright-blue"
-read_only = "󰌾 "
+read_only = " 󰌾"
 
 [shell]
 disabled = false
