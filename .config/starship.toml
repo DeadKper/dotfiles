@@ -34,7 +34,7 @@ disabled = false
 symbol = " "
 
 [character]
-success_symbol = "[❯](bold green)"
+success_symbol = "[❯](bold #9134cc)"
 
 [time]
 disabled = false
