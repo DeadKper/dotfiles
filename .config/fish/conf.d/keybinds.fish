@@ -1,28 +1,10 @@
 if status is-interactive
     # edit current line in buffer
-    bind \cx edit_command_buffer
-
-    # move in insert mode
-    bind \ch backward-char
-    bind \cj down-or-search
-    bind \ck up-or-search
-    bind \f forward-char # this is \cl for some reason
-
-    # word jumpinp
-    bind \cB backward-word
-    bind \eb backward-bigword
-    bind \cF forward-word
-    bind \ef forward-bigword
-
-    # kill words with alt
-    bind \el kill-word
-    bind \eh backward-kill-word
-    bind \eL kill-bigword
-    bind \eH backward-kill-bigword
+    bind \ex edit_command_buffer
 
     # ctrl + left/right
-    bind \e\[1\;5D backward-bigword
-    bind \e\[1\;5C forward-bigword
+    bind \e\[1\;3D backward-bigword
+    bind \e\[1\;3C forward-bigword
 
     # reverse i-search
     bind \cR history-pager
