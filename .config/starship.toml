@@ -2,12 +2,12 @@ format = """
 $shell\
 $all\
 $fill\
+$container\
 $status\
 $cmd_duration\
 $jobs\
 $battery\
 $time\
-$container\
 $line_break\
 $character\
 """
@@ -38,11 +38,12 @@ success_symbol = "[❯](bold green)"
 
 [time]
 disabled = false
-style = "dark-grey"
+style = "#909090"
 format = "[$time]($style)"
 
 [container]
-format = ' [$symbol \[$name\]]($style)'
+symbol = ''
+format = ' [$symbol \[$name\]]($style) '
 
 [directory]
 style = "bright-blue"
