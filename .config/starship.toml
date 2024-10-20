@@ -1,20 +1,30 @@
-command_timeout = 50
-
 format = """
 $shell\
 $all\
 $fill\
+$status\
 $cmd_duration\
 $jobs\
 $battery\
 $time\
-$status\
 $container\
 $line_break\
 $character\
 """
 
+command_timeout = 50
 add_newline = false
+
+[profiles]
+transient="""
+$character\
+"""
+
+rtransient="""
+$status\
+$cmd_duration\
+$time\
+"""
 
 [line_break]
 disabled = false

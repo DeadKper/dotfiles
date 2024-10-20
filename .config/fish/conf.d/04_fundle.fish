@@ -11,7 +11,7 @@ if status is-interactive
         fundle plugin nickeb96/puffer-fish
         fundle plugin acomagu/fish-async-prompt
 
-        set -x async_prompt_functions 'starship prompt'
+        set -x async_prompt_functions 'starship prompt' 'starship prompt --right'
 
         function fish_right_prompt_loading_indicator -a last_prompt
             echo -n "$last_prompt" | sed -r 's/\x1B\[[0-9;]*[JKmsu]//g' | read -zl uncolored_last_prompt
