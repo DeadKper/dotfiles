@@ -4,7 +4,7 @@ end
 
 if not type -q starship
     test -d "$HOME/.local/bin" || mkdir -p "$HOME/.local/bin"
-    type -q starship || curl -sS https://starship.rs/install.sh | sh -s -- -b ~/.local/bin/ -y
+    curl -sS https://starship.rs/install.sh | sh -s -- -b ~/.local/bin/ -y
 end
 
 if not type -q starship
