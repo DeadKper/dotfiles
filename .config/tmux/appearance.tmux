@@ -21,8 +21,8 @@ gray="#adb5bd"
 sky="#99daff"
 cyan="#25cac8"
 
-status_color_fg="#{?client_prefix,#[fg=$green],#{?pane_in_mode,#[fg=$blue],#{?pane_synchronized,#[fg=$magenta],#[fg=$lavender]}}}"
-status_color_bg="#{?client_prefix,#[bg=$green],#{?pane_in_mode,#[bg=$blue],#{?pane_synchronized,#[bg=$magenta],#[bg=$lavender]}}}"
+status_color_fg="#{?client_prefix,#[fg=$green],#{?pane_in_mode,#[fg=$blue],#{?pane_synchronized,#[fg=$pink],#[fg=$lavender]}}}"
+status_color_bg="#{?client_prefix,#[bg=$green],#{?pane_in_mode,#[bg=$blue],#{?pane_synchronized,#[bg=$pink],#[bg=$lavender]}}}"
 
 # status bar
 set -g status-style "bg=$none"

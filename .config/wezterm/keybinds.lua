@@ -4,7 +4,7 @@ local act = action
 local deep_copy = require("utils").deep_copy
 
 local config
-local repeat_time = 500
+local repeat_time = 200
 local repeat_number = 0
 
 ---Add generated key combinations
@@ -152,18 +152,32 @@ config = {
 	},
 }
 
-gen_keys({ "UpArrow", "k" }, { mods = "LEADER", action = action.ActivatePaneDirection("Up") }, "activate_pane")
-gen_keys({ "DownArrow", "j" }, { mods = "LEADER", action = action.ActivatePaneDirection("Down") }, "activate_pane")
-gen_keys({ "LeftArrow", "h" }, { mods = "LEADER", action = action.ActivatePaneDirection("Left") }, "activate_pane")
-gen_keys({ "RightArrow", "l" }, { mods = "LEADER", action = action.ActivatePaneDirection("Right") }, "activate_pane")
-gen_keys({ "UpArrow", "k" }, { mods = "LEADER|CTRL", action = action.AdjustPaneSize({ "Up", 2 }) }, "resize_pane")
-gen_keys({ "DownArrow", "j" }, { mods = "LEADER|CTRL", action = action.AdjustPaneSize({ "Down", 2 }) }, "resize_pane")
-gen_keys({ "LeftArrow", "h" }, { mods = "LEADER|CTRL", action = action.AdjustPaneSize({ "Left", 5 }) }, "resize_pane")
-gen_keys({ "RightArrow", "l" }, { mods = "LEADER|CTRL", action = action.AdjustPaneSize({ "Right", 5 }) }, "resize_pane")
-gen_keys("p", { mods = "LEADER", action = action.ActivateTabRelative(-1) }, "activate_tab")
-gen_keys("n", { mods = "LEADER", action = action.ActivateTabRelative(1) }, "activate_tab")
-gen_keys("p", { mods = "LEADER|SHIFT", action = action.MoveTabRelative(-1) }, "move_tab")
-gen_keys("n", { mods = "LEADER|SHIFT", action = action.MoveTabRelative(1) }, "move_tab")
+-- stylua: ignore start
+gen_keys({ "UpArrow", "k" }, { mods = "LEADER", action = action.ActivatePaneDirection("Up") })
+gen_keys({ "DownArrow", "j" }, { mods = "LEADER", action = action.ActivatePaneDirection("Down") })
+gen_keys({ "LeftArrow", "h" }, { mods = "LEADER", action = action.ActivatePaneDirection("Left") })
+gen_keys({ "RightArrow", "l" }, { mods = "LEADER", action = action.ActivatePaneDirection("Right") })
+gen_keys({ "UpArrow", "k" }, { mods = "LEADER|CTRL", action = action.ActivatePaneDirection("Up") }, "activate_pane")
+gen_keys({ "DownArrow", "j" }, { mods = "LEADER|CTRL", action = action.ActivatePaneDirection("Down") }, "activate_pane")
+gen_keys({ "LeftArrow", "h" }, { mods = "LEADER|CTRL", action = action.ActivatePaneDirection("Left") }, "activate_pane")
+gen_keys({ "RightArrow", "l" }, { mods = "LEADER|CTRL", action = action.ActivatePaneDirection("Right") }, "activate_pane")
+gen_keys({ "UpArrow", "k" }, { mods = "LEADER|SHIFT", action = action.AdjustPaneSize({ "Up", 2 }) }, "resize_pane")
+gen_keys({ "DownArrow", "j" }, { mods = "LEADER|SHIFT", action = action.AdjustPaneSize({ "Down", 2 }) })
+gen_keys({ "LeftArrow", "h" }, { mods = "LEADER|SHIFT", action = action.AdjustPaneSize({ "Left", 5 }) })
+gen_keys({ "RightArrow", "l" }, { mods = "LEADER|SHIFT", action = action.AdjustPaneSize({ "Right", 5 }) })
+gen_keys({ "UpArrow", "k" }, { mods = "LEADER|SHIFT|CTRL", action = action.AdjustPaneSize({ "Up", 2 }) }, "resize_pane")
+gen_keys({ "DownArrow", "j" }, { mods = "LEADER|SHIFT|CTRL", action = action.AdjustPaneSize({ "Down", 2 }) }, "resize_pane")
+gen_keys({ "LeftArrow", "h" }, { mods = "LEADER|SHIFT|CTRL", action = action.AdjustPaneSize({ "Left", 5 }) }, "resize_pane")
+gen_keys({ "RightArrow", "l" }, { mods = "LEADER|SHIFT|CTRL", action = action.AdjustPaneSize({ "Right", 5 }) }, "resize_pane")
+gen_keys("p", { mods = "LEADER", action = action.ActivateTabRelative(-1) })
+gen_keys("n", { mods = "LEADER", action = action.ActivateTabRelative(1) })
+gen_keys("p", { mods = "LEADER|CTRL", action = action.ActivateTabRelative(-1) }, "activate_tab")
+gen_keys("n", { mods = "LEADER|CTRL", action = action.ActivateTabRelative(1) }, "activate_tab")
+gen_keys("p", { mods = "LEADER|SHIFT", action = action.MoveTabRelative(-1) })
+gen_keys("n", { mods = "LEADER|SHIFT", action = action.MoveTabRelative(1) })
+gen_keys("p", { mods = "LEADER|SHIFT|CTRL", action = action.MoveTabRelative(-1) }, "move_tab")
+gen_keys("n", { mods = "LEADER|SHIFT|CTRL", action = action.MoveTabRelative(1) }, "move_tab")
+-- stylua: ignore end
 
 for i = 1, 10 do
 	config.keys[#config.keys + 1] = {
