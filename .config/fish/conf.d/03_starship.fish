@@ -2,21 +2,20 @@ if not status --is-interactive
     exit
 end
 
-if not type -q starship
+if not type -q starship; and not test -f "$HOME/.local/bin/starship"
     test -d "$HOME/.local/bin" || mkdir -p "$HOME/.local/bin"
     curl -sS https://starship.rs/install.sh | sh -s -- -b ~/.local/bin/ -y
 end
 
-if not type -q starship
+if not type -q starship; and not test -f "$HOME/.local/bin/starship"
     exit
 end
 
-set -gx STARSHIP_SHELL fish
 set -x STARSHIP_LOG error
 
 set -g VIRTUAL_ENV_DISABLE_PROMPT 1
 
-set -g STARSHIP_SHELL fish
+set -gx STARSHIP_SHELL fish
 set -gx STARSHIP_SESSION_KEY (random 10000000000000 9999999999999999)
 set -g __starship_transient 0
 
