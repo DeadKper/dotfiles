@@ -22,7 +22,7 @@ sky="#99daff"
 cyan="#25cac8"
 
 prefix_color="#{?#{==:1,#{TMUX_PREFIX_STATE}},$lavender,#{?#{==:2,#{TMUX_PREFIX_STATE}},$cyan,$fg0}}"
-status_color="#{?client_prefix,$green,#{?pane_in_mode,$blue,#{?pane_synchronized,#{?#{==:1,#{PREFIX_STATE}},$pink,$prefix_color},$prefix_color}}}"
+status_color="#{?client_prefix,$green,#{?pane_in_mode,$blue,#{?#{==:1,#{TMUX_PREFIX_STATE}},#{?pane_synchronized,$pink,$prefix_color},$prefix_color}}}"
 
 # status bar
 set -g status-style "bg=$none"
