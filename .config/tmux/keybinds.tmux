@@ -7,6 +7,10 @@ unbind C-b
 bind R run "#{SRC}/reset; exit 0" \; source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded..."
 
 # general
+bind C-g run "#{SRC}/change_prefix 1"
+bind G run "#{SRC}/change_prefix 0"
+
+# general
 bind    C-w kill-window
 bind    C-x kill-pane \; refresh-client -S
 bind    C-c new-window -c "#{session_path}" \; refresh-client -S

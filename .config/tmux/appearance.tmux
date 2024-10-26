@@ -21,19 +21,19 @@ gray="#adb5bd"
 sky="#99daff"
 cyan="#25cac8"
 
-status_color_fg="#{?client_prefix,#[fg=$green],#{?pane_in_mode,#[fg=$blue],#{?pane_synchronized,#[fg=$pink],#[fg=$lavender]}}}"
-status_color_bg="#{?client_prefix,#[bg=$green],#{?pane_in_mode,#[bg=$blue],#{?pane_synchronized,#[bg=$pink],#[bg=$lavender]}}}"
+prefix_color="#{?#{==:1,#{TMUX_PREFIX_STATE}},$lavender,#{?#{==:2,#{TMUX_PREFIX_STATE}},$cyan,$fg0}}"
+status_color="#{?client_prefix,$green,#{?pane_in_mode,$blue,#{?pane_synchronized,#{?#{==:1,#{PREFIX_STATE}},$pink,$prefix_color},$prefix_color}}}"
 
 # status bar
 set -g status-style "bg=$none"
 set -g status-left-length 150
 set -g status-right-length 150
-set -g status-left "#[fg=$bg3,bold]$status_color_bg  #(#{SRC}/cuttxt '#{session_name}' 16) #[bg=$bg3]$status_color_fg"
-set -ag status-left "#[bg=$bg3 fg=bold]$status_color_fg  #(#{SRC}/uptime-display) #[bg=$none fg=$bg3,bold]"
+set -g status-left "#[fg=$bg3,bold]#[bg=$status_color]  #(#{SRC}/cuttxt '#{session_name}' 16) #[bg=$bg3]#[fg=$status_color]"
+set -ag status-left "#[bg=$bg3 fg=bold]#[fg=$status_color]  #(#{SRC}/uptime-display) #[bg=$none fg=$bg3,bold]"
 set -g status-right "#[fg=$fg0 bg=$none]#(#{SRC}/battery-display '')"
 set -ag status-right " #(date +'%%H:%%M  %%d %%b')"
-set -ag status-right " #[bg=$none fg=$bg3,bold]#[bg=$bg3 fg=terminal,bold]$status_color_fg #(#{SRC}/username | #{SRC}/cuttxt 16)"
-set -ag status-right " #[bg=$bg3]$status_color_fg#[fg=$bg3,bold]$status_color_bg #(#{SRC}/hostname | #{SRC}/cuttxt 16) "
+set -ag status-right " #[bg=$none fg=$bg3,bold]#[bg=$bg3 fg=terminal,bold]#[fg=$status_color] #(#{SRC}/username | #{SRC}/cuttxt 16)"
+set -ag status-right " #[bg=$bg3]#[fg=$status_color]#[fg=$bg3,bold]#[bg=$status_color] #(#{SRC}/hostname | #{SRC}/cuttxt 16) "
 
 # windows
 active=$pink
