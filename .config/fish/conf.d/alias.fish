@@ -16,4 +16,7 @@ if status is-interactive
         alias cf='set -l __path "$(fzf)"; test -n "$__path"; and cd "$__path"'
         alias zf='set -l __path "$(fzf)"; test -n "$__path"; and z "$__path"'
     end
+
+    alias pkill="pkill -i"
+    alias pgrep="pgrep -i"
 end
