@@ -59,7 +59,7 @@ bind -T copy-mode-vi C-v    send -X begin-selection \; send -X rectangle-toggle
 bind -T copy-mode-vi Escape send -X clear-selection
 bind -T copy-mode-vi C-c    send -X cancel
 bind -T copy-mode-vi C-y    send -X copy-pipe
-bind v                      copy-mode
+bind m                      copy-mode
 bind C-u                    copy-mode \; send -X halfpage-up
 bind C-b                    copy-mode \; send -X page-up
 bind C-y                    copy-mode \; send -X scroll-up
@@ -68,6 +68,6 @@ bind C-y                    copy-mode \; send -X scroll-up
 bind C-Space run "tmux display-popup -xC -yC -w90% -h90% -E '#{SRC}/popup-toggle' || exit 0"
 
 bind -T popup C-Space detach
-bind -T popup M-v     copy-mode
+bind -T popup M-m     copy-mode
 bind -T popup M-[     copy-mode
 bind -T popup M-q     confirm -p 'Kill this tmux session? (y/n)' { kill-session ; detach }
