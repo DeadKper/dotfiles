@@ -6,6 +6,8 @@ if type -q wslpath
             add-path -a PATH "$wpath"
         end
     end
+
+    set -x WSL_HOME "$(wslpath "$(/mnt/c/Windows/system32/cmd.exe /c echo %userprofile% 2>/dev/null | sed -e 's/\r$//')")"
 end
 
 if test -f /run/.containerenv
