@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+COLS=149
+MID=$((COLS/2-1))
+RED="\\\e[31m"
+GREEN="\\\e[32m"
+YELLOW="\\\e[33m"
+
+diff() {
+	env diff -tTbBdyaEZ --suppress-common-lines --suppress-blank-empty -W $COLS "$@"
+}
+
+grep_changes() {
+	grep -E "^.{$MID}.?[<|>]"
+}
+
+ungrep_empty() {
+	grep -vE "^\s{$MID}\s?[<|>]\s*$"
+}
+
+color_output() {
+	if [ -t 1 ]; then
+		sed -E "s/(^.{$MID}.?[<])/$RED\1/;s/(^.{$MID}.?[>])/$GREEN\1/;s/(^.{$MID}.?[|])/$YELLOW\1/" | xargs -r -d '\n' -n 1 echo -e
+	else
+		cat
+	fi
+}
+
+diff "$@" | ungrep_empty | color_output
