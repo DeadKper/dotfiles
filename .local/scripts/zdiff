@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-COLS=149
+COLS="$(tput cols 2>/dev/null || echo 130)"
 MID=$((COLS/2-1))
 RED="\\\e[31m"
 GREEN="\\\e[32m"
