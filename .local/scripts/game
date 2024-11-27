@@ -1,14 +1,22 @@
 #!/usr/bin/env fish
 
-set -l known g e w h m v d
+set -l known g e w h m v d c a 3
 set -l flags
 set -l remove
 set -l gs
 set -l skip 0
+set -l overrides
 
 for i in (seq (count $argv))
     if test $skip -gt 0
         set skip (math $skip - 1)
+        continue
+    end
+    echo $argv[$i]
+    if test "$argv[$i]" = -o
+        set -a overrides "$argv["$(math $i + 1)"]"
+        set -a remove $i (math $i + 1)
+        set skip 1
         continue
     end
     if echo -- $argv[$i] | rg -q -- '^-'
@@ -19,6 +27,10 @@ for i in (seq (count $argv))
             if contains $letter $known
                 if test $letter = w -o $letter = h
                     set -a gs "-$letter" "$argv["$(math $i + 1)"]"
+                    set -a remove (math $i + 1)
+                    set skip 1
+                else if test $letter = o
+                    set -a overrides "$argv["$(math $i + 1)"]"
                     set -a remove (math $i + 1)
                     set skip 1
                 else
@@ -37,19 +49,62 @@ for i in (seq (count $remove) -1 1)
 end
 
 set -l command $argv
+set -l env DXVK_HUD=compiler
 set -l gamescope_flag
+set -l steam_flag
+
+if contains SteamLaunch $argv
+    set steam_flag yes
+end
 
 if contains g $flags; and type gamescope &>/dev/null
     set gamescope_flag yes
+end
 
+if contains e $flags
+    set -a env PROTON_NO_ESYNC=1
+end
+
+if contains v $flags
+    set -a env __GL_SYNC_TO_VBLANK=0
+end
+
+if contains a $flags
+    set -a env DXVK_ASYNC=1
+end
+
+if contains d $flags
+    set -a overrides dinput8=n,b
+end
+
+if contains c $flags
+    set -a env VKD3D_CONFIG=force_host_cached __GL_SHADER_DISK_CACHE=1 __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
+end
+
+if contains 3 $flags
+    set -a env PROTON_USE_WINED3D11=1
+end
+
+if contains m $flags; and type mangohud &>/dev/null
+    if test -n "$gamescope_flag"
+        set -a env MANGOHUD=0
+    end
+end
+
+if contains g $flags; and type gamescope &>/dev/null
     set -l opt_flag
-    if contains e $flags
+
+    if test -n "$steam_flag"
         set -a opt_flag -e
+    end
+
+    if test -n $WAYLAND_DISPLAY
+        set -a opt_flag --expose-wayland
     end
 
     set -l res (xrandr | rg -F '*+' | sd '^\s+|\s+$|\*\+' '' | sd '\s+|x' '\n')
 
-    set -l prefix gamescope $opt_flag -W "$res[1]" -H "$res[2]" $gs -b -o 5 --backend=wayland --force-grab-cursor --adaptive-sync
+    set -l prefix gamescope $opt_flag -W "$res[1]" -H "$res[2]" $gs -b -o 5 --force-grab-cursor
 
     if contains m $flags; and type mangoapp &>/dev/null
         # set command MANGOHUD=0 "MANGOHUD_CONFIG=\"$(cat "$HOME/.config/MangoHud/MangoHud.conf" | rg '\S' | rg -v '^#|^legacy_layout|^pci_dev|,' | sd '\n' ',' | sd ',$' '')\"" $prefix --mangoapp $command
@@ -63,33 +118,22 @@ if type gamemoderun &>/dev/null
     set command gamemoderun $command
 end
 
-set env_set
-
 if contains m $flags; and type mangohud &>/dev/null
-    set env_set yes
-    if and test -z "$gamescope_flag"
-        set command MANGOHUD=1 $command
-    else
-        set command MANGOHUD=0 $command
+    if test -z "$gamescope_flag"
+        set command mangohud $command
     end
 end
 
-if contains d $flags
-    set env_set yes
-    set command 'WINEDLLOVERRIDES="dinput8=n,b"' $command
+if test -n "$overrides"
+    set -p env WINEDLLOVERRIDES="\"$(printf '%s\n' $overrides | sort -u | sed -z 's/\n/ /g;s/ $//')\""
 end
 
-if contains v $flags
-    set env_set yes
-    set command DXVK_ASYNC=1 $command
-end
-
-if test "$env_set" = yes
-    set command env $command
+if test -n "$env"
+    set -p command env $env
 end
 
 if echo -- "$argv" | rg -qv '^\s*$'
-    printf '\'%s\' ' $command | sd ' $' '' >~/.cache/game
+    printf '%s\n' $command | grep '\S' | sed -E "s/([^ ]* .*)/'\1'/" | sed -zE 's/\n/ /g;s/ $/\n/' >~/.cache/game
     eval $(printf '\'%s\' ' $command)
 else
     echo -- $command
