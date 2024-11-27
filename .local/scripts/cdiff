@@ -11,11 +11,11 @@ diff() {
 }
 
 grep_changes() {
-	grep -E "^.{$MID}.?[<|>]"
+	grep -E "^.{$MID}.?\S"
 }
 
 ungrep_empty() {
-	grep -vE "^\s{$MID}\s?[<|>]\s*$"
+	grep -vE "^\s{$MID}\s?\S\s*$"
 }
 
 color_output() {
