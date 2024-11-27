@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+state="$(tmux display -p '#{TMUX_PREFIX_STATE}')"
+
+swap=$1
+test -n "$swap" || swap=0
+
+case "$swap" in
+	0)
+		if test "$state" = 0; then
+			prev_state="$(tmux display -p '#{TMUX_PREFIX_PREVIOUS_STATE}')"
+			test -n "$prev_state" || prev_state=1
+			aux_state="$state"
+			state="$prev_state"
+			prev_state="$aux_state"
+		else
+			prev_state="$state"
+			state=0
+		fi
+		;;
+	1)
+		prev_state="$state"
+		if test "$state" = 2; then
+			state=1
+		else
+			state=2
+		fi
+		;;
+	*)
+		echo "swap option '$swap' not supported"
+		exit 0
+		;;
+esac
+
+tmux unbind -n C-g
+
+case "$state" in
+	0)
+		tmux set -g prefix None
+		tmux unbind C-a
+		tmux bind -n C-g "run '$(tmux display -p '#{SRC}')/$(basename "$0")'"
+		;;
+	1)
+		tmux set -g prefix C-a
+		tmux bind C-a send-prefix
+		tmux unbind C-b
+		;;
+	2)
+		tmux set -g prefix C-b
+		tmux bind C-b send-prefix
+		tmux unbind C-a
+		;;
+esac
+
+tmux setenv TMUX_PREFIX_STATE "$state"
+tmux setenv TMUX_PREFIX_PREVIOUS_STATE "$prev_state"
+
+tmux refresh
