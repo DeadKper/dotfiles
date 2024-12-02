@@ -168,6 +168,11 @@ __parser_make_args() {
 		printf "%s\n" "${__parser_flags_count[@]}" >&2
 		return 1
 	fi
+
+	for __parser_varname in $(printf '%s\n' "${__parser_varname_count[@]}" | awk '{print $2}'); do
+		unset $__parser_varname
+	done
+
 	printf "%s\n" "${__parser_args[@]}"
 }
 
