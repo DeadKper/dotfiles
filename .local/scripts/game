@@ -12,7 +12,6 @@ for i in (seq (count $argv))
         set skip (math $skip - 1)
         continue
     end
-    echo $argv[$i]
     if test "$argv[$i]" = -o
         set -a overrides "$argv["$(math $i + 1)"]"
         set -a remove $i (math $i + 1)
