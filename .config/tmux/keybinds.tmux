@@ -59,6 +59,7 @@ bind -T copy-mode-vi C-v    send -X begin-selection \; send -X rectangle-toggle
 bind -T copy-mode-vi Escape send -X clear-selection
 bind -T copy-mode-vi C-c    send -X cancel
 bind -T copy-mode-vi C-y    send -X copy-pipe
+bind -T copy-mode-vi y      send -X copy-pipe \; send -X cancel
 bind -n M-m                 copy-mode
 bind C-u                    copy-mode \; send -X halfpage-up
 bind C-b                    copy-mode \; send -X page-up
