@@ -8,7 +8,7 @@ get_user() {
 		ssh_host=$(printf '%s\n' $pane_command | grep -F '@' || printf '%s\n' $pane_command | tail -1)
 		ssh -G $ssh_host 2>/dev/null | awk '/^user / { print $2; exit }' | grep -v '^[0-9]*$' | grep '\S' || ps -t $pane_tty -o user= | tail -1
 	else
-		ps -t $pane_tty -o user= | tail -1
+		ps -t $pane_tty -o user= | grep -v '^/' | tail -1
 	fi
 }
 
