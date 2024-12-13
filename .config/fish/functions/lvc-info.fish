@@ -57,21 +57,21 @@ function lvc-info --wraps='dmsetup status' --description 'alias lvc-info=dmsetup
     set i (math $end + 1)
 
     set -l CoreArgs
-    set end (math $i + $info[$i] x 2 + 1)
+    set end (math $i + $info[$i] x 2)
     if test $info[$i] != 0
         echo " Core Args:"
         for i in (seq (math $i + 1) 2 $end)
             echo "   $info[$i] $info[$(math $i + 1)]"
         end
     end
-    set i (math $end + 2)
+    set i (math $end + 1)
 
     set -l PolicyArgs
     if test $i -lt (count $info)
-        set end (math (math $i + $info[$i]) x 2)
-        echo " Policy Args:"
+        set end (math (count $info) - 1)
         if test $info[$i] != 0
-            for i in (seq (math $i + 1) 2 $end)
+            echo " Policy Args:"
+            for i in (seq $i 2 $end)
                 echo "   $info[$i] $info[$(math $i + 1)]"
             end
         end
