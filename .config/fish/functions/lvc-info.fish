@@ -32,15 +32,17 @@ function lvc-info --wraps='dmsetup status' --description 'alias lvc-info=dmsetup
 
     echo " --- LVM Cache report of $argv ---"
 
-    set -l MetaUsage (echo "scale=1;$NrMetadataBlocks[1] * 100 / $NrMetadataBlocks[2]" | bc)
-    set -l CacheUsage ( echo "scale=1;($NrCacheBlocks[1] * 100) / $NrCacheBlocks[2]" | bc)
-    echo " Cache Usage: $CacheUsage%"
-    echo " Metadata Usage: $MetaUsage%"
+    set -l MetaUsage (math "$NrMetadataBlocks[1] * 100 / $NrMetadataBlocks[2]")
+    set -l CacheUsage (math "($NrCacheBlocks[1] * 100) / $NrCacheBlocks[2]")
+    # printf " Cache Usage: %0.1f%%\n" $CacheUsage
+    # printf " Metadata Usage: %0.1f%%\n" $MetaUsage
 
-    set -l ReadRate ( echo "scale=1;($NrReadHits * 100) / ($NrReadMisses + $NrReadHits)" | bc)
-    set -l WriteRate ( echo "scale=1;($NrWriteHits * 100) / ($NrWriteMisses + $NrWriteHits)" | bc)
-    echo " Read Hit Rate: $ReadRate%"
-    echo " Write Hit Rate: $WriteRate%"
+    set -l ReadRate (math "($NrReadHits * 100) / ($NrReadMisses + $NrReadHits)")
+    set -l WriteRate (math "($NrWriteHits * 100) / ($NrWriteMisses + $NrWriteHits)")
+    # printf " Read Hit Rate: %0.1f%%\n" $ReadRate
+    # printf " Write Hit Rate: %0.1f%%\n" $WriteRate
+
+    printf " %-15s %5.1f%%\n" 'Cache Usage:' $CacheUsage 'Metadata Usage:' $MetaUsage 'Read Hit Rate:' $ReadRate 'Write Hit Rate:' $WriteRate
     echo
     echo " Demotions/Promotions/Dirty: $NrDemotions/$NrPromotions/$NrDirty"
 
