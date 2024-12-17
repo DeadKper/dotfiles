@@ -8,22 +8,22 @@ fi
 
 readarray -t pane_commands < <(ps -efH | grep -A 2 -E "\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s+")
 readarray -t pane_commands < <(printf '%s\n' "${pane_commands[@]}" | cut -c $(printf '%s\n' "${pane_commands[@]}" | head -1 | grep -oE '^(\S+\s+){7}' | wc -c)-)
-pane_command=("${pane_commands[0]}")
+pane_command="${pane_commands[0]}"
 
 for cmd in "${pane_commands[@]:1}"; do
 	if ! grep -q '^\s' <<< "$cmd"; then
 		break
 	fi
-	pane_command=("$(sed -E 's/^\s+//' <<< "$cmd")")
+	pane_command="$(sed -E 's/^\s+//' <<< "$cmd")"
 done
 
 get_user() {
 	if grep -qwF 'ssh' <<< "$pane_command"; then
 		ssh_host=$(printf '%s\n' $pane_command | grep -F '@' || printf '%s\n' $pane_command | tail -1)
 		if grep -q 'cyberark\.cloud' <<< "$ssh_host"; then
-			ssh -qG $ssh_host | awk '/^user / { print $2; exit }' | awk -F@ '{print $3"\n"$4}' | sed -E 's/#\w+$//' | head -1 | grep -v '^/' | grep '\S' || hostname
+			ssh -qG $ssh_host | awk '/^user / { print $2; exit }' | awk -F@ '{print $3"\n"$4}' | head -1
 		else
-			ssh -qG $ssh_host 2>/dev/null | awk '/^user / { print $2; exit }' | grep -v '^[0-9]*$' | grep '\S' || ps -t $pane_tty -o user= | tail -1
+			ssh -qG $ssh_host 2>/dev/null | awk '/^user / { print $2; exit }' | grep '\S' || ps -t $pane_tty -o user= | tail -1
 		fi
 	else
 		ps -t $pane_tty -o user= | grep -v '^/' | tail -1
