@@ -21,7 +21,9 @@ get_hostname() {
 	if grep -qwF 'ssh' <<< "$pane_command"; then
 		ssh_host=$(printf '%s\n' $pane_command | grep -F '@' || printf '%s\n' $pane_command | tail -1)
 		if grep -q 'cyberark\.cloud' <<< "$ssh_host"; then
-			ssh -qG $ssh_host | awk '/^user / { print $2; exit }' | awk -F@ '{print $3"\n"$4}' | tail -1 | sed -E 's/#\w+$//'
+			ssh -qG $ssh_host | awk '/^user / {print $2}' | awk -F@ '{print $4}' | sed -E 's/#\w+$//'
+		elif grep -q 'coppel\.cloud' <<< "$ssh_host"; then
+			ssh -qG $ssh_host | awk '/^hostname / {print $2}' | sed -E 's/#\w+$//'
 		else
 			ssh -G $ssh_host 2>/dev/null | awk '/^hostname / { print $2; exit }'
 		fi
