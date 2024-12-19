@@ -12,7 +12,7 @@ tty_commands=("${commands[0]}")
 
 for cmd in "${commands[@]:1}"; do
 	if grep -qE "^.{$cut}\s" <<< "$cmd"; then
-		tty_commands+=("$(sed -E 's/^\s+//' <<< "$cmd")")
+		tty_commands+=("$cmd")
 	else
 		break
 	fi
