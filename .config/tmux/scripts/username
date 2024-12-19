@@ -6,28 +6,29 @@ else
 	pane_tty=$(tmux display -p '#{pane_tty}')
 fi
 
-readarray -t pane_commands < <(ps -efH | grep -A 2 -E "\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s+")
-readarray -t pane_commands < <(printf '%s\n' "${pane_commands[@]}" | cut -c $(printf '%s\n' "${pane_commands[@]}" | head -1 | grep -oE '^(\S+\s+){7}' | wc -c)-)
-pane_command="${pane_commands[0]}"
+readarray -t commands < <(ps -eH -o user:30,tty,cmd | grep -A 1000 -E "^\S+\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s")
+cut=$(echo "${commands[0]}" | grep -oE '^(\S+\s+){2}' | wc -c)
+tty_commands=("${commands[0]}")
 
-for cmd in "${pane_commands[@]:1}"; do
-	if ! grep -q '^\s' <<< "$cmd"; then
+for cmd in "${commands[@]:1}"; do
+	if grep -qE "^.{$cut}\s" <<< "$cmd"; then
+		tty_commands+=("$(sed -E 's/^\s+//' <<< "$cmd")")
+	else
 		break
 	fi
-	pane_command="$(sed -E 's/^\s+//' <<< "$cmd")"
 done
 
-get_user() {
-	if grep -qwF 'ssh' <<< "$pane_command"; then
-		ssh_host=$(printf '%s\n' $pane_command | grep -F '@' || printf '%s\n' $pane_command | tail -1)
-		if grep -qE 'cyberark\.cloud|coppel\.cloud' <<< "$ssh_host"; then
+get_username() {
+	if cut -c "${cut}-" <<< "$cmd" <<< "${tty_commands[-1]}" | grep -qE '^\s*(/\S+/)?(ssh|sftp)\s+'; then
+		ssh_host=$(printf '%s\n' ${tty_commands[-1]} | grep -F '@' | head -1 || printf '%s\n' ${tty_commands[-1]} | tail -1)
+		if grep -qwE 'cyberark\.cloud|coppel\.cloud' <<< "$ssh_host"; then
 			ssh -qG $ssh_host | awk '/^user / {print $2}' | awk -F@ '{print $3}'
 		else
 			ssh -qG $ssh_host 2>/dev/null | awk '/^user / {print $2}' | grep '\S' || ps -t $pane_tty -o user= | tail -1
 		fi
 	else
-		ps -t $pane_tty -o user= | grep -v '^/' | tail -1
+		echo "${tty_commands[-1]}" | awk '{print $1}'
 	fi
 }
 
-get_user | grep -v '^/' | grep '\S' || echo $USER
+get_username | grep -v '^/' | grep '\S' || echo $USER
