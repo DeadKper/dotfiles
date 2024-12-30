@@ -19,16 +19,21 @@ for cmd in "${commands[@]:1}"; do
 done
 
 get_username() {
-	if cut -c "${cut}-" <<< "$cmd" <<< "${tty_commands[-1]}" | grep -qE '^\s*(/\S+/)?(ssh|sftp)\s+'; then
-		ssh_host=$(printf '%s\n' ${tty_commands[-1]} | grep -F '@' | head -1 || printf '%s\n' ${tty_commands[-1]} | tail -1)
+	if cut -c "${cut}-" <<< "$cmd" <<< "${tty_commands[-1]}" | grep -qE "^\s*($(which ssh)|ssh)\s+"; then
+		ssh_host=$(printf '%s\n' ${tty_commands[-1]} | grep -F '@' | head -1)
+		test -n "$ssh_host" || ssh_host=$(echo ${tty_commands[-1]} | grep -oE -- '-- \S+')
+		test -n "$ssh_host" || ssh_host=$(printf '%s\n' ${tty_commands[-1]} | tail -1)
 		if grep -qwE 'cyberark\.cloud|coppel\.cloud' <<< "$ssh_host"; then
-			ssh -qG $ssh_host | awk '/^user / {print $2}' | awk -F@ '{print $3}'
+			username=$(ssh -qG $ssh_host | awk '/^user / {print $2}' | awk -F@ '{print $3}')
 		else
-			ssh -qG $ssh_host 2>/dev/null | awk '/^user / {print $2}' | grep '\S' || ps -t $pane_tty -o user= | tail -1
+			username=$(ssh -qG $ssh_host | awk '/^user / {print $2}')
 		fi
-	else
+	fi
+	if test -z "$username"; then
 		echo "${tty_commands[-1]}" | awk '{print $1}'
+	else
+		echo $username
 	fi
 }
 
-get_username | grep -v '^/' | grep '\S' || echo $USER
+get_username
