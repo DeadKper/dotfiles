@@ -77,7 +77,7 @@ end
 function fish_right_prompt
     if test $__starship_transient -eq 1
         printf '\e[0J'
-        starship prompt --profile rtransient \
+        starship prompt --profile Rtransient \
             --terminal-width="$COLUMNS" --status=$STARSHIP_CMD_STATUS \
             --pipestatus="$STARSHIP_CMD_PIPESTATUS" --keymap=$STARSHIP_KEYMAP \
             --cmd-duration=$STARSHIP_DURATION --jobs=$STARSHIP_JOBS
