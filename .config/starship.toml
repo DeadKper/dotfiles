@@ -7,7 +7,7 @@ $status\
 $cmd_duration\
 $jobs\
 $battery\
-$time\
+$time \
 $line_break\
 $character\
 """
@@ -24,6 +24,12 @@ rtransient="""
 $status\
 $cmd_duration\
 $time\
+"""
+
+Rtransient="""
+$status\
+$cmd_duration\
+$time \
 """
 
 [line_break]
