@@ -61,6 +61,6 @@ zmodule zsh-users/zsh-autosuggestions
 # zsh abbreviations
 zmodule olets/zsh-abbr
 zmodule olets/zsh-autosuggestions-abbreviations-strategy
-ZSH_AUTOSUGGEST_STRATEGY=(abbreviations $ZSH_AUTOSUGGEST_STRATEGY)
+
 # zsh autopair
 zmodule hlissner/zsh-autopair
