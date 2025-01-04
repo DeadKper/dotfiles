@@ -5,7 +5,7 @@ function bindkey-word() {
     local command="$2"
     eval "
         function ${command}-to-space () {
-            local WORDCHARS=\"|@*?_-.[]~=\\/&;!#\$%^(){}<>'\\\"\"
+            local WORDCHARS=\"!\\\"#%&'()*+,-./:;<=>?@[\\]^_\\\`{|}~¡¨«¬´·¸»¿•\$\"
             zle ${command}
         }
         zle -N ${command}-to-space
