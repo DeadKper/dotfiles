@@ -8,6 +8,6 @@ sleep $sleep_time
 if test -z "$WAYLAND_DISPLAY"
     xdotool type "$(xclip -o -selection clipboard)"
 else
-    # ydotool type -d 0 "$(wl-paste | sed -e 'y/|\'¿´+}ñ{-°!"&\/()=?¡¨*]Ñ[;:_/`-=[]\\\\;\'\/~!@^&*()_+{}|:"<>?/')"
-    wtype "$(wl-paste)"
+    ydotool type -d 0 "$(wl-paste | sed -e 'y/|\'¿´+}ñ{-°!"&\/()=?¡¨*]Ñ[;:_/`-=[]\\\\;\'\/~!@^&*()_+{}|:"<>?/')"
+    # wtype "$(wl-paste)"
 end
