@@ -1,3 +1,3 @@
 if [[ -o login ]]; then
-    export PATH="$HOME/.local/scripts:$HOME/.local/bin:$PATH"
+    export PATH="$HOME/.local/scripts:${XDG_DATA_HOME:=$HOME/.local/share}/bin:$HOME/.local/bin:$PATH"
 fi
