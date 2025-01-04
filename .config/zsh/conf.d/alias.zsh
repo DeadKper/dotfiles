@@ -20,3 +20,5 @@ fi
 
 alias pkill="pkill -i"
 alias pgrep="pgrep -i"
+
+alias edit=sudoedit
