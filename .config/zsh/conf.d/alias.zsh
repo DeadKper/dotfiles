@@ -1,5 +1,8 @@
 which nvim &>/dev/null && alias vim=nvim
 
+# preserve env and aliases
+alias sudo='sudo --preserve-env=PATH -E '
+
 if which lsd &>/dev/null; then
     alias ls=lsd
     alias lt="lsd --tree"

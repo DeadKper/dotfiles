@@ -1,6 +1,7 @@
 [[ -o interactive ]] || return
 
 typeset -A ZSH_HIGHLIGHT_STYLES
+typeset -A ZSH_HIGHLIGHT_REGEXP
 
 local bg0=0b0b0b
 local bg1=161616
@@ -22,6 +23,8 @@ local sky=99daff
 local cyan=25cac8
 
 ZSH_HIGHLIGHT_STYLES[precommand]="fg=#$sky"
+ZSH_HIGHLIGHT_REGEXP+=('^\<sudo\>' "fg=#$sky") # sudo is now an alias so fix highlight here
+
 ZSH_HIGHLIGHT_STYLES[command]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[builtin]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[alias]="fg=#$pink"
@@ -44,4 +47,6 @@ ZSH_HIGHLIGHT_STYLES[commandseparator]="fg=#$green"
 ZSH_HIGHLIGHT_STYLES[autodirectory]="fg=#$sky"
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#$fg2,underline"
+
 export ZSH_HIGHLIGHT_STYLES
+export ZSH_HIGHLIGHT_REGEXP

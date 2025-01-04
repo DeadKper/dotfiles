@@ -1,3 +1,7 @@
+if [ -n "${ZSH_DEBUGRC+1}" ]; then # debug startup time with ZSH_DEBUGRC
+  zmodload zsh/zprof
+fi
+
 # Start configuration added by Zim install {{{
 #
 # User configuration sourced by interactive shells
@@ -82,7 +86,7 @@ ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
 # Set what highlighters will be used.
 # See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main regexp)
 
 # Customize the main highlighter styles.
 # See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters/main.md#how-to-tweak-it
@@ -136,3 +140,7 @@ for rc in "${(@f)$(find "$ZDOTDIR/functions" -maxdepth 1 -type f -iname '*.zsh' 
   source "$rc"
 done
 unset rc
+
+if [[ -n "$ZSH_DEBUGRC" ]]; then
+  zprof
+fi
