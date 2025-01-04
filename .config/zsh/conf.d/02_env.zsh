@@ -52,6 +52,7 @@ if [[ -o login ]]; then
 fi
 
 unset LS_COLORS
+unset GREP_COLOR
 unset GREP_COLORS
 
 ZSH_AUTOSUGGEST_STRATEGY=(abbreviations $ZSH_AUTOSUGGEST_STRATEGY)
