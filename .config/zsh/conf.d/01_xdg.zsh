@@ -1,4 +1,4 @@
-if [[ -o login ]] && test -z "${ZSH_LOGIN+1}"; then
+if [[ -o login ]]; then
     # Config xdg dirs
     test -z "${XDG_CONFIG_HOME+1}" && export XDG_CONFIG_HOME=~/.config
     test -z "${XDG_CACHE_HOME+1}"  && export XDG_CACHE_HOME=~/.cache
@@ -10,7 +10,6 @@ if [[ -o login ]] && test -z "${ZSH_LOGIN+1}"; then
         if test -d /usr/share/kde-settings/kde-profile/default/share; then
             export XDG_DATA_DIRS="/usr/share/kde-settings/kde-profile/default/share:${XDG_DATA_DIRS}"
         fi
-        export XDG_DATA_DIRS="${XDG_DATA_HOME}:${XDG_DATA_DIRS}"
     fi
     typeset -U path XDG_DATA_DIRS
 

@@ -1,4 +1,4 @@
-if [[ -o login ]] && test -z "${ZSH_LOGIN+1}"; then
+if [[ -o login ]]; then
     NPM_PACKAGES="${XDG_DATA_HOME:-$HOME/.local/share}/npm-packages"
 
     if test ! -f "$HOME/.npmrc"; then
