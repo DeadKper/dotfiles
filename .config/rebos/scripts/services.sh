@@ -79,7 +79,7 @@ Documentation=man:ydotoold(8)
 
 [Service]
 Type=forking
-ExecStart=$(which sudo) -b $(which ydotoold) -p "$HOME/.cache/ydotool.socket" -o $(id -u):$(id -g)
+ExecStart=$(which sudo) -b $(which ydotoold) -p "$HOME/.local/state/ydotool.socket" -o $(id -u):$(id -g)
 KillMode=control-group
 
 RestartSec=2
