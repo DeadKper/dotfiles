@@ -26,6 +26,7 @@ ZSH_HIGHLIGHT_STYLES[command]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[builtin]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[alias]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[arg0]="fg=#$pink"
+ZSH_HIGHLIGHT_STYLES[unknown-token]="fg=#$magenta,underline"
 
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument]="fg=#$lavender"
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument-unclosed]="fg=#$lavender"
