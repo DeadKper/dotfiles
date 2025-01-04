@@ -29,6 +29,7 @@ alias ll='ls -l'
 alias la='ls -A'
 alias lla='ls -lA'
 alias grep='grep --color=auto'
+
 which nvim &>/dev/null && alias vim=nvim
 
 if test -f ~/.local/share/blesh/ble.sh; then
