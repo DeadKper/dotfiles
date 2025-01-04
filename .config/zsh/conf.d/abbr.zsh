@@ -8,7 +8,7 @@ if [[ -o login ]] && test -z "${ZSH_LOGIN+1}" && type abbr &>/dev/null; then
         fi
         alias "$1"="$2"
         if ! (($abbrs[(Ie)$1])); then
-            abbr add "$1"="$2"
+            abbr add "$1"="$2" &>/dev/null
         fi
         if test -n "$binary" || grep -qE '^\.+$' <<< "$1"; then
             unalias "$1"
