@@ -1,4 +1,4 @@
-if [[ -o login ]] && test -z "${ZSH_LOGIN+1}" && type abbr &>/dev/null; then
+if [[ -o login ]] && type abbr &>/dev/null; then
     abbrs=("${(@f)$(abbr list | awk -F= '{gsub(/^"|"$/,"",$1); print $1}')}")
     add_abbr() {
         if which "$1" &>/dev/null; then

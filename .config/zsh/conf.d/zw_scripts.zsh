@@ -1,3 +1,3 @@
-if [[ -o login ]] && test -z "${ZSH_LOGIN+1}"; then
+if [[ -o login ]]; then
     export PATH="$HOME/.local/scripts:$HOME/.local/bin:$PATH"
 fi

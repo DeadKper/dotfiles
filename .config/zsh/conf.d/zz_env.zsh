@@ -7,5 +7,3 @@ if [[ -o interactive ]] && which tmux &>/dev/null && ! tmux info &>/dev/null && 
         tmux new-session -s "$TMUX_HOME" -c "$HOME"
     fi
 fi
-
-test -z "${ZSH_LOGIN}" && export ZSH_LOGIN=true
