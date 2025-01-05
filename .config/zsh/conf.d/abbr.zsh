@@ -6,7 +6,7 @@ if [[ -o login ]] && type abbr &>/dev/null; then
             alias "$1"="$2"
         fi
         if ! (($abbr_list[(Ie)"$1"])); then
-            abbr add -f -S "$1"="$2" &>/dev/null
+            abbr add --quieter --force --session "$1"="$2"
         fi
     }
 
