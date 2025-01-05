@@ -132,6 +132,9 @@ for key ('j') bindkey -M vicmd ${key} history-substring-search-down
 unset key
 # }}} End configuration added by Zim install
 
+# custom opts
+setopt RC_EXPAND_PARAM
+
 # Load zsh folders
 for rc in "${(@f)$(find "$ZDOTDIR/conf.d" -maxdepth 1 -type f -iname '*.zsh' | sort -V)}"; do
   source "$rc"
