@@ -1,0 +1,6 @@
+*
+!.gitignore
+!.zshrc
+!.zimrc
+!conf.d
+!functions
