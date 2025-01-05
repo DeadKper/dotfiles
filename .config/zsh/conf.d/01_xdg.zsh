@@ -6,7 +6,7 @@ if [[ -o login ]]; then
     test -z "${XDG_STATE_HOME+1}"  && export XDG_STATE_HOME=~/.local/state
 
     typeset -TUx XDG_DATA_DIRS xdg_data_dirs
-    xdg_data_dirs+=("/usr/local/share:/usr/share")
+    xdg_data_dirs+=("/usr/local/share" "/usr/share")
     if test -d /usr/share/kde-settings/kde-profile/default/share; then
         xdg_data_dirs=("/usr/share/kde-settings/kde-profile/default/share" "${xdg_data_dirs[@]}")
     fi
