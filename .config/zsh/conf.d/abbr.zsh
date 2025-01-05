@@ -1,41 +1,40 @@
 if [[ -o login ]] && type abbr &>/dev/null; then
-    abbrs=("${(@f)$(abbr list | awk -F= '{gsub(/^"|"$/,"",$1); print $1}')}")
-    add_abbr() {
-        if which "$1" &>/dev/null; then
-            local binary=true
-        else
-            local binary=""
-        fi
-        alias "$1"="$2"
-        if ! (($abbrs[(Ie)$1])); then
-            abbr add "$1"="$2" &>/dev/null
-        fi
-        if test -n "$binary" || grep -qE '^\.+$' <<< "$1"; then
-            unalias "$1"
+    abbr_list=("${(@f)$(abbr list | awk -F= '{gsub(/^"|"$/,"",$1); print $1}')}")
+
+    abbr_add() {
+        if ! (($abbr_list[(Ie)$1])); then
+            abbr add -f -S "$1"="$2" &>/dev/null
         fi
     }
 
-    add_abbr mkdir 'mkdir -p'
-    add_abbr '...' '../..'
-    add_abbr '....' '../../..'
-    add_abbr '.....' '../../../..'
+    abbr_ali() {
+        abbr_add "$1" "$2"
+        alias "$1"="$2"
+    }
+
+    abbr_add mkdir 'mkdir -p'
+    abbr_add '...' '../..'
+    abbr_add '....' '../../..'
+    abbr_add '.....' '../../../..'
+    abbr_ali 'edit' 'sudoedit'
+    abbr_add 'visudo' 'sudo visudo'
 
     if type ansible &>/dev/null; then
-        add_abbr apl 'ansible-playbook'
-        add_abbr apv 'ansible-playbook --extra-vars'
-        add_abbr apa 'ansible-playbook asd.yaml -i'
+        abbr_ali apl 'ansible-playbook'
+        abbr_ali apv 'ansible-playbook --extra-vars'
+        abbr_ali apa 'ansible-playbook asd.yaml -i'
 
-        add_abbr agl 'ansible-galaxy'
-        add_abbr agi 'ansible-galaxy init'
+        abbr_ali agl 'ansible-galaxy'
+        abbr_ali agi 'ansible-galaxy init'
 
-        add_abbr aed 'ansible-edit'
+        abbr_ali aed 'ansible-edit'
 
-        add_abbr arn 'ansible-run -m'
-        add_abbr arc 'ansible-run -m shell -a'
-        add_abbr arx 'ansible-run -m script -a'
+        abbr_ali arn 'ansible-run -m'
+        abbr_ali arc 'ansible-run -m shell -a'
+        abbr_ali arx 'ansible-run -m script -a'
 
-        add_abbr alg 'ansible-logs'
+        abbr_ali alg 'ansible-logs'
 
-        add_abbr atp 'ansible-template'
+        abbr_ali atp 'ansible-template'
     fi
 fi
