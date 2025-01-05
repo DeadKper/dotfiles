@@ -55,9 +55,13 @@ unset LS_COLORS
 unset GREP_COLOR
 unset GREP_COLORS
 
-ZSH_AUTOSUGGEST_STRATEGY=(abbreviations $ZSH_AUTOSUGGEST_STRATEGY)
+export ZSH_AUTOSUGGEST_STRATEGY=(abbreviations $ZSH_AUTOSUGGEST_STRATEGY)
 
-# ________________________________________________________
-# Executed in  219.04 millis    fish           external
-#    usr time  148.39 millis  166.00 micros  148.22 millis
-#    sys time   99.53 millis  139.00 micros   99.39 millis
+export TIMEFMT="$(cat <<EOF
+
+________________________________________
+Executed in %*E CPU %P
+   usr time %*U
+   sys time %*S
+EOF
+)"
