@@ -1,12 +1,27 @@
 if [[ -o login ]] && type abbr &>/dev/null; then
+    if test -n "$_LOGIN_ABBR"; then
+        test -f "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases" && source "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases"
+        return
+    fi
+
+    export _LOGIN_ABBR=true
+
     abbr_list=("${(@f)$(abbr list | awk -F= '{gsub(/^"|"$/,"",$1); print $1}')}")
 
     abbr_add() {
         if ! which "$1" &>/dev/null; then
+            flags=(--quiet)
+            abbr_alias=true
             alias "$1"="$2"
+        else
+            flags=(--quieter --force)
+            abbr_alias=''
         fi
-        if ! (($abbr_list[(Ie)"$1"])); then
-            abbr add --quieter --force --session "$1"="$2"
+        if ! (($abbr_list[(Ie)$1])); then
+            abbr add "${flags[@]}" "$1"="$2"
+            if test "$abbr_alias" = true && ! grep -qwF "alias '$1'='$2'" "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases"; then
+                echo "alias '$1'='$2'" >>! "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases"
+            fi
         fi
     }
 
@@ -38,4 +53,6 @@ if [[ -o login ]] && type abbr &>/dev/null; then
 
     unset -f abbr_add
     unset abbr_list
+    unset abbr_alias
+    unset flags
 fi
