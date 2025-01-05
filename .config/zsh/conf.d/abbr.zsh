@@ -19,8 +19,8 @@ if [[ -o login ]] && type abbr &>/dev/null; then
         fi
         if ! (($abbr_list[(Ie)$1])); then
             abbr add "${flags[@]}" "$1"="$2"
-            if test "$abbr_alias" = true && ! grep -qwF "alias '$1'='$2'" "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases"; then
-                echo "alias '$1'='$2'" >>! "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases"
+            if test "$abbr_alias" = true && ! grep -qwF "alias \"$1\"=\"$2\"" "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases" 2>/dev/null; then
+                echo "alias \"$1\"=\"$2\"" >>! "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases"
             fi
         fi
     }
