@@ -15,6 +15,8 @@ trap "rm '$file' && trap - exit && exit 0" exit hup kill term int
 	tmux -L unconfigured -f /dev/null start-server \; show-options -s  | awk '{print("set -s  "$N)}'
 	tmux -L unconfigured -f /dev/null start-server \; show-options -g  | awk '{print("set -g  "$N)}'
 	tmux -L unconfigured -f /dev/null start-server \; show-options -gw | awk '{print("set -gw "$N)}'
+
+	echo "set-option -g default-shell $(tmux display -p '#{default-shell}')" # preserve shell
 } > "$file"
 
 tmux source "$file" 2>/dev/null
