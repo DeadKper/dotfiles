@@ -37,4 +37,8 @@ if [[ -o login ]] && type abbr &>/dev/null; then
 
         abbr_ali atp 'ansible-template'
     fi
+
+    unset -f abbr_add
+    unset -f abbr_ali
+    unset abbr_list
 fi
