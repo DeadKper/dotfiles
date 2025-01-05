@@ -5,7 +5,7 @@ if [[ -o login ]]; then
     export YDOTOOL_SOCKET="${XDG_STATE_HOME:=$HOME/.local/state}/ydotool.socket"
 
     if which manpath &>/dev/null && test -z "${MANPATH+1}"; then
-        export MANPATH="$(manpath)"
+        export MANPATH="$(find "$ZIM_HOME" -type d -name man | xargs -r -d \\n -I {} echo -n {}:)$(manpath)"
         typeset -U path MANPATH
     fi
     typeset -U path PATH
@@ -56,3 +56,8 @@ unset GREP_COLOR
 unset GREP_COLORS
 
 ZSH_AUTOSUGGEST_STRATEGY=(abbreviations $ZSH_AUTOSUGGEST_STRATEGY)
+
+# ________________________________________________________
+# Executed in  219.04 millis    fish           external
+#    usr time  148.39 millis  166.00 micros  148.22 millis
+#    sys time   99.53 millis  139.00 micros   99.39 millis
