@@ -6,4 +6,4 @@
 	url = https://github.com/tmux-plugins/tpm.git
 [submodule ".local/share/yadm-git"]
 	path = .local/share/yadm-git
-	url = https://github.com/TheLocehiliosan/yadm
+	url = https://github.com/yadm-dev/yadm
