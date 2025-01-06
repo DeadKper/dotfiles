@@ -1,5 +1,12 @@
 #!/usr/bin/env sh
 
+echo -n "Decrypt archive? [y/N]: "
+read decrypt
+case "$decrypt" in
+	y|Y) yadm decrypt ;;
+	*) : ;;
+esac
+
 echo "Init submodules..."
 yadm -C "$HOME" submodule update --recursive --init
 
