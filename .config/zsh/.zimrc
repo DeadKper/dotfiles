@@ -64,3 +64,6 @@ zmodule olets/zsh-autosuggestions-abbreviations-strategy
 
 # zsh autopair
 zmodule hlissner/zsh-autopair
+
+which zoxide &>/dev/null && zmodule z-shell/zsh-zoxide
+which fzf &>/dev/null && zmodule Aloxaf/fzf-tab
