@@ -31,8 +31,6 @@ if type abbr &>/dev/null; then
     abbr_add '.....' '../../../..'
     abbr_add 'edit' 'sudoedit'
     abbr_add 'visudo' 'sudo visudo'
-    abbr_add 'yadm pull' 'yadm pull --rebase --recurse-submodules'
-    abbr_add 'git pull' 'git pull --rebase --recurse-submodules'
 
     if type ansible &>/dev/null; then
         abbr_add apl 'ansible-playbook'
@@ -54,7 +52,4 @@ if type abbr &>/dev/null; then
     fi
 
     unset -f abbr_add
-    unset abbr_list
-    unset abbr_alias
-    unset flags
 fi
