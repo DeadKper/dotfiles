@@ -1,4 +1,4 @@
-if [[ -o login ]] && type abbr &>/dev/null; then
+if type abbr &>/dev/null; then
     if test -n "$_LOGIN_ABBR"; then
         test -f "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases" && source "${XDG_CONFIG_HOME:=$HOME/.config}/zsh-abbr/user-aliases"
         return
@@ -6,16 +6,16 @@ if [[ -o login ]] && type abbr &>/dev/null; then
 
     export _LOGIN_ABBR=true
 
-    abbr_list=("${(@f)$(abbr list | awk -F= '{gsub(/^"|"$/,"",$1); print $1}')}")
+    local abbr_list=("${(@f)$(abbr list | awk -F= '{gsub(/^"|"$/,"",$1); print $1}')}")
 
     abbr_add() {
-        if ! which "$1" &>/dev/null; then
-            flags=(--quiet)
-            abbr_alias=true
+        if ! which "$(sed "s/ .*$//" <<< "$1")" &>/dev/null; then
+            local flags=(--quiet)
+            local abbr_alias=true
             alias "$1"="$2"
         else
-            flags=(--quieter --force)
-            abbr_alias=''
+            local flags=(--quieter --force)
+            local abbr_alias=''
         fi
         if ! (($abbr_list[(Ie)$1])); then
             abbr add "${flags[@]}" "$1"="$2"
@@ -31,6 +31,8 @@ if [[ -o login ]] && type abbr &>/dev/null; then
     abbr_add '.....' '../../../..'
     abbr_add 'edit' 'sudoedit'
     abbr_add 'visudo' 'sudo visudo'
+    abbr_add 'yadm pull' 'yadm pull --rebase --recurse-submodules'
+    abbr_add 'git pull' 'git pull --rebase --recurse-submodules'
 
     if type ansible &>/dev/null; then
         abbr_add apl 'ansible-playbook'
