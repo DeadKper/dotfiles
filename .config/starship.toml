@@ -12,7 +12,7 @@ $line_break\
 $character\
 """
 
-command_timeout = 50
+command_timeout = 100
 add_newline = false
 
 [profiles]
