@@ -32,8 +32,8 @@ set -g status-left "#[fg=$bg3,bold]#[bg=$status_color]  #(#{SRC}/cuttxt '#{se
 set -ag status-left "#[bg=$bg3 fg=bold]#[fg=$status_color]  #(#{SRC}/uptime-display) #[bg=$none fg=$bg3,bold]"
 set -g status-right "#[fg=$fg0 bg=$none]#(#{SRC}/battery-display '')"
 set -ag status-right " #(date +'%%H:%%M  %%d %%b')"
-set -ag status-right " #[bg=$none fg=$bg3,bold]#[bg=$bg3 fg=terminal,bold]#[fg=$status_color] #(#{SRC}/username | #{SRC}/cuttxt 16)"
-set -ag status-right " #[bg=$bg3]#[fg=$status_color]#[fg=$bg3,bold]#[bg=$status_color] #(#{SRC}/hostname | #{SRC}/cuttxt 16) "
+set -ag status-right " #[bg=$none fg=$bg3,bold]#[bg=$bg3 fg=terminal,bold]#[fg=$status_color] #(#{SRC}/username | #{SRC}/cuttxt 16 .)"
+set -ag status-right " #[bg=$bg3]#[fg=$status_color]#[fg=$bg3,bold]#[bg=$status_color] #(#{SRC}/hostname | #{SRC}/cuttxt 24 .) "
 
 # windows
 active=$pink
