@@ -45,6 +45,7 @@ if type abbr &>/dev/null; then
         abbr_add arn 'ansible-run -m'
         abbr_add arc 'ansible-run -m shell -a'
         abbr_add arx 'ansible-run -m script -a'
+        abbr_add arm 'ansible-run -m role -a'
 
         abbr_add alg 'ansible-logs'
 
