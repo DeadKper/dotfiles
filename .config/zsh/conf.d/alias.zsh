@@ -1,6 +1,4 @@
 # preserve env and aliases
-alias sudo="sudo --preserve-env=PATH -E "
-
 which nvim &>/dev/null && alias vim=nvim
 
 if which lsd &>/dev/null; then
