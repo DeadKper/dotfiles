@@ -18,6 +18,6 @@ bindkey-word "^[[1;3C" forward-word
 bindkey-word "^[[1;3D" backward-word
 
 bindkey '^[[Z' reverse-menu-complete
-bindkey '^[[[SE' accept-and-hold
+bindkey '^J' self-insert
 
 unset -f bindkey-word
