@@ -16,8 +16,6 @@ export VISUAL=nvim
 which nvim &>/dev/null && export MANPAGER='nvim +Man!'
 export YDOTOOL_SOCKET="${XDG_STATE_HOME:=$HOME/.local/state}/ydotool.socket"
 
-export ZSH_AUTOSUGGEST_STRATEGY=(abbreviations $ZSH_AUTOSUGGEST_STRATEGY)
-
 export TIMEFMT="$(cat <<EOF
 
 ________________________________________

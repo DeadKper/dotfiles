@@ -58,10 +58,6 @@ zmodule zsh-users/zsh-autosuggestions
 # Custom modules
 #
 
-# zsh abbreviations
-zmodule olets/zsh-abbr
-zmodule olets/zsh-autosuggestions-abbreviations-strategy
-
 # zsh autopair
 zmodule hlissner/zsh-autopair
 
