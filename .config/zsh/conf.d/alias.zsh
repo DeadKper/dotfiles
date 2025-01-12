@@ -13,6 +13,3 @@ alias l="ls -l"
 alias ll="ls -l"
 alias la="ls -A"
 alias lla="ls -lA"
-
-alias pkill="pkill -i "
-alias pgrep="pgrep -i "
