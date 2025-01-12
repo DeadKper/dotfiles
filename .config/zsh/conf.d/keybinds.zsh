@@ -18,5 +18,6 @@ bindkey-word "^[[1;3C" forward-word
 bindkey-word "^[[1;3D" backward-word
 
 bindkey '^[[Z' reverse-menu-complete
+bindkey '^[[[SE' accept-and-hold
 
 unset -f bindkey-word
