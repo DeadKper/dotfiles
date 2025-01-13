@@ -16,6 +16,18 @@ space_abbreviations=(
     'pgrep'     'pgrep -i'
 )
 
+if type yadm &>/dev/null; then
+    space_abbreviations+=(
+        'yad'   'yadm add'
+        'ycm'   'yadm commit -m "<CURSOR>"'
+        'yca'   'yadm commit -am "<CURSOR>"'
+        'yst'   'yadm status'
+        'ydf'   'yadm diff'
+        'ypl'   'yadm pull --rebase'
+        'yps'   'yadm push'
+    )
+fi
+
 if type ansible &>/dev/null; then
     space_abbreviations+=(
         apl 'ansible-playbook'
@@ -36,6 +48,10 @@ if type ansible &>/dev/null; then
         atp 'ansible-template'
     )
 fi
+
+for abbr exp in "${(@kv)space_abbreviations}"; do
+    type "$abbr" &>/dev/null || alias "$abbr=${exp/<CURSOR>/}"
+done
 
 function self-insert() {
     zle .self-insert
@@ -80,21 +96,11 @@ function abbreviation-expand() {
     fi
 }
 
-function self-insert-no-abbr() {
-    zle .self-insert
-}
-
-function accept-line-no-abbr() {
-    zle .accept-line
-}
-
 zle -N self-insert
 zle -N accept-line
 zle -N abbreviation-expand
-zle -N self-insert-no-abbr
-zle -N accept-line-no-abbr
 
 bindkey " " abbreviation-expand
-bindkey "^x " self-insert-no-abbr
-bindkey "^x^M" accept-line-no-abbr
+bindkey "^x " .self-insert
+bindkey "^x^M" .accept-line
 bindkey -M isearch " " .self-insert
