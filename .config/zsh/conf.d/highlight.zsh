@@ -34,7 +34,7 @@ ZSH_HIGHLIGHT_STYLES[unknown-token]="fg=#$magenta,underline"
 local hl="${ZSH_HIGHLIGHT_STYLES[alias]}"
 for abbr in "${(@k)space_abbreviations[@]}"; do
     if ! (( $+commands[$abbr] )); then
-        ZSH_HIGHLIGHT_REGEXP+=("\\<$abbr\\>" "$hl")
+        ZSH_HIGHLIGHT_REGEXP+=("(^|\\s)$abbr(\\s|\$)" "$hl")
     fi
 done
 
