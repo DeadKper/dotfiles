@@ -1,4 +1,3 @@
-# preserve env and aliases
 which nvim &>/dev/null && alias vim=nvim
 
 if which lsd &>/dev/null; then
