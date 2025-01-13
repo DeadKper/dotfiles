@@ -31,6 +31,13 @@ ZSH_HIGHLIGHT_STYLES[alias]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[arg0]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[unknown-token]="fg=#$magenta,underline"
 
+local hl="${ZSH_HIGHLIGHT_STYLES[alias]}"
+for abbr in "${(@k)space_abbreviations[@]}"; do
+    if ! (( $+commands[$abbr] )); then
+        ZSH_HIGHLIGHT_REGEXP+=("\\<$abbr\\>" "$hl")
+    fi
+done
+
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument]="fg=#$lavender"
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument-unclosed]="fg=#$lavender"
 ZSH_HIGHLIGHT_STYLES[double-quoted-argument]="fg=#$lavender"

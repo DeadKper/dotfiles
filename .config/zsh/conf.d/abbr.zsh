@@ -49,10 +49,6 @@ if type ansible &>/dev/null; then
     )
 fi
 
-for abbr exp in "${(@kv)space_abbreviations}"; do
-    type "$abbr" &>/dev/null || alias "$abbr=${exp/<CURSOR>/}"
-done
-
 function self-insert() {
     zle .self-insert
     setopt extendedglob
