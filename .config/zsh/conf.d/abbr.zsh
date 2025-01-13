@@ -16,7 +16,7 @@ space_abbreviations=(
     'pgrep'     'pgrep -i'
 )
 
-if ! type ansible &>/dev/null; then
+if type ansible &>/dev/null; then
     space_abbreviations+=(
         apl 'ansible-playbook'
         apv 'ansible-playbook -e "<CURSOR>"'
