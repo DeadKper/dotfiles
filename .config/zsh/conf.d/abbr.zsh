@@ -16,7 +16,7 @@ space_abbreviations=(
     'pgrep'     'pgrep -i'
 )
 
-if type yadm &>/dev/null; then
+if which yadm &>/dev/null; then
     space_abbreviations+=(
         'yad'   'yadm add'
         'ycm'   'yadm commit -m "<CURSOR>"'
@@ -28,7 +28,19 @@ if type yadm &>/dev/null; then
     )
 fi
 
-if type ansible &>/dev/null; then
+if which git &>/dev/null; then
+    space_abbreviations+=(
+        'gad'   'git add'
+        'gcm'   'git commit -m "<CURSOR>"'
+        'gca'   'git commit -am "<CURSOR>"'
+        'gst'   'git status'
+        'gdf'   'git diff'
+        'gpl'   'git pull --rebase'
+        'gps'   'git push'
+    )
+fi
+
+if which ansible &>/dev/null; then
     space_abbreviations+=(
         apl 'ansible-playbook'
         apv 'ansible-playbook -e "<CURSOR>"'
@@ -65,9 +77,9 @@ function self-insert() {
 
 function accept-line() {
     setopt extendedglob
-    [[ "${#RBUFFER}" == 0 || -n "${RBUFFER[1]%%[a-zA-Z0-9${WORDCHARS/-/\\-}]}" ]] || { zle .accept-line; return }
+    [[ "${#RBUFFER}" == 0 || -n "${RBUFFER[1]%%[a-zA-Z0-9_]}" ]] || { zle .accept-line; return }
     local MATCH
-    LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9${WORDCHARS/-/\\-}]#}"
+    LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9_]#}"
     local abbreviation="${space_abbreviations[$MATCH]}"
     LBUFFER+="${abbreviation:-$MATCH}"
     if [[ "${abbreviation}" =~ "<CURSOR>" ]]; then
@@ -79,9 +91,9 @@ function accept-line() {
 
 function abbreviation-expand() {
     setopt extendedglob
-    [[ "${#RBUFFER}" == 0 || -n "${RBUFFER[1]%%[a-zA-Z0-9${WORDCHARS/-/\\-}]}" ]] || { zle .self-insert; return }
+    [[ "${#RBUFFER}" == 0 || -n "${RBUFFER[1]%%[a-zA-Z0-9_]}" ]] || { zle .self-insert; return }
     local MATCH
-    LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9${WORDCHARS/-/\\-}]#}"
+    LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9_]#}"
     local abbreviation="${space_abbreviations[$MATCH]}"
     LBUFFER+="${abbreviation:-$MATCH}"
     if [[ "${abbreviation}" =~ "<CURSOR>" ]]; then
