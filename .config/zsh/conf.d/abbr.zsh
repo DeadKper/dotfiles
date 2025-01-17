@@ -14,6 +14,7 @@ space_abbreviations=(
     edit    'sudoedit'
     pkill   'pkill -i'
     pgrep   'pgrep -i'
+    math    'echo $(( <CURSOR> ))'
 )
 
 if which yadm &>/dev/null; then
