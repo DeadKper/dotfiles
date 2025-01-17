@@ -3,7 +3,7 @@ if [ -n "${ZSH_DEBUGRC+1}" ]; then # debug startup time with ZSH_DEBUGRC
 fi
 
 local XDG_CONFIG_HOME="${XDG_CONFIG_HOME:=$HOME/.config}"
-fpath=(${ZDOTDIR:=$XDG_CONFIG_HOME}/zsh/completions "${fpath[@]}")
+fpath=(${ZDOTDIR:=${XDG_CONFIG_HOME}/zsh}/completions "${fpath[@]}")
 
 if which yadm &>/dev/null && test -d "${XDG_DATA_HOME:=$HOME/.local/share}/yadm-git"; then
   fpath=("${XDG_DATA_HOME:=$HOME/.local/share}/yadm-git/completion/zsh" "${fpath[@]}")
