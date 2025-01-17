@@ -1,5 +1,6 @@
 if [[ -o interactive ]]; then
     eval "$(starship init zsh)"
+    _STARSHIP_EXE="$(which starship)"
 
     zle-line-init() {
         emulate -L zsh
@@ -15,8 +16,8 @@ if [[ -o interactive ]]; then
 
         local saved_prompt=$PROMPT
         local saved_rprompt=$RPROMPT
-        PROMPT='$(starship prompt --profile transient --terminal-width="$COLUMNS" --keymap="${KEYMAP:-}" --status="$STARSHIP_CMD_STATUS" --pipestatus="${STARSHIP_PIPE_STATUS[*]}" --cmd-duration="${STARSHIP_DURATION:-}" --jobs="$STARSHIP_JOBS_COUNT")'
-        RPROMPT='$(starship prompt --profile rtransient --terminal-width="$COLUMNS" --keymap="${KEYMAP:-}" --status="$STARSHIP_CMD_STATUS" --pipestatus="${STARSHIP_PIPE_STATUS[*]}" --cmd-duration="${STARSHIP_DURATION:-}" --jobs="$STARSHIP_JOBS_COUNT")'
+        PROMPT='$('$_STARSHIP_EXE' prompt --profile transient --terminal-width="$COLUMNS" --keymap="${KEYMAP:-}" --status="$STARSHIP_CMD_STATUS" --pipestatus="${STARSHIP_PIPE_STATUS[*]}" --cmd-duration="${STARSHIP_DURATION:-}" --jobs="$STARSHIP_JOBS_COUNT")'
+        RPROMPT='$('$_STARSHIP_EXE' prompt --profile rtransient --terminal-width="$COLUMNS" --keymap="${KEYMAP:-}" --status="$STARSHIP_CMD_STATUS" --pipestatus="${STARSHIP_PIPE_STATUS[*]}" --cmd-duration="${STARSHIP_DURATION:-}" --jobs="$STARSHIP_JOBS_COUNT")'
         zle .reset-prompt
         PROMPT=$saved_prompt
         RPROMPT="$saved_rprompt"
