@@ -23,6 +23,10 @@ options:
 EOF
 }
 
+function _abbr_sort() {
+    awk -F= '{print(length($1)"="$0)}' | sort -t= -k1n -k2d | sed -E 's/^[0-9]+=/  /'
+}
+
 function abbr() {
     zparseopts -D -E -F -- -highlight:=highlight h=help -help=help l=list -list=list \
             i=instant -instant=instant g=global -global=global r=remove -remove=remove || return 1
@@ -32,40 +36,36 @@ function abbr() {
     fi
 
     if [[ -n "$highlight" ]]; then
-        if [[ ${#abbreviations_global[@]} -gt 0 ]]; then
-            for abbr in "${(@k)abbreviations_global[@]}"; do
-                if ! (( $+commands[$abbr] )); then
-                    ZSH_HIGHLIGHT_REGEXP+=("(^|\\s)$abbr(\\s|\$)" "${highlight[2]}")
-                fi
-            done
-        fi
-        if [[ ${#abbreviations[@]} -gt 0 ]]; then
-            for abbr in "${(@k)abbreviations[@]}"; do
-                if ! (( $+commands[$abbr] )); then
-                    ZSH_HIGHLIGHT_REGEXP+=("^\\s*$abbr(\\s|\$)" "${highlight[2]}")
-                fi
-            done
-        fi
+        for abbr in "${(@k)abbreviations_global[@]}"; do
+            if ! (( $+commands[$abbr] )); then
+                ZSH_HIGHLIGHT_REGEXP+=("(^|\\s)$abbr(\\s|\$)" "${highlight[2]}")
+            fi
+        done
+        for abbr in "${(@k)abbreviations[@]}"; do
+            if ! (( $+commands[$abbr] )); then
+                ZSH_HIGHLIGHT_REGEXP+=("^\\s*$abbr(\\s|\$)" "${highlight[2]}")
+            fi
+        done
         return 0
     fi
 
     if [[ -n "$list" ]]; then
         echo global instant abbreviations:
         for abbr expansion in "${(@kv)abbreviations_instant_global[@]}"; do
-            echo "  $abbr=$expansion"
-        done | sort -t= -d
+            echo "$abbr=$expansion"
+        done | _abbr_sort
         echo global abbreviations:
         for abbr expansion in "${(@kv)abbreviations_global[@]}"; do
-            echo "  $abbr=$expansion"
-        done | sort -t= -d
+            echo "$abbr=$expansion"
+        done | _abbr_sort
         echo instant abbreviations:
         for abbr expansion in "${(@kv)abbreviations_instant[@]}"; do
-            echo "  $abbr=$expansion"
-        done | sort -t= -d
+            echo "$abbr=$expansion"
+        done | _abbr_sort
         echo abbreviations:
         for abbr expansion in "${(@kv)abbreviations[@]}"; do
-            echo "  $abbr=$expansion"
-        done | sort -t= -d
+            echo "$abbr=$expansion"
+        done | _abbr_sort
         return 0
     fi
 
