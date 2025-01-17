@@ -77,7 +77,7 @@ function abbr() {
     if [[ -n "$remove" ]]; then
         unset "abbreviations${instant:+_instant}${global:+_global}[$1]"
     else
-        eval "abbreviations${instant:+_instant}${global:+_global}+=( \"\${1%=*}\" \"\${1##[^=]##=}\" )"
+        eval "abbreviations${instant:+_instant}${global:+_global}+=( \"\$(cut -d= -f1 <<< \"\$1\")\" \"\${1##[^=]##=}\" )"
     fi
 }
 
