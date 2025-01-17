@@ -23,7 +23,7 @@ local sky=99daff
 local cyan=25cac8
 
 ZSH_HIGHLIGHT_STYLES[precommand]="fg=#$sky"
-ZSH_HIGHLIGHT_REGEXP+=('^\<sudo\>' "fg=#$sky") # sudo is now an alias so fix highlight here
+ZSH_HIGHLIGHT_REGEXP+=('^\s*\<sudo\>' "fg=#$sky") # sudo is now an alias so fix highlight here
 
 ZSH_HIGHLIGHT_STYLES[command]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[builtin]="fg=#$pink"
@@ -31,12 +31,7 @@ ZSH_HIGHLIGHT_STYLES[alias]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[arg0]="fg=#$pink"
 ZSH_HIGHLIGHT_STYLES[unknown-token]="fg=#$magenta,underline"
 
-local hl="${ZSH_HIGHLIGHT_STYLES[alias]}"
-for abbr in "${(@k)space_abbreviations[@]}"; do
-    if ! (( $+commands[$abbr] )); then
-        ZSH_HIGHLIGHT_REGEXP+=("(^|\\s)$abbr(\\s|\$)" "$hl")
-    fi
-done
+abbr --highlight "fg=#$pink"
 
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument]="fg=#$lavender"
 ZSH_HIGHLIGHT_STYLES[single-quoted-argument-unclosed]="fg=#$lavender"
