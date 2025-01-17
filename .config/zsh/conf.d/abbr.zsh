@@ -77,19 +77,18 @@ function abbr() {
     if [[ -n "$remove" ]]; then
         unset "abbreviations${instant:+_instant}${global:+_global}[$1]"
     else
-        eval "abbreviations${instant:+_instant}${global:+_global}+=( \"\$(cut -d= -f1 <<< \"\$1\")\" \"\${1##[^=]##=}\" )"
+        eval "abbreviations${instant:+_instant}${global:+_global}+=( \"\${1%%=*}\" \"\${1##[^=]##=}\" )"
     fi
 }
 
 function expand-abbreviation() {
-    setopt extendedglob
     test "${3}" = instant && zle "${1}"
-    if [[ "${#RBUFFER}" != 0 && -z "${RBUFFER[1]%%[a-zA-Z0-9${2}]}" ]]; then
+    if [[ "${#RBUFFER}" != 0 && -z "${RBUFFER[1]%%[a-zA-Z0-9${~2}]}" ]]; then
         test "${3}" != instant && zle "${1}"
         return
     fi
     local MATCH
-    LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9${2}]#}"
+    LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9${~2}]#}"
     if test "${3}" = instant; then
         local abbreviation="${abbreviations_instant_global[$MATCH]}"
         if [[ -z "$abbreviation" && -z "${LBUFFER// }" ]]; then
@@ -112,14 +111,18 @@ function expand-abbreviation() {
 }
 
 function self-insert() {
-    expand-abbreviation .self-insert "${WORDCHARS/-/\\-}" instant
+    setopt extendedglob
+    local MATCH
+    expand-abbreviation .self-insert "${WORDCHARS//(#m)[\[\]\-]/\\$MATCH}" instant
 }
 
 function accept-line() {
+    setopt extendedglob
     expand-abbreviation .accept-line _ line
 }
 
 function space-expansion() {
+    setopt extendedglob
     expand-abbreviation .self-insert _ space
 }
 
