@@ -37,12 +37,12 @@ function abbr() {
 
     if [[ -n "$highlight" ]]; then
         for abbr in "${(@k)abbreviations_global[@]}"; do
-            if ! (( $+commands[$abbr] )); then
+            if ! (( $+commands[$abbr] )) && [[ "$abbr" = "${abbr// }" ]]; then
                 ZSH_HIGHLIGHT_REGEXP+=("(^|\\s)$abbr(\\s|\$)" "${highlight[2]}")
             fi
         done
         for abbr in "${(@k)abbreviations[@]}"; do
-            if ! (( $+commands[$abbr] )); then
+            if ! (( $+commands[$abbr] )) && [[ "$abbr" = "${abbr// }" ]]; then
                 ZSH_HIGHLIGHT_REGEXP+=("^\\s*$abbr(\\s|\$)" "${highlight[2]}")
             fi
         done
@@ -88,16 +88,19 @@ function expand-abbreviation() {
         return
     fi
     local MATCH
+    local buffer="${LBUFFER## #}"
     LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9${~2}]#}"
     if test "${3}" = instant; then
         local abbreviation="${abbreviations_instant_global[$MATCH]}"
-        if [[ -z "$abbreviation" && -z "${LBUFFER// }" ]]; then
-            local abbreviation="${abbreviations_instant[$MATCH]}"
+        if [[ -z "$abbreviation" ]]; then
+            local abbreviation="${abbreviations_instant[${LBUFFER## #}$MATCH]}"
+            [[ -z "$abbreviation" ]] || LBUFFER="${LBUFFER//[[:graph:]][[:print:]]#}"
         fi
     else
         local abbreviation="${abbreviations_global[$MATCH]}"
-        if [[ -z "$abbreviation" && -z "${LBUFFER// }" ]]; then
-            local abbreviation="${abbreviations[$MATCH]}"
+        if [[ -z "$abbreviation" ]]; then
+            local abbreviation="${abbreviations[${LBUFFER## #}$MATCH]}"
+            [[ -z "$abbreviation" ]] || LBUFFER="${LBUFFER//[[:graph:]][[:print:]]#}"
         fi
     fi
     LBUFFER+="${abbreviation:-$MATCH}"
@@ -143,6 +146,24 @@ abbr edit='sudoedit'
 abbr pkill='pkill -i'
 abbr pgrep='pgrep -i'
 abbr math='echo $(( <CURSOR> ))'
+
+if which pacman &>/dev/null; then
+    abbr pac=pacman
+    abbr 'pacman -Syu=sudo pacman -Syu'
+    abbr 'pacman -Sy=sudo pacman -Sy'
+    abbr 'pacman -S=sudo pacman -S'
+    abbr 'pacman -Rsc=sudo pacman -Rsc'
+    abbr 'pacman -R=sudo pacman -Rsc'
+fi
+
+if which dnf &>/dev/null; then
+    abbr 'dnf install=sudo dnf install'
+    abbr 'dnf in=sudo dnf install'
+    abbr 'dnf remove=sudo dnf remove'
+    abbr 'dnf rm=sudo dnf remove'
+    abbr 'dnf update=sudo dnf update'
+    abbr 'dnf up=sudo dnf update'
+fi
 
 if which yadm &>/dev/null; then
     abbr yad='yadm add'
