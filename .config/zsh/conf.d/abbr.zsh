@@ -23,10 +23,6 @@ options:
 EOF
 }
 
-function _abbr_sort() {
-    awk -F= '{print(length($1)"="$0)}' | sort -t= -k1n -k2d | sed -E 's/^[0-9]+=/  /'
-}
-
 function abbr() {
     zparseopts -D -E -F -- -highlight:=highlight h=help -help=help l=list -list=list \
             i=instant -instant=instant g=global -global=global r=remove -remove=remove || return 1
@@ -50,22 +46,12 @@ function abbr() {
     fi
 
     if [[ -n "$list" ]]; then
-        echo global instant abbreviations:
-        for abbr expansion in "${(@kv)abbreviations_instant_global[@]}"; do
-            echo "$abbr=$expansion"
-        done | _abbr_sort
-        echo global abbreviations:
-        for abbr expansion in "${(@kv)abbreviations_global[@]}"; do
-            echo "$abbr=$expansion"
-        done | _abbr_sort
-        echo instant abbreviations:
-        for abbr expansion in "${(@kv)abbreviations_instant[@]}"; do
-            echo "$abbr=$expansion"
-        done | _abbr_sort
-        echo abbreviations:
-        for abbr expansion in "${(@kv)abbreviations[@]}"; do
-            echo "$abbr=$expansion"
-        done | _abbr_sort
+        echo "${global:+global }${instant:+instant }abbreviations:"
+        eval "
+            for abbr expansion in \"\${(@kv)abbreviations${instant:+_instant}${global:+_global}[@]}\"; do
+                echo \"  \$abbr=\$expansion\"
+            done
+            " | sort -t= -k1d #| awk -F= '{print(length($1)"="$0)}' | sort -t= -k1n -k2d | sed -E 's/^[0-9]+=/  /'
         return 0
     fi
 
@@ -88,18 +74,18 @@ function expand-abbreviation() {
         return
     fi
     local MATCH
-    local buffer="${LBUFFER## #}"
+    local abbreviation
     LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9${~2}]#}"
     if test "${3}" = instant; then
-        local abbreviation="${abbreviations_instant_global[$MATCH]}"
+        abbreviation="${abbreviations_instant_global[$MATCH]}"
         if [[ -z "$abbreviation" ]]; then
-            local abbreviation="${abbreviations_instant[${LBUFFER## #}$MATCH]}"
+            abbreviation="${abbreviations_instant[${LBUFFER## #}$MATCH]}"
             [[ -z "$abbreviation" ]] || LBUFFER="${LBUFFER//[[:graph:]][[:print:]]#}"
         fi
     else
-        local abbreviation="${abbreviations_global[$MATCH]}"
+        abbreviation="${abbreviations_global[$MATCH]}"
         if [[ -z "$abbreviation" ]]; then
-            local abbreviation="${abbreviations[${LBUFFER## #}$MATCH]}"
+            abbreviation="${abbreviations[${LBUFFER## #}$MATCH]}"
             [[ -z "$abbreviation" ]] || LBUFFER="${LBUFFER//[[:graph:]][[:print:]]#}"
         fi
     fi
@@ -138,7 +124,17 @@ bindkey "^x " .self-insert
 bindkey "^x^M" .accept-line
 bindkey -M isearch " " .self-insert
 
-abbr -gi '...'='../..'
+local dots='..'
+local exps
+
+for _ in $(seq 5); do
+    dots+='.'
+    exps="${dots//.../../..}"
+    abbr -i "${dots}"="${exps}"
+    which zoxide &>/dev/null && abbr -i "z ${dots}"="z ${exps}"
+    abbr -i "cd ${dots}"="cd ${exps}"
+    dots="$exps"
+done
 
 abbr mkdir='mkdir -p'
 abbr visudo='sudo visudo'
