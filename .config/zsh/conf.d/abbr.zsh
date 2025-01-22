@@ -159,6 +159,7 @@ if which dnf &>/dev/null; then
     abbr 'dnf rm=sudo dnf remove'
     abbr 'dnf update=sudo dnf update'
     abbr 'dnf up=sudo dnf update'
+    abbr 'dnf se=dnf search'
 fi
 
 if which yadm &>/dev/null; then
