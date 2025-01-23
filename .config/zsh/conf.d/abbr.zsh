@@ -32,12 +32,7 @@ function abbr() {
     fi
 
     if [[ -n "$highlight" ]]; then
-        for abbr in "${(@k)abbreviations_global[@]}"; do
-            if ! (( $+commands[$abbr] )) && [[ "$abbr" = "${abbr// }" ]]; then
-                ZSH_HIGHLIGHT_REGEXP+=("(^|\\s)$abbr(\\s|\$)" "${highlight[2]}")
-            fi
-        done
-        for abbr in "${(@k)abbreviations[@]}"; do
+        for abbr in "${(@k)abbreviations_global[@]}" "${(@k)abbreviations[@]}"; do
             if ! (( $+commands[$abbr] )) && [[ "$abbr" = "${abbr// }" ]]; then
                 ZSH_HIGHLIGHT_REGEXP+=("^\\s*$abbr(\\s|\$)" "${highlight[2]}")
             fi
@@ -47,7 +42,8 @@ function abbr() {
 
     if [[ -n "$list" ]]; then
         echo "${global:+global }${instant:+instant }abbreviations:"
-        eval 'printf "  %s=%s\n" "${(@kv)abbreviations'${instant:+_instant}${global:+_global}'[@]}"' | sort -t= -k1d
+        eval 'test "${#abbreviations'${instant:+_instant}${global:+_global}'[@]}" -gt 0 && \
+            printf "  %s=%s\n" "${(@kv)abbreviations'${instant:+_instant}${global:+_global}'[@]}"' | sort -t= -k1d
         return 0
     fi
 
