@@ -68,19 +68,14 @@ function expand-abbreviation() {
     local MATCH
     local abbreviation
     LBUFFER="${LBUFFER%%(#m)[a-zA-Z0-9${~2}]#}"
-    if test "${3}" = instant; then
-        abbreviation="${abbreviations_instant_global[$MATCH]}"
-        if [[ -z "$abbreviation" ]]; then
-            abbreviation="${abbreviations_instant[${LBUFFER## #}$MATCH]}"
-            [[ -z "$abbreviation" ]] || LBUFFER="${LBUFFER//[[:graph:]][[:print:]]#}"
-        fi
-    else
-        abbreviation="${abbreviations_global[$MATCH]}"
-        if [[ -z "$abbreviation" ]]; then
-            abbreviation="${abbreviations[${LBUFFER## #}$MATCH]}"
-            [[ -z "$abbreviation" ]] || LBUFFER="${LBUFFER//[[:graph:]][[:print:]]#}"
-        fi
-    fi
+    local instant
+    test "${3}" = instant && instant=true || unset instant
+    eval '
+    abbreviation="${abbreviations'${instant:+_instant}'_global[$MATCH]}"
+    if [[ -z "$abbreviation" ]]; then
+        abbreviation="${abbreviations'${instant:+_instant}'[${LBUFFER## #}$MATCH]}"
+        [[ -z "$abbreviation" ]] || LBUFFER="${LBUFFER//[[:graph:]][[:print:]]#}"
+    fi'
     LBUFFER+="${abbreviation:-$MATCH}"
     if [[ "${abbreviation}" =~ "<CURSOR>" ]]; then
         RBUFFER="${LBUFFER[(ws:<CURSOR>:)2]}$RBUFFER"
