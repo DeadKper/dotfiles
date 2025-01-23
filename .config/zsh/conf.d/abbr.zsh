@@ -47,11 +47,7 @@ function abbr() {
 
     if [[ -n "$list" ]]; then
         echo "${global:+global }${instant:+instant }abbreviations:"
-        eval "
-            for abbr expansion in \"\${(@kv)abbreviations${instant:+_instant}${global:+_global}[@]}\"; do
-                echo \"  \$abbr=\$expansion\"
-            done
-            " | sort -t= -k1d #| awk -F= '{print(length($1)"="$0)}' | sort -t= -k1n -k2d | sed -E 's/^[0-9]+=/  /'
+        eval 'printf "  %s=%s\n" "${(@kv)abbreviations'${instant:+_instant}${global:+_global}'[@]}"' | sort -t= -k1d
         return 0
     fi
 
