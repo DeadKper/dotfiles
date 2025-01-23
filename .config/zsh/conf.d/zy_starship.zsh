@@ -4,21 +4,10 @@ if [[ -o interactive ]] && which starship &>/dev/null; then
     TRANSIENT_PROMPT="${PROMPT// prompt / prompt --profile transient }"
     TRANSIENT_RPROMPT="${PROMPT// prompt / prompt --profile rtransient }"
 
-    zle -N send-break transient-prompt-send-break
-    function transient-prompt-send-break {
-        transient-prompt-zle-line-finish
-        zle .send-break
-    }
+    autoload -Uz add-zle-hook-widget
+    add-zle-hook-widget zle-line-finish transient-prompt
 
-    zle -N zle-line-finish transient-prompt-zle-line-finish
-    function transient-prompt-zle-line-finish {
+    function transient-prompt() {
         PROMPT="$TRANSIENT_PROMPT" RPROMPT="$TRANSIENT_RPROMPT" zle reset-prompt
-    }
-
-    autoload -Uz add-zsh-hook
-    add-zsh-hook precmd transient-prompt-precmd
-
-    function transient-prompt-precmd {
-        TRAPINT() { zle && transient-prompt-zle-line-finish; return $(( 128 + $1 )) }
     }
 fi
