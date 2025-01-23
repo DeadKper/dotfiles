@@ -143,10 +143,10 @@ unset key
 setopt RC_EXPAND_PARAM
 
 # Load zsh folders
-for rc in "${(@f)$(find "$ZDOTDIR/conf.d" -maxdepth 1 -type f -iname '*.zsh' | sort -V)}"; do
+for rc in "${ZDOTDIR}/conf.d/"*.zsh; do
   source "$rc"
 done
-for rc in "${(@f)$(find "$ZDOTDIR/functions" -maxdepth 1 -type f -iname '*.zsh' | sort -V)}"; do
+for rc in "${ZDOTDIR}/functions/"*.zsh; do
   source "$rc"
 done
 unset rc
