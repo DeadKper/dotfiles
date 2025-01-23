@@ -32,6 +32,9 @@ $cmd_duration\
 $time \
 """
 
+[status]
+disabled = false
+
 [line_break]
 disabled = false
 
