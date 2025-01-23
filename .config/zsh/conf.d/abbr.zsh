@@ -32,7 +32,12 @@ function abbr() {
     fi
 
     if [[ -n "$highlight" ]]; then
-        for abbr in "${(@k)abbreviations_global[@]}" "${(@k)abbreviations[@]}"; do
+        for abbr in "${(@k)abbreviations_global[@]}"; do
+            if ! (( $+commands[$abbr] )) && [[ "$abbr" = "${abbr// }" ]]; then
+                ZSH_HIGHLIGHT_REGEXP+=("(^|\\s)$abbr(\\s|\$)" "${highlight[2]}")
+            fi
+        done
+        for abbr in "${(@k)abbreviations[@]}"; do
             if ! (( $+commands[$abbr] )) && [[ "$abbr" = "${abbr// }" ]]; then
                 ZSH_HIGHLIGHT_REGEXP+=("^\\s*$abbr(\\s|\$)" "${highlight[2]}")
             fi
