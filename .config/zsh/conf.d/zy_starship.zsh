@@ -1,4 +1,4 @@
-if [[ -o interactive ]]; then
+if [[ -o interactive ]] && which starship &>/dev/null; then
     eval "$(starship init zsh)"
 
     TRANSIENT_PROMPT="${PROMPT// prompt / prompt --profile transient }"
