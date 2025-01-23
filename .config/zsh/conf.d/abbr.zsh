@@ -117,15 +117,12 @@ bindkey "^x^M" .accept-line
 bindkey -M isearch " " .self-insert
 
 local dots='..'
-local exps
 
 for _ in $(seq 5); do
-    dots+='.'
-    exps="${dots//.../../..}"
-    abbr -i "${dots}"="${exps}"
-    which zoxide &>/dev/null && abbr -i "z ${dots}"="z ${exps}"
-    abbr -i "cd ${dots}"="cd ${exps}"
-    dots="$exps"
+    abbr -i "${dots}."="${dots}/.."
+    which zoxide &>/dev/null && abbr -i "z ${dots}."="z ${dots}/.."
+    abbr -i "cd ${dots}."="cd ${dots}/.."
+    dots+="/.."
 done
 
 abbr mkdir='mkdir -p'
@@ -134,6 +131,9 @@ abbr edit='sudoedit'
 abbr pkill='pkill -i'
 abbr pgrep='pgrep -i'
 abbr math='echo $(( <CURSOR> ))'
+abbr printn="printf '%s\\n'"
+abbr -g iargs='xargs -d \\n -I {}'
+abbr -g nargs='xargs -d \\n -n 1'
 
 if which pacman &>/dev/null; then
     abbr pac=pacman
