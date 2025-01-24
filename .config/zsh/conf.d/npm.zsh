@@ -1,7 +1,7 @@
 NPM_PACKAGES="${XDG_DATA_HOME:-$HOME/.local/share}/npm-packages"
 
 if test ! -f "$HOME/.npmrc"; then
-    echo "prefix = $NPM_PACKAGES" | sed "s,$HOME,~,g" >~/.npmrc
+    echo "prefix = ${NPM_PACKAGES//${~HOME}/~}" > ~/.npmrc
 fi
 
 path=("$NPM_PACKAGES/bin" "${path[@]}")

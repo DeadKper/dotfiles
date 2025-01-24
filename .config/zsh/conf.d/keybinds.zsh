@@ -4,13 +4,12 @@ function bindkey-word() {
     local keybind="$1"
     local command="$2"
     eval "
-        function ${command}-to-space () {
-            local WORDCHARS='!\"#%&'\''()*+,-./:;<=>?@[\\]^_\`{|}~¡¨«¬´·¸»¿•\$'
-            zle ${command}
-        }
-        zle -N ${command}-to-space
-        bindkey '${keybind}' ${command}-to-space
-    "
+    function ${command}-to-space () {
+        local WORDCHARS='!\"#%&'\''()*+,-./:;<=>?@[\\]^_\`{|}~¡¨«¬´·¸»¿•\$'
+        zle ${command}
+    }
+    zle -N ${command}-to-space
+    bindkey '${keybind}' ${command}-to-space"
 }
 
 # use alt + left/right to jump big word

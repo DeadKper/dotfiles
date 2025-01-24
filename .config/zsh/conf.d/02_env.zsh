@@ -14,14 +14,11 @@ export VISUAL=nvim
 which nvim &>/dev/null && export MANPAGER='nvim +Man!'
 export YDOTOOL_SOCKET="${XDG_STATE_HOME:=$HOME/.local/state}/ydotool.socket"
 
-export TIMEFMT="$(cat <<EOF
-
+export TIMEFMT="
 ________________________________________
 Executed in %*E CPU %P
    usr time %*U
-   sys time %*S
-EOF
-)"
+   sys time %*S"
 
 unset LS_COLORS
 unset GREP_COLOR
