@@ -8,6 +8,6 @@ if [[ -o interactive ]] && which starship &>/dev/null; then
     add-zle-hook-widget zle-line-finish transient-prompt
 
     function transient-prompt() {
-        PROMPT="$TRANSIENT_PROMPT" RPROMPT="$TRANSIENT_RPROMPT" zle reset-prompt
+        PROMPT="$TRANSIENT_PROMPT" RPROMPT="$TRANSIENT_RPROMPT" zle .reset-prompt
     }
 fi
