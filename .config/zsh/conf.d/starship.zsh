@@ -10,4 +10,11 @@ if [[ -o interactive ]] && which starship &>/dev/null; then
     function transient-prompt() {
         PROMPT="$TRANSIENT_PROMPT" RPROMPT="$TRANSIENT_RPROMPT" zle .reset-prompt
     }
+
+    # autoload -Uz add-zsh-hook
+    # add-zsh-hook precmd transient-prompt-precmd
+    #
+    # function transient-prompt-precmd {
+    #     TRAPINT() { transient-prompt; return $(( 128 + $1 )) }
+    # }
 fi
