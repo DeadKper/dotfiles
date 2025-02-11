@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set -l known g e w h m v d c a 3
+set -l known g e w h m v d c a 3 n U L S
 set -l flags
 set -l remove
 set -l gs
@@ -56,6 +56,22 @@ if contains SteamLaunch $argv
     set steam_flag yes
 end
 
+if contains S $flags
+    set -a env DXVK_CONFIG=dxgi.syncInterval=0
+end
+
+if contains U $flags
+    set -a env VKD3D_CONFIG=disable_uav_compression
+end
+
+if contains L $flags
+    set -a env VKD3D_DISABLE_EXTENSIONS=VK_NV_low_latency2
+end
+
+if contains n $flags
+    set -a env PROTON_ENABLE_NGX_UPDATER=1 PROTON_HIDE_NVIDIA_GPU=0 PROTON_ENABLE_NVAPI=1
+end
+
 if contains g $flags; and type gamescope &>/dev/null
     set gamescope_flag yes
 end
@@ -73,7 +89,7 @@ if contains a $flags
 end
 
 if contains d $flags
-    set -a overrides dinput8=n,b
+    set -a overrides dinput8.dll=n,b
 end
 
 if contains c $flags
@@ -119,7 +135,8 @@ end
 
 if contains m $flags; and type mangohud &>/dev/null
     if test -z "$gamescope_flag"
-        set command mangohud $command
+        # set command mangohud $command
+        set -a env MANGOHUD=1
     end
 end
 
