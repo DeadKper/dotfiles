@@ -1,0 +1,222 @@
+#!/usr/bin/env bash
+
+function main() {
+  # Default vars
+  ENV=()
+  WINEDLLOVERRIDES=()
+  VKD3D_CONFIG=()
+  VKD3D_DISABLE_EXTENSIONS=()
+  GAMESCOPE_ARGS=()
+  EXEC=()
+
+  USE_COMPILER_HUD=
+
+  USE_GAMEMODE=true
+  USE_GAMESCOPE=
+  USE_MANGOHUD=true
+
+  # Generated, do not modify
+  COMMAND=()
+  POSITIONAL_ARGS=()
+
+  parse "$@"
+  config
+
+  if [[ "${#POSITIONAL_ARGS[@]}" -eq 0 ]]; then
+    printf "%s\n" "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}" | sed -r "s/([^ ]* .*)/'\1'/" | sed -z 's/\n/ /g;s/\s*$/\n/'
+  else
+    printf "%s\n" "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}" | sed -r "s/([^ ]* .*)/'\1'/" | sed -z 's/\n/ /g;s/\s*$/\n/' > ~/.cache/genv
+    "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}"
+  fi
+}
+
+function config() {
+  case "$(awk '{print $NF}' <<< "${POSITIONAL_ARGS[@]}")" in
+    */MonsterHunterWilds.exe)
+      ENV+=(
+        MESA_DISK_CACHE_SINGLE_FILE=0
+        PROTON_ENABLE_NGX_UPDATER=1
+        PROTON_HIDE_NVIDIA_GPU=0
+        PROTON_ENABLE_NVAPI=1
+        __GL_SHADER_DISK_CACHE=1
+        __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
+        VKD3D_DEBUG=none
+      )
+      WINEDLLOVERRIDES+=(
+        dinput8=n,b
+      )
+      VKD3D_CONFIG+=(
+        disable_uav_compression
+        force_host_cached
+      )
+      VKD3D_DISABLE_EXTENSIONS+=(
+        VK_NV_low_latency2
+      )
+      ;;
+    *)
+      :
+      ;;
+  esac
+
+  if [[ -n "$USE_COMPILER_HUD" ]]; then
+    ENV+=(DXVK_HUD=compiler)
+  fi
+
+  if [[ -n "$USE_MANGOHUD" ]] && command -v mangohud &>/dev/null; then
+    if [[ -n "$USE_GAMESCOPE" ]]; then
+      GAMESCOPE_ARGS+=(--mangoapp)
+    else
+      ENV+=(MANGOHUD=1)
+    fi
+  fi
+
+  if [[ -n "$USE_GAMEMODE" ]] && command -v gamemoderun &>/dev/null; then
+    COMMAND+=("$(command -v gamemoderun)")
+  fi
+
+  if [[ -n "$USE_GAMESCOPE" ]] && command -v gamescope &>/dev/null; then
+    COMMAND+=("$(command -v gamescope)" "${GAMESCOPE_ARGS[@]}" --)
+  fi
+
+  if [[ "${#VKD3D_CONFIG[@]}" -gt 0 ]]; then
+    ENV=("VKD3D_CONFIG=$(printf '%s\n' "${VKD3D_CONFIG[@]}" | sort -u | sed -z 's/\n/,/g;s/,$//')" "${ENV[@]}")
+  fi
+
+  if [[ "${#VKD3D_DISABLE_EXTENSIONS[@]}" -gt 0 ]]; then
+    ENV=("VKD3D_DISABLE_EXTENSIONS=$(printf '%s\n' "${VKD3D_DISABLE_EXTENSIONS[@]}" | sort -u | sed -z 's/\n/,/g;s/,$//')" "${ENV[@]}")
+  fi
+
+  if [[ "${#WINEDLLOVERRIDES[@]}" -gt 0 ]]; then
+    ENV=("WINEDLLOVERRIDES=$(printf '%s\n' "${WINEDLLOVERRIDES[@]}" | sort -u | sed -z 's/\n/ /g;s/ $//')" "${ENV[@]}")
+  fi
+
+  if [[ "${#ENV[@]}" -gt 0 ]]; then
+    COMMAND=(env "${ENV[@]}" "${COMMAND[@]}")
+  fi
+}
+
+function parse() {
+  local option
+  local next
+  local last
+  local count
+
+  unset option
+  unset next
+
+  while [[ $# -gt 0 ]]; do
+    if [[ "$1" == "$last" && "$#" == "$count" ]]; then
+      echo infinite loop found, termintaing >&2
+      exit 1
+    fi
+
+    if [[ -n "${next+x}" && "$next" == "$1" ]]; then
+      shift
+      set -- "-$next" "$@"
+    fi
+
+    if [[ -n "${next+x}" ]]; then
+      unset option
+      unset next
+    fi
+
+    [[ "$1" == -* ]] || break
+
+    if [[ "$1" == -- ]]; then
+      shift
+      break
+    elif [[ "$1" == --* ]]; then
+      option="$1"
+    elif [[ "$1" == -* ]]; then
+      option="$1"
+      if [[ "${#option}" -gt 2 ]]; then
+        next="${option[@]:2}"
+        option="${option[@]:0:2}"
+        shift
+        set -- "$option" "$next" "$@"
+      fi
+    else
+      break
+    fi
+
+    last="$1"
+    count="$#"
+
+    case "$1" in
+      -g) # use gamemode
+        USE_GAMEMODE=true
+        shift
+        ;;
+      -G) # disable gamemode
+        USE_GAMEMODE=
+        shift
+        ;;
+      -m) # use mangohud
+        USE_MANGOHUD=true
+        shift
+        ;;
+      -M) # disable mangohud
+        USE_MANGOHUD=
+        shift
+        ;;
+      -s) # use gamescope
+        USE_GAMESCOPE=true
+        GAMESCOPE_ARGS=(
+          --output-width "$(xrandr | grep '\*+$' | sed 's/^\s*//;s/x.*//')"
+          --output-height "$(xrandr | grep '\*+$' | sed 's/^\s*[^x]*x//;s/\s.*//')"
+          --borderless
+          --nested-unfocused-refresh 5
+          --force-grab-cursor
+          "${GAMESCOPE_ARGS[@]}"
+        )
+        shift
+        ;;
+      -S) # disable gamescope
+        USE_GAMESCOPE=
+        shift
+        ;;
+      -e) # use gamescope steam integration
+        GAMESCOPE_ARGS+=(--steam)
+        shift
+        ;;
+      -y) # expose wayland to gamescope
+        GAMESCOPE_ARGS+=(--expose-wayland)
+        shift
+        ;;
+      -w) # (WIDTH) set gamescope width
+        [[ "$#" -lt 2 ]] && usage && exit 1
+        GAMESCOPE_ARGS+=(--nested-width "$2")
+        shift 2
+        ;;
+      -h) # (HEIGHT) set gamescope height
+        [[ "$#" -lt 2 ]] && usage && exit 1
+        GAMESCOPE_ARGS+=(--nested-height "$2")
+        shift 2
+        ;;
+      --install) # symlink this app to /bin/ (requires sudo)
+        sudo ln -s "$0" /bin/
+        exit 0
+        ;;
+      --help) # print help message
+        usage
+        exit 0
+        ;;
+    esac
+  done
+
+  [[ $# -gt 0 ]] && POSITIONAL_ARGS+=("$@")
+}
+
+function usage() {
+  printf '%s\n' \
+    "usage: $(basename "$0") [OPTIONS] [ARGUMENTS]" \
+    "" \
+    options:
+  sed -zE 's/.*\sparse\(\)\s*\{\n*//;s/\n\}\n.*/\n/' "$0" \
+    | grep -E '^\s*-[a-zA-Z0-9|\-]+\)\s*#' \
+    | sed 's/^\s*/  /;s/[|]/, /g;s/[)]\s*#\s*/\t/' \
+    | sed -E 's/\t\(([^\)]+)\)\s*/ \1\t/' \
+    | column -s $'\t' -t
+}
+
+main "$@"
