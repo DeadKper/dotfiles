@@ -2,17 +2,22 @@
 
 function main() {
   # Default vars
-  ENV=()
+  ENV=(
+    DXVK_HUD=compiler
+    __GL_SHADER_DISK_CACHE=1
+    __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
+  )
+  DXVK_CONFIG=()
+  VKD3D_CONFIG=(
+    force_host_cached
+  )
   WINEDLLOVERRIDES=()
-  VKD3D_CONFIG=()
   VKD3D_DISABLE_EXTENSIONS=()
   GAMESCOPE_ARGS=()
   EXEC=()
 
-  USE_COMPILER_HUD=
-
-  USE_GAMEMODE=true
   USE_GAMESCOPE=
+  USE_GAMEMODE=true
   USE_MANGOHUD=true
 
   # Generated, do not modify
@@ -31,35 +36,24 @@ function main() {
 }
 
 function config() {
-  case "$(awk '{print $NF}' <<< "${POSITIONAL_ARGS[@]}")" in
-    */MonsterHunterWilds.exe)
-      ENV+=(
-        MESA_DISK_CACHE_SINGLE_FILE=0
-        PROTON_ENABLE_NGX_UPDATER=1
-        PROTON_HIDE_NVIDIA_GPU=0
-        PROTON_ENABLE_NVAPI=1
-        __GL_SHADER_DISK_CACHE=1
-        __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
-        VKD3D_DEBUG=none
-      )
-      WINEDLLOVERRIDES+=(
-        dinput8=n,b
-      )
-      VKD3D_CONFIG+=(
-        disable_uav_compression
-        force_host_cached
-      )
-      VKD3D_DISABLE_EXTENSIONS+=(
-        VK_NV_low_latency2
-      )
-      ;;
-    *)
-      :
-      ;;
-  esac
-
-  if [[ -n "$USE_COMPILER_HUD" ]]; then
-    ENV+=(DXVK_HUD=compiler)
+  if [[ "${POSITIONAL_ARGS[*]}" == */MonsterHunterWilds.exe ]]; then
+    ENV+=(
+      MESA_DISK_CACHE_SINGLE_FILE=0
+      PROTON_ENABLE_NGX_UPDATER=1
+      PROTON_HIDE_NVIDIA_GPU=0
+      PROTON_ENABLE_NVAPI=1
+      VKD3D_DEBUG=none
+    )
+    VKD3D_DISABLE_EXTENSIONS+=(
+      VK_NV_low_latency2
+    )
+    WINEDLLOVERRIDES+=(
+      dinput8=n,b
+    )
+  elif [[ "${POSITIONAL_ARGS[*]}" == */MonsterHunterRise.exe ]]; then
+    WINEDLLOVERRIDES+=(
+      dinput8=n,b
+    )
   fi
 
   if [[ -n "$USE_MANGOHUD" ]] && command -v mangohud &>/dev/null; then
@@ -76,6 +70,10 @@ function config() {
 
   if [[ -n "$USE_GAMESCOPE" ]] && command -v gamescope &>/dev/null; then
     COMMAND+=("$(command -v gamescope)" "${GAMESCOPE_ARGS[@]}" --)
+  fi
+
+  if [[ "${#DXVK_CONFIG[@]}" -gt 0 ]]; then
+    ENV=("DXVK_CONFIG=$(printf '%s\n' "${DXVK_CONFIG[@]}" | sort -u | sed -z 's/\n/,/g;s/,$//')" "${ENV[@]}")
   fi
 
   if [[ "${#VKD3D_CONFIG[@]}" -gt 0 ]]; then
@@ -161,12 +159,16 @@ function parse() {
         ;;
       -s) # use gamescope
         USE_GAMESCOPE=true
+        local display="$(xrandr | grep '\*+$')"
         GAMESCOPE_ARGS=(
-          --output-width "$(xrandr | grep '\*+$' | sed 's/^\s*//;s/x.*//')"
-          --output-height "$(xrandr | grep '\*+$' | sed 's/^\s*[^x]*x//;s/\s.*//')"
+          --output-width "$(sed 's/^\s*//;s/x.*//' <<< "$display")"
+          --output-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")"
+          # --nested-refresh "$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
+          # --framerate-limit "$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
+          # --fullscreen
+          --adaptive-sync
           --borderless
           --nested-unfocused-refresh 5
-          --force-grab-cursor
           "${GAMESCOPE_ARGS[@]}"
         )
         shift
@@ -180,18 +182,16 @@ function parse() {
         shift
         ;;
       -y) # expose wayland to gamescope
-        GAMESCOPE_ARGS+=(--expose-wayland)
+        GAMESCOPE_ARGS+=(--expose-wayland --backend wayland)
         shift
         ;;
       -w) # (WIDTH) set gamescope width
-        [[ "$#" -lt 2 ]] && usage && exit 1
         GAMESCOPE_ARGS+=(--nested-width "$2")
-        shift 2
+        shift 2 || { usage && exit 1; }
         ;;
       -h) # (HEIGHT) set gamescope height
-        [[ "$#" -lt 2 ]] && usage && exit 1
         GAMESCOPE_ARGS+=(--nested-height "$2")
-        shift 2
+        shift 2 || { usage && exit 1; }
         ;;
       --install) # symlink this app to /bin/ (requires sudo)
         sudo ln -s "$0" /bin/
