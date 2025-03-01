@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set -l known g e w h m v d c a 3 n U L S
+set -l known g e w h m v d c a 3 n U L S W
 set -l flags
 set -l remove
 set -l gs
@@ -54,6 +54,10 @@ set -l steam_flag
 
 if contains SteamLaunch $argv
     set steam_flag yes
+end
+
+if contains W $flags
+    set -a env WAYLAND_DISPLAY=
 end
 
 if contains S $flags
