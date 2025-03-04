@@ -37,30 +37,35 @@ function main() {
 
 function config() {
   if [[ "${POSITIONAL_ARGS[*]}" == */MonsterHunterWilds.exe ]]; then
-    ENV+=(
-      MESA_DISK_CACHE_SINGLE_FILE=0
-      PROTON_ENABLE_NGX_UPDATER=1
-      PROTON_HIDE_NVIDIA_GPU=0
+    add_if_missing ENV \
+      PROTON_ENABLE_NGX_UPDATER=1 \
+      PROTON_HIDE_NVIDIA_GPU=1 \
       PROTON_ENABLE_NVAPI=1
-      VKD3D_DEBUG=none
-    )
-    VKD3D_DISABLE_EXTENSIONS+=(
+    add_if_missing VKD3D_DISABLE_EXTENSIONS \
       VK_NV_low_latency2
-    )
-    WINEDLLOVERRIDES+=(
+    add_if_missing WINEDLLOVERRIDES \
       dinput8=n,b
-    )
   elif [[ "${POSITIONAL_ARGS[*]}" == */MonsterHunterRise.exe ]]; then
-    WINEDLLOVERRIDES+=(
+    add_if_missing WINEDLLOVERRIDES \
       dinput8=n,b
-    )
+  elif [[ "${POSITIONAL_ARGS[*]}" == */HoloCure.exe ]]; then
+    USE_GAMESCOPE=true
+  elif [[ "${POSITIONAL_ARGS[*]}" == */Terraria ]]; then
+    if [[ "$(xrandr | grep '\*+$' | sed 's/^\s*//;s/x.*//')" -lt 1920 ]]; then
+      USE_GAMESCOPE=true
+      add_if_missing GAMESCOPE_ARGS \
+        --nested-height 1080 \
+        --nested-width 1920
+    fi
   fi
 
   if [[ -n "$USE_MANGOHUD" ]] && command -v mangohud &>/dev/null; then
     if [[ -n "$USE_GAMESCOPE" ]]; then
-      GAMESCOPE_ARGS+=(--mangoapp)
+      add_if_missing GAMESCOPE_ARGS \
+        --mangoapp
     else
-      ENV+=(MANGOHUD=1)
+      add_if_missing ENV \
+        MANGOHUD=1
     fi
   fi
 
@@ -157,40 +162,78 @@ function parse() {
         USE_MANGOHUD=
         shift
         ;;
+      -v) # set PROTON_LOG to 1
+        add_if_missing ENV \
+          PROTON_LOG=1
+        shift
+        ;;
       -s) # use gamescope
         USE_GAMESCOPE=true
         local display="$(xrandr | grep '\*+$')"
-        GAMESCOPE_ARGS=(
+        # --nested-refresh "$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
+        # --framerate-limit "$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
+        # --fullscreen
+        add_if_missing GAMESCOPE_ARGS \
+          --output-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")" \
           --output-width "$(sed 's/^\s*//;s/x.*//' <<< "$display")"
-          --output-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")"
-          # --nested-refresh "$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
-          # --framerate-limit "$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
-          # --fullscreen
-          --adaptive-sync
-          --borderless
+        # add_if_missing GAMESCOPE_ARGS \
+        #   --adaptive-sync
+        add_if_missing GAMESCOPE_ARGS \
           --nested-unfocused-refresh 5
-          "${GAMESCOPE_ARGS[@]}"
-        )
+        shift
+        ;;
+      -b) # set gamescope as borderless
+        add_if_missing GAMESCOPE_ARGS \
+          --borderless
+        shift
+        ;;
+      -f) # set gamescope as fullscreen
+        add_if_missing GAMESCOPE_ARGS \
+          --fullscreen
+        shift
+        ;;
+      -F) # set gamescope as fsr
+        add_if_missing GAMESCOPE_ARGS \
+          --filter fsr \
+          --scaler auto \
+          --fsr-sharpness 20
         shift
         ;;
       -S) # disable gamescope
         USE_GAMESCOPE=
         shift
         ;;
+      -c) # set gamescope force composition and immediate flips
+        add_if_missing GAMESCOPE_ARGS \
+          --immediate-flips \
+          --force-composition
+        shift
+        ;;
       -e) # use gamescope steam integration
-        GAMESCOPE_ARGS+=(--steam)
+        add_if_missing GAMESCOPE_ARGS \
+          --steam
         shift
         ;;
       -y) # expose wayland to gamescope
-        GAMESCOPE_ARGS+=(--expose-wayland --backend wayland)
+        add_if_missing GAMESCOPE_ARGS \
+          --expose-wayland --backend wayland
+        shift
+        ;;
+      -a) # set gamescope nested size to current size
+        local display="$(xrandr | grep '\*+$')"
+        add_if_missing GAMESCOPE_ARGS \
+          --nested-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")" \
+          --nested-width "$(sed 's/^\s*//;s/x.*//' <<< "$display")"
         shift
         ;;
       -w) # (WIDTH) set gamescope width
-        GAMESCOPE_ARGS+=(--nested-width "$2")
+        add_if_missing GAMESCOPE_ARGS \
+          --nested-width "$2"
         shift 2 || { usage && exit 1; }
         ;;
       -h) # (HEIGHT) set gamescope height
-        GAMESCOPE_ARGS+=(--nested-height "$2")
+        add_if_missing GAMESCOPE_ARGS \
+          --nested-height "$2"
         shift 2 || { usage && exit 1; }
         ;;
       --install) # symlink this app to /bin/ (requires sudo)
@@ -217,6 +260,32 @@ function usage() {
     | sed 's/^\s*/  /;s/[|]/, /g;s/[)]\s*#\s*/\t/' \
     | sed -E 's/\t\(([^\)]+)\)\s*/ \1\t/' \
     | column -s $'\t' -t
+}
+
+function index() {
+  local value="$1"
+  shift
+  local size="$#"
+  for ((i = 0; i < $size; i++)); do
+    [[ "$1" == "${value}" ]] && {
+      echo $i
+      return
+    }
+    shift
+  done
+  echo -1
+  return -1
+}
+
+function add_if_missing() {
+  local var="$1"
+  eval "local array=(\"\${${var}[@]}\")"
+  shift
+  local values=("$@")
+
+  if [[ "$(index "${values[0]}" "${array[@]}")" -eq -1 ]]; then
+    eval "${var}+=(\"\${values[@]}\")"
+  fi
 }
 
 main "$@"
