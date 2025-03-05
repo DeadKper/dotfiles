@@ -170,16 +170,17 @@ function parse() {
       -s) # use gamescope
         USE_GAMESCOPE=true
         local display="$(xrandr | grep '\*+$')"
-        # --nested-refresh "$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
-        # --framerate-limit "$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
-        # --fullscreen
+        # local refresh="$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
         add_if_missing GAMESCOPE_ARGS \
           --output-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")" \
           --output-width "$(sed 's/^\s*//;s/x.*//' <<< "$display")"
-        # add_if_missing GAMESCOPE_ARGS \
-        #   --adaptive-sync
+        add_if_missing GAMESCOPE_ARGS \
+          --adaptive-sync
         add_if_missing GAMESCOPE_ARGS \
           --nested-unfocused-refresh 5
+        # add_if_missing GAMESCOPE_ARGS \
+        #   --nested-refresh "$(awk '{printf "%0.f\n",$1*2}' <<< "$refresh")"
+        #   --framerate-limit "$(awk '{printf "%0.f\n",$1*2}' <<< "$refresh")"
         shift
         ;;
       -b) # set gamescope as borderless
