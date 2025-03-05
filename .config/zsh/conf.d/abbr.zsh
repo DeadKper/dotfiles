@@ -140,8 +140,8 @@ if which pacman &>/dev/null; then
     abbr 'pacman -Syu=sudo pacman -Syu'
     abbr 'pacman -Sy=sudo pacman -Sy'
     abbr 'pacman -S=sudo pacman -S'
-    abbr 'pacman -Rsc=sudo pacman -Rsc'
-    abbr 'pacman -R=sudo pacman -Rsc'
+    abbr 'pacman -Rns=sudo pacman -Rns'
+    abbr 'pacman -R=sudo pacman -Rns'
 fi
 
 if which dnf &>/dev/null; then
