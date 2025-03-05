@@ -1,0 +1,19 @@
+[managers.system]
+items = [
+    "btrfs-assistant",
+    "btrfs-progs",
+    "dosfstools",
+    "efibootmgr",
+    "fuse-overlayfs",
+    "fuse2",
+    "fuse2fs",
+    "grub",
+    "grub-btrfs",
+    "lvm2",
+    "partitionmanager",
+    "snap-pac",
+    "snap-pac-grub",
+    "snapper",
+    "udiskie",
+    "zram-generator",
+]

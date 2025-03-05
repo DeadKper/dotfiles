@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-if ! sudo echo -n; then
-	exit 1
-fi
-
-while sleep 30; do
-	sudo -nv
-done &

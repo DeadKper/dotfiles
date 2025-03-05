@@ -1,9 +1,3 @@
 begin = [
-    "zypper-obs",
     "system",
-]
-
-# Any other managers will run in between the begin and end stages.
-
-end = [
 ]

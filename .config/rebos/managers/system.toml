@@ -8,13 +8,14 @@
 
 # Example: add = "sudo apt install #:?"
 
-add = "echo y | sudo zypper addrepo -cf #:? $(echo #:? | sed -E 's,obs://,,')" # Example: sudo apt install #:?
-remove = "echo y | sudo zypper removerepo $(echo #:? | sed -E 's,obs://,,')" # Example: sudo apt remove #:?
-sync = "echo y | sudo zypper refresh" # Example: sudo apt update
+add = "paru -S --needed --noconfirm #:?" # Example: sudo apt install #:?
+remove = "paru -Rns --noconfirm #:?" # Example: sudo apt remove #:?
+# sync = "paru -Syy --needed --noconfirm" # Example: sudo apt update
+upgrade = "paru -Syu --needed --noconfirm" # Example: sudo apt upgrade
 
-plural_name = "zypper obs repositories"
+plural_name = "system packages"
 
-hook_name = "zypper_obs" # This is used in hooks. (Example: post_system_packages_add)
+hook_name = "system_packages" # This is used in hooks. (Example: post_system_packages_add)
 
 # ------------------------------- #
 #    Additional configuration.    #
@@ -23,4 +24,4 @@ hook_name = "zypper_obs" # This is used in hooks. (Example: post_system_packages
 # many_args = BOOL: Can you supply many items as an argument? Example: 'sudo apt install git vim wget'
 
 [config]
-many_args = false
+many_args = true

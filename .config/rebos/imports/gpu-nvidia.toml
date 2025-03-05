@@ -1,0 +1,11 @@
+[managers.system]
+items = [
+    "cuda",
+    "cuda-tools",
+    "lib32-nvidia-utils",
+    "libnvidia-container",
+    "nvidia-container-toolkit",
+    "nvidia-dkms",
+    "nvidia-settings",
+    "nvidia-utils",
+]
