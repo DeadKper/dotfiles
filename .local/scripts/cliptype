@@ -1,13 +1,29 @@
-#!/usr/bin/env fish
+#!/usr/bin/env bash
 
-set sleep_time "$argv[1]"
-test -z "$sleep_time" && set sleep_time 1
+function wait() {
+    sleep_time="$1"
+    test -z "$sleep_time" && sleep_time=1
 
-sleep $sleep_time
+    sleep $sleep_time
+}
 
-if test -z "$WAYLAND_DISPLAY"
+function deps() {
+    local fail=
+    for dep in "$@"; do
+        if ! command -v "$dep" > /dev/null; then
+            echo "dependency '$dep' not found"
+            fail=true
+        fi
+    done
+    [[ -n "$fail" ]] && exit 1
+}
+
+if test -z "$WAYLAND_DISPLAY"; then
+    deps xdotool xclip
+    wait "$@"
     xdotool type "$(xclip -o -selection clipboard)"
 else
-    ydotool type -d 0 "$(wl-paste | sed -e 'y/|\'¿´+}ñ{-°!"&\/()=?¡¨*]Ñ[;:_/`-=[]\\\\;\'\/~!@^&*()_+{}|:"<>?/')"
-    # wtype "$(wl-paste)"
-end
+    deps ydotool wl-paste sed
+    wait "$@"
+    ydotool type -d 0 "$(wl-paste | sed -e 'y/|'\''¿´+}ñ{-°!"&\/()=?¡¨*]Ñ[;:_/`-=[]'\\\\';'\''\/~!@^&*()_+{}|:"<>?/')"
+fi
