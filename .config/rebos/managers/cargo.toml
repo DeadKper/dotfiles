@@ -2,7 +2,6 @@
 
 add = "cargo install #:?"
 remove = "cargo uninstall #:?"
-upgrade = "cargo install-update -a"
 
 plural_name = "crates"
 

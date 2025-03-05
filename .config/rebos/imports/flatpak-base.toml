@@ -1,5 +1,0 @@
-[managers.flatpak]
-items = [
-    "one.ablaze.floorp",
-    "org.wezfurlong.wezterm",
-]

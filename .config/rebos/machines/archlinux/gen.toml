@@ -1,0 +1,117 @@
+# --------------------- #
+#    Generation File    #
+# --------------------- #
+
+# Other generation files to import. (Example: intensive_apps -> ~/.config/rebos/imports/intensive_apps.toml)
+imports = [
+    "base",
+    "compression",
+    "cpu-amd",
+    "filesystem",
+    "gpu-nvidia",
+
+    "flatpak",
+]
+
+# Packages to be installed via the native package manager.
+[managers.system]
+items = [
+    # archlinux
+    "ansible",
+    "appmenu-gtk-module",
+    "bc",
+    "btop",
+    "cups",
+    "cups-pk-helper",
+    "dolphin",
+    "expect",
+    "fastfetch",
+    "fd",
+    "ffmpegthumbs",
+    "flatpak",
+    "fzf",
+    "gamemode",
+    "gamescope",
+    "git",
+    "goverlay",
+    "gscan2pdf",
+    "gst-plugin-pipewire",
+    "gwenview",
+    "imagemagick",
+    "inetutils",
+    "iotop",
+    "jdk21-openjdk",
+    "jq",
+    "kde-cli-tools",
+    "kdeconnect",
+    "kitty",
+    "lib32-mesa-utils",
+    "lib32-vkbasalt",
+    "libnotify",
+    "lsd",
+    "man-db",
+    "man-pages",
+    "mesa-utils",
+    "mtools",
+    "neovim",
+    "net-tools",
+    "network-manager-applet",
+    "networkmanager",
+    "nodejs",
+    "noto-fonts-emoji",
+    "npm",
+    "parallel",
+    "pavucontrol",
+    "pipewire",
+    "pipewire-alsa",
+    "pipewire-audio",
+    "pipewire-jack",
+    "pipewire-pulse",
+    "pokemon-colorscripts-git",
+    "polkit-gnome",
+    "proton-vpn-gtk-app",
+    "protontricks-git",
+    "reflector",
+    "reshade-shaders-git",
+    "sd",
+    "sddm",
+    "simple-scan",
+    "starship",
+    "steam",
+    "sudo",
+    "system-config-printer",
+    "tmux",
+    "vim",
+    "vkbasalt",
+    "vkbasalt-cli",
+    "webkit2gtk-4.1",
+    "wget",
+    "wireguard-tools",
+    "wtype",
+    "xdg-desktop-portal-gtk",
+    "xdg-desktop-portal-hyprland",
+    "yadm",
+    "ydotool",
+    "zoxide",
+    "zsh",
+
+    # AUR
+    "hyde-cli-git",
+    "kanata-bin",
+    "linux-wallpaperengine-git",
+    "paru-bin",
+    "python-pyamdgpuinfo",
+    "trash-cli-git",
+]
+
+# Packages to be installed via Flatpak.
+[managers.flatpak]
+items = [
+    # "com.github.tchx84.Flatseal",
+]
+
+# Packages to be installed via Cargo.
+[managers.cargo]
+items = [
+    # "bacon",
+]

@@ -1,0 +1,11 @@
+[managers.system]
+items = [
+    "7zip",
+    "ark",
+    "bzip2",
+    "gzip",
+    "tar",
+    "unrar",
+    "unzip",
+    "zip",
+]
