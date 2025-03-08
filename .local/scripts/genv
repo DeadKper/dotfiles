@@ -29,9 +29,9 @@ function main() {
   config
 
   if [[ "${#POSITIONAL_ARGS[@]}" -eq 0 ]]; then
-    printf "%s\n" "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}" | sed -r "s/([^ ]* .*)/'\1'/" | sed -z 's/\n/ /g;s/\s*$/\n/'
+    print_array "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}"
   else
-    printf "%s\n" "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}" | sed -r "s/([^ ]* .*)/'\1'/" | sed -z 's/\n/ /g;s/\s*$/\n/' > ~/.cache/genv
+    print_array "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}" > ~/.cache/genv
     "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}"
   fi
 }
@@ -45,10 +45,12 @@ function config() {
     add_if_missing VKD3D_DISABLE_EXTENSIONS \
       VK_NV_low_latency2
     add_if_missing WINEDLLOVERRIDES \
-      dinput8=n,b
+      dinput8 \
+      dstorage \
+      dstoragecore
   elif [[ "${POSITIONAL_ARGS[*]}" == */MonsterHunterRise.exe ]]; then
     add_if_missing WINEDLLOVERRIDES \
-      dinput8=n,b
+      dinput8
   elif [[ "${POSITIONAL_ARGS[*]}" == */HoloCure.exe ]]; then
     USE_GAMESCOPE=true
   elif [[ "${POSITIONAL_ARGS[*]}" == */Terraria ]]; then
@@ -84,19 +86,19 @@ function config() {
   fi
 
   if [[ "${#DXVK_CONFIG[@]}" -gt 0 ]]; then
-    ENV=("DXVK_CONFIG=$(printf '%s\n' "${DXVK_CONFIG[@]}" | sort -u | sed -z 's/\n/,/g;s/,$//')" "${ENV[@]}")
+    ENV=("DXVK_CONFIG=$(comma_separated "${DXVK_CONFIG[@]}")" "${ENV[@]}")
   fi
 
   if [[ "${#VKD3D_CONFIG[@]}" -gt 0 ]]; then
-    ENV=("VKD3D_CONFIG=$(printf '%s\n' "${VKD3D_CONFIG[@]}" | sort -u | sed -z 's/\n/,/g;s/,$//')" "${ENV[@]}")
+    ENV=("VKD3D_CONFIG=$(comma_separated "${VKD3D_CONFIG[@]}")" "${ENV[@]}")
   fi
 
   if [[ "${#VKD3D_DISABLE_EXTENSIONS[@]}" -gt 0 ]]; then
-    ENV=("VKD3D_DISABLE_EXTENSIONS=$(printf '%s\n' "${VKD3D_DISABLE_EXTENSIONS[@]}" | sort -u | sed -z 's/\n/,/g;s/,$//')" "${ENV[@]}")
+    ENV=("VKD3D_DISABLE_EXTENSIONS=$(comma_separated "${VKD3D_DISABLE_EXTENSIONS[@]}")" "${ENV[@]}")
   fi
 
   if [[ "${#WINEDLLOVERRIDES[@]}" -gt 0 ]]; then
-    ENV=("WINEDLLOVERRIDES=$(printf '%s\n' "${WINEDLLOVERRIDES[@]}" | sort -u | sed -z 's/\n/ /g;s/ $//')" "${ENV[@]}")
+    ENV=("WINEDLLOVERRIDES=$(comma_separated "${WINEDLLOVERRIDES[@]}")=n,b" "${ENV[@]}")
   fi
 
   if [[ "${#ENV[@]}" -gt 0 ]]; then
@@ -307,6 +309,16 @@ function add_if_missing() {
   if [[ "$(index "${values[0]}" "${array[@]}")" -eq -1 ]]; then
     eval "${var}+=(\"\${values[@]}\")"
   fi
+}
+
+function comma_separated() {
+  printf '%s\n' "$@" | sort -u | sed -z 's/\n/,/g;s/,$/\n/'
+}
+
+function print_array() {
+  printf '%s\n' "$@" \
+    | awk '{if ($0 ~ / /) {gsub(/'\''/,"'\''\\'\'''\''",$0); print "'\''"$0"'\''"} else {print}}' \
+    | sed -z 's/\n/ /g;s/ $/\n/'
 }
 
 main "$@"
