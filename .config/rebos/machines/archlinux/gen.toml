@@ -81,6 +81,7 @@ items = [
     "sudo",
     "system-config-printer",
     "tmux",
+    "umu-launcher",
     "vim",
     "vkbasalt",
     "vkbasalt-cli",
