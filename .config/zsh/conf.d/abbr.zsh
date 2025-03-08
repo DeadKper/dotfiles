@@ -130,7 +130,6 @@ abbr visudo='sudo visudo'
 abbr edit='sudoedit'
 abbr pkill='pkill -i'
 abbr pgrep='pgrep -i'
-abbr math='echo $(( <CURSOR> ))'
 abbr printn="printf '%s\\n'"
 abbr -g iargs='xargs -d \\n -I {}'
 abbr -g nargs='xargs -d \\n -n 1'
