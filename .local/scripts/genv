@@ -181,6 +181,12 @@ function parse() {
           PROTON_LOG=1
         shift
         ;;
+      -L) # log vkBasalt output
+        add_if_missing ENV \
+          VKBASALT_LOG_LEVEL=trace \
+          VKBASALT_LOG_FILE="$HOME/vkBasalt.log"
+        shift
+        ;;
       -s) # use gamescope
         USE_GAMESCOPE=true
         local display="$(xrandr | grep '\*+$')"
