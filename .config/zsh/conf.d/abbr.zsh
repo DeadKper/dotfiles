@@ -134,6 +134,18 @@ abbr printn="printf '%s\\n'"
 abbr -g iargs='xargs -d \\n -I {}'
 abbr -g nargs='xargs -d \\n -n 1'
 
+if which rebos &>/dev/null; then
+    abbr reb=rebos
+    abbr "rebos ed=$EDITOR '${XDG_CONFIG_HOME:-$HOME/.config}/rebos/machines/$(cat /proc/sys/kernel/hostname)/gen.toml'"
+    abbr "rebos edit=$EDITOR '${XDG_CONFIG_HOME:-$HOME/.config}/rebos/machines/$(cat /proc/sys/kernel/hostname)/gen.toml'"
+    abbr "rebos bu=rebos gen current build"
+    abbr "rebos build=rebos gen current build"
+    abbr "rebos co=rebos gen commit '<CURSOR>'"
+    abbr "rebos commit=rebos gen commit '<CURSOR>'"
+    abbr "rebos up=rebos managers upgrade"
+    abbr "rebos upgrade=rebos managers upgrade"
+fi
+
 if which pacman &>/dev/null; then
     abbr pac=pacman
     abbr 'pacman -Syu=sudo pacman -Syu'
