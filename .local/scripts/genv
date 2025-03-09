@@ -177,7 +177,7 @@ function parse() {
     count="$#"
 
     case "$1" in
-      -g) # use gamemode
+      -g) # enable gamemode
         USE_GAMEMODE=true
         shift
         ;;
@@ -185,7 +185,7 @@ function parse() {
         USE_GAMEMODE=
         shift
         ;;
-      -m) # use mangohud
+      -m) # enable mangohud
         USE_MANGOHUD=true
         shift
         ;;
@@ -193,7 +193,7 @@ function parse() {
         USE_MANGOHUD=
         shift
         ;;
-      -v) # use vkbasalt
+      -v) # enable vkbasalt
         USE_VKBASALT=true
         shift
         ;;
@@ -212,7 +212,7 @@ function parse() {
           VKBASALT_LOG_FILE="$HOME/vkBasalt.log"
         shift
         ;;
-      -s) # use gamescope
+      -s) # enable gamescope
         USE_GAMESCOPE=true
         local display="$(xrandr | grep '\*+$')"
         # local refresh="$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
@@ -226,6 +226,20 @@ function parse() {
         # add_if_missing GAMESCOPE_ARGS \
         #   --nested-refresh "$(awk '{printf "%0.f\n",$1*2}' <<< "$refresh")"
         #   --framerate-limit "$(awk '{printf "%0.f\n",$1*2}' <<< "$refresh")"
+        shift
+        ;;
+      -S) # disable gamescope
+        USE_GAMESCOPE=
+        shift
+        ;;
+      -e) # enable gamescope steam integration
+        add_if_missing GAMESCOPE_ARGS \
+          --steam
+        shift
+        ;;
+      -y) # expose wayland to gamescope
+        add_if_missing GAMESCOPE_ARGS \
+          --expose-wayland --backend wayland
         shift
         ;;
       -b) # set gamescope as borderless
@@ -245,24 +259,10 @@ function parse() {
           --fsr-sharpness 20
         shift
         ;;
-      -S) # disable gamescope
-        USE_GAMESCOPE=
-        shift
-        ;;
       -c) # set gamescope force composition and immediate flips
         add_if_missing GAMESCOPE_ARGS \
           --immediate-flips \
           --force-composition
-        shift
-        ;;
-      -e) # use gamescope steam integration
-        add_if_missing GAMESCOPE_ARGS \
-          --steam
-        shift
-        ;;
-      -y) # expose wayland to gamescope
-        add_if_missing GAMESCOPE_ARGS \
-          --expose-wayland --backend wayland
         shift
         ;;
       -a) # set gamescope nested size to current size
