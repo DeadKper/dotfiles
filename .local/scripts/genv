@@ -1,79 +1,102 @@
 #!/usr/bin/env bash
 
 function main() {
-  # Default vars
-  ENV=(
-    __GL_SHADER_DISK_CACHE=1
-    __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
-    DXVK_HUD=compiler
-  )
-  DXVK_CONFIG=()
-  VKD3D_CONFIG=(
-    force_host_cached
-  )
-  WINEDLLOVERRIDES=()
-  VKD3D_DISABLE_EXTENSIONS=()
-  GAMESCOPE_ARGS=()
-  EXEC=()
-
-  USE_GAMESCOPE=
-  USE_GAMEMODE=true
-  USE_MANGOHUD=true
-  USE_VKBASALT=true
-
-  # Generated, do not modify
-  COMMAND=()
-  POSITIONAL_ARGS=()
-
+  init
   parse "$@"
   config
 
   if [[ "${#POSITIONAL_ARGS[@]}" -eq 0 ]]; then
-    print_array "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}"
+    print_array "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}"
   else
-    print_array "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}" > ~/.cache/genv
-    "${COMMAND[@]}" "${POSITIONAL_ARGS[@]}"
+    print_array "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}" > ~/.cache/genv
+    "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}"
   fi
 }
 
-function config() {
-  if [[ "${POSITIONAL_ARGS[*]}" == */MonsterHunterWilds.exe ]]; then
-    add_if_missing ENV \
-      PROTON_ENABLE_NGX_UPDATER=1 \
-      PROTON_HIDE_NVIDIA_GPU=1 \
-      PROTON_ENABLE_NVAPI=1
-    add_if_missing VKD3D_DISABLE_EXTENSIONS \
-      VK_NV_low_latency2
-    add_if_missing WINEDLLOVERRIDES \
-      dinput8 \
-      dstorage \
-      dstoragecore
-  elif [[ "${POSITIONAL_ARGS[*]}" == */MonsterHunterRise.exe ]]; then
-    add_if_missing WINEDLLOVERRIDES \
-      dinput8
-  elif [[ "${POSITIONAL_ARGS[*]}" == */HoloCure.exe ]]; then
-    USE_GAMESCOPE=true
-  elif [[ "${POSITIONAL_ARGS[*]}" == */Terraria ]]; then
-    if [[ "$(xrandr | grep '\*+$' | sed 's/^\s*//;s/x.*//')" -lt 1920 ]]; then
-      USE_GAMESCOPE=true
-      add_if_missing GAMESCOPE_ARGS \
-        --nested-height 1080 \
-        --nested-width 1920
-    fi
+function init_string() {
+  cat <<EOF
+#!/usr/bin/env bash
+
+ENV_VARS=()
+DXVK_CONFIG=()
+VKD3D_CONFIG=()
+WINEDLLOVERRIDES=()
+VKD3D_DISABLE_EXTENSIONS=()
+GAMESCOPE_ARGS=()
+COMMAND_PRE=()
+COMMAND_POST=()
+
+USE_GAMESCOPE=
+USE_GAMEMODE=
+USE_MANGOHUD=
+USE_VKBASALT=
+EOF
+}
+
+function init() {
+  source <(init_string)
+
+  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/genv"
+  CONF_VARS="$CONF_DIR/config.sh"
+  CONF_GAMES="$CONF_DIR/game_cfg.sh"
+
+  if [[ ! -d "$CONF_DIR" ]]; then
+    mkdir -p "$CONF_DIR" || exit 1
   fi
+  if [[ ! -f "$CONF_VARS" ]]; then
+    init_string > "$CONF_VARS"
+  else
+    source "$CONF_VARS"
+  fi
+  if [[ ! -f "$CONF_GAMES" ]]; then
+    cat <<EOF > "$CONF_GAMES"
+#!/usr/bin/env bash
+
+case "\${POSITIONAL_ARGS[*]} " in
+  *"/Terraria "*)
+    USE_GAMEMODE=true
+    ;;
+  *)
+    USE_GAMEMODE=true
+    ;;
+esac
+EOF
+  fi
+
+  case "$(lspci -vnn | grep VGA)" in
+    *NVIDIA*)
+      GPU_VENDOR=NVIDIA
+      ;;
+    *AMD*)
+      GPU_VENDOR=AMD
+      ;;
+    *INTEL*)
+      GPU_VENDOR=INTEL
+      ;;
+    *)
+      GPU_VENDOR=UNKNOWN
+      ;;
+  esac
+
+  COMMAND=()
+  POSITIONAL_ARGS=()
+}
+
+function config() {
+  source "$CONF_GAMES"
 
   if [[ -n "$USE_MANGOHUD" ]] && command -v mangohud &>/dev/null; then
     if [[ -n "$USE_GAMESCOPE" ]]; then
       add_if_missing GAMESCOPE_ARGS \
         --mangoapp
     else
-      add_if_missing ENV \
+      add_if_missing ENV_VARS \
         MANGOHUD=1
     fi
   fi
 
   if [[ -n "$USE_VKBASALT" ]] && command -v vkbasalt &>/dev/null; then
-    add_if_missing ENV \
+    add_if_missing ENV_VARS \
       ENABLE_VKBASALT=1
   fi
 
@@ -86,23 +109,23 @@ function config() {
   fi
 
   if [[ "${#DXVK_CONFIG[@]}" -gt 0 ]]; then
-    ENV=("DXVK_CONFIG=$(comma_separated "${DXVK_CONFIG[@]}")" "${ENV[@]}")
+    ENV_VARS=("DXVK_CONFIG=$(comma_separated "${DXVK_CONFIG[@]}")" "${ENV_VARS[@]}")
   fi
 
   if [[ "${#VKD3D_CONFIG[@]}" -gt 0 ]]; then
-    ENV=("VKD3D_CONFIG=$(comma_separated "${VKD3D_CONFIG[@]}")" "${ENV[@]}")
+    ENV_VARS=("VKD3D_CONFIG=$(comma_separated "${VKD3D_CONFIG[@]}")" "${ENV_VARS[@]}")
   fi
 
   if [[ "${#VKD3D_DISABLE_EXTENSIONS[@]}" -gt 0 ]]; then
-    ENV=("VKD3D_DISABLE_EXTENSIONS=$(comma_separated "${VKD3D_DISABLE_EXTENSIONS[@]}")" "${ENV[@]}")
+    ENV_VARS=("VKD3D_DISABLE_EXTENSIONS=$(comma_separated "${VKD3D_DISABLE_EXTENSIONS[@]}")" "${ENV_VARS[@]}")
   fi
 
   if [[ "${#WINEDLLOVERRIDES[@]}" -gt 0 ]]; then
-    ENV=("WINEDLLOVERRIDES=$(comma_separated "${WINEDLLOVERRIDES[@]}")=n,b" "${ENV[@]}")
+    ENV_VARS=("WINEDLLOVERRIDES=$(comma_separated "${WINEDLLOVERRIDES[@]}")=n,b" "${ENV_VARS[@]}")
   fi
 
-  if [[ "${#ENV[@]}" -gt 0 ]]; then
-    COMMAND=(env "${ENV[@]}" "${COMMAND[@]}")
+  if [[ "${#ENV_VARS[@]}" -gt 0 ]]; then
+    COMMAND=(env "${ENV_VARS[@]}" "${COMMAND[@]}")
   fi
 }
 
@@ -179,12 +202,12 @@ function parse() {
         shift
         ;;
       -l) # set PROTON_LOG to 1
-        add_if_missing ENV \
+        add_if_missing ENV_VARS \
           PROTON_LOG=1
         shift
         ;;
       -L) # log vkBasalt output
-        add_if_missing ENV \
+        add_if_missing ENV_VARS \
           VKBASALT_LOG_LEVEL=trace \
           VKBASALT_LOG_FILE="$HOME/vkBasalt.log"
         shift
