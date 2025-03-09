@@ -2,6 +2,11 @@
 
 case "${POSITIONAL_ARGS[*]} " in
   *"/MonsterHunterWilds.exe "*)
+    USE_VKBASALT=true
+    add_if_missing WINEDLLOVERRIDES \
+      dinput8 \
+      dstorage \
+      dstoragecore
     if [[ "$GPU_VENDOR" == NVIDIA ]]; then
       add_if_missing ENV_VARS \
         PROTON_ENABLE_NGX_UPDATER=1 \
@@ -10,10 +15,6 @@ case "${POSITIONAL_ARGS[*]} " in
       add_if_missing VKD3D_DISABLE_EXTENSIONS \
         VK_NV_low_latency2
     fi
-    add_if_missing WINEDLLOVERRIDES \
-      dinput8 \
-      dstorage \
-      dstoragecore
     ;;
   *"/MonsterHunterRise.exe "*)
     add_if_missing WINEDLLOVERRIDES \
