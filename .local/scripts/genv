@@ -9,7 +9,7 @@ function main() {
     print_array "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}"
   else
     print_array "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}" > ~/.cache/genv
-    "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}"
+    exec "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}"
   fi
 }
 
