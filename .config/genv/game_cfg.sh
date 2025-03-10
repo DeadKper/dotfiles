@@ -22,6 +22,7 @@ case "${POSITIONAL_ARGS[*]} " in
     ;;
   *"/HoloCure.exe "*)
     USE_GAMESCOPE=true
+    GAMESCOPE_AUTO_OUTPUT_SIZE=true
     ;;
   *"/Terraria "*)
     if [[ "$(xrandr | grep '\*+$' | sed 's/^\s*//;s/x.*//')" -lt 1920 ]]; then
