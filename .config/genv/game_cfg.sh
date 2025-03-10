@@ -26,6 +26,7 @@ case "${POSITIONAL_ARGS[*]} " in
   *"/Terraria "*)
     if [[ "$(xrandr | grep '\*+$' | sed 's/^\s*//;s/x.*//')" -lt 1920 ]]; then
       USE_GAMESCOPE=true
+      GAMESCOPE_AUTO_OUTPUT_SIZE=true
       add_if_missing GAMESCOPE_ARGS \
         --nested-height 1080 \
         --nested-width 1920
