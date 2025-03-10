@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
 
 function main() {
+  GENV_LOG="${XDG_CACHE_HOME:-$HOME/.cache}/genv"
+
   init
   parse "$@"
   config
 
   if [[ "${#POSITIONAL_ARGS[@]}" -eq 0 ]]; then
-    print_array "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}"
+    [[ "${#COMMAND_PRE[@]}" -gt 0 ]] && print_array "${COMMAND_PRE[@]}"
+    print_array "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}"
+    [[ "${#COMMAND_POST[@]}" -gt 0 ]] && print_array "${COMMAND_POST[@]}"
+    return 0
   else
-    print_array "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}" > ~/.cache/genv
-    exec "${COMMAND[@]}" "${COMMAND_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${COMMAND_POST[@]}"
+    echo -n > "$GENV_LOG"
+    [[ "${#COMMAND_PRE[@]}" -gt 0 ]] && print_array "${COMMAND_PRE[@]}" >> "$GENV_LOG" && eval "$(print_array "${COMMAND_PRE[@]}")"
+    print_array "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}" >> "$GENV_LOG"
+    function post() {
+      local code=$?
+      [[ "${#COMMAND_POST[@]}" -gt 0 ]] && print_array "${COMMAND_POST[@]}" >> "$GENV_LOG" && eval "$(print_array "${COMMAND_POST[@]}")"
+      return $code
+    }
+    trap "trap - hup int kill term exit; post" hup int kill term exit
+    "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}"
   fi
 }
 
@@ -23,13 +36,19 @@ VKD3D_CONFIG=()
 WINEDLLOVERRIDES=()
 VKD3D_DISABLE_EXTENSIONS=()
 GAMESCOPE_ARGS=()
-COMMAND_PRE=()
-COMMAND_POST=()
+ARGS_PRE=()
+ARGS_POST=()
 
-USE_GAMESCOPE=
 USE_GAMEMODE=
 USE_MANGOHUD=
 USE_VKBASALT=
+
+USE_GAMESCOPE=
+GAMESCOPE_AUTO_OUTPUT_SIZE=
+GAMESCOPE_AUTO_NESTED_SIZE=
+
+COMMAND_PRE=()
+COMMAND_POST=()
 EOF
 }
 
@@ -84,6 +103,20 @@ EOF
 
 function config() {
   source "$CONF_GAMES"
+
+  local display="$(xrandr | grep '\*+$')"
+  if [[ -n "$GAMESCOPE_AUTO_NESTED_SIZE" ]]; then
+    add_if_missing GAMESCOPE_ARGS \
+      --nested-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")" \
+      --nested-width "$(sed 's/^\s*//;s/x.*//' <<< "$display")"
+  fi
+  if [[ -n "$GAMESCOPE_AUTO_OUTPUT_SIZE" ]]; then
+    add_if_missing GAMESCOPE_ARGS \
+      --output-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")" \
+      --output-width "$(sed 's/^\s*//;s/x.*//' <<< "$display")"
+  fi
+
+  local display="$(xrandr | grep '\*+$')"
 
   if [[ -n "$USE_MANGOHUD" ]] && command -v mangohud &>/dev/null; then
     if [[ -n "$USE_GAMESCOPE" ]]; then
@@ -217,9 +250,6 @@ function parse() {
         local display="$(xrandr | grep '\*+$')"
         # local refresh="$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
         add_if_missing GAMESCOPE_ARGS \
-          --output-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")" \
-          --output-width "$(sed 's/^\s*//;s/x.*//' <<< "$display")"
-        add_if_missing GAMESCOPE_ARGS \
           --adaptive-sync
         add_if_missing GAMESCOPE_ARGS \
           --nested-unfocused-refresh 5
@@ -265,11 +295,12 @@ function parse() {
           --force-composition
         shift
         ;;
-      -a) # set gamescope nested size to current size
-        local display="$(xrandr | grep '\*+$')"
-        add_if_missing GAMESCOPE_ARGS \
-          --nested-height "$(sed 's/^\s*[^x]*x//;s/\s.*//' <<< "$display")" \
-          --nested-width "$(sed 's/^\s*//;s/x.*//' <<< "$display")"
+      -a) # set gamescope nested size to screen size
+        GAMESCOPE_AUTO_NESTED_SIZE=true
+        shift
+        ;;
+      -A) # set gamescope output size to screen size
+        GAMESCOPE_AUTO_OUTPUT_SIZE=true
         shift
         ;;
       -w) # (WIDTH) set gamescope width
