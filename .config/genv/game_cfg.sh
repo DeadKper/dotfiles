@@ -7,6 +7,9 @@ case "${POSITIONAL_ARGS[*]} " in
       dinput8 \
       dstorage \
       dstoragecore
+    # add_if_missing ARGS_POST \
+    #   /WineDetectionEnabled:False \
+    #   -dx11
     if [[ "$GPU_VENDOR" == NVIDIA ]]; then
       add_if_missing ENV_VARS \
         PROTON_ENABLE_NGX_UPDATER=1 \
