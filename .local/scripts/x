@@ -134,7 +134,6 @@ tmp_extract() {
     mkdir -p "${TMP_DIR}"
     case "${EXT}" in
         "rar")
-            check
             if [ -n "${VERBOSE}" ]
             then
                 unrar x "${ARCHIVE}" "${TMP_DIR}"
@@ -154,9 +153,9 @@ tmp_extract() {
             cd "${TMP_DIR}"
             if [ -n "${VERBOSE}" ]
             then
-                7z e  "${ARCHIVE}"
+                7z -y e "${ARCHIVE}"
             else
-                7z e "${ARCHIVE}" > /dev/null
+                7z -y e "${ARCHIVE}" > /dev/null
             fi
             cd "${OLDPWD}"
             ;;
