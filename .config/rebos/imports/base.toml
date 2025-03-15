@@ -6,6 +6,7 @@ items = [
     "curl",
     "flatpak",
     "git",
+    "git-lfs",
     "imagemagick",
     "inetutils",
     "iotop",
