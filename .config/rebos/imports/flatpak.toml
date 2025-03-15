@@ -10,6 +10,7 @@ items = [
     "net.audiorelay.AudioRelay",
     "org.gimp.GIMP",
     "org.kde.krita",
+    "com.nextcloud.desktopclient.nextcloud",
 
     "com.heroicgameslauncher.hgl",
     "com.vysp3r.ProtonPlus",
