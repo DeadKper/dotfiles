@@ -1,3 +1,4 @@
-export RUSTUP_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/rust/rustup"
-export CARGO_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/rust/cargo"
-path=("$CARGO_HOME/bin" "${path[@]}")
+local RUST_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/rust"
+export RUSTUP_HOME="$RUST_HOME/rustup"
+export CARGO_HOME="$RUST_HOME/cargo"
+source "$RUST_HOME/cargo/env"
