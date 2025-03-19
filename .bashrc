@@ -39,3 +39,4 @@ if test -f ~/.local/share/blesh/ble.sh; then
 		bleopt prompt_rps1_final='$(starship module time | xargs -d \\n -I {} echo "{} ")'
 	fi
 fi
+. "/home/missael/.local/share/rust/cargo/env"
