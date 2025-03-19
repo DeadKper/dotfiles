@@ -9,6 +9,7 @@ imports = [
     "cpu-amd",
     "filesystem",
     "gpu-nvidia",
+    "tauri",
 
     "flatpak",
 ]
@@ -76,6 +77,7 @@ items = [
     "sd",
     "sddm",
     "simple-scan",
+    "squashfs-tools",
     "starship",
     "steam",
     "sudo",
