@@ -4,6 +4,31 @@ function main() {
   GENV_LOG="${XDG_CACHE_HOME:-$HOME/.cache}/genv"
 
   init
+
+  if grep -qiE '^ed?i?t?$' <<< "$1"; then
+    if [[ -z "$EDITOR" ]]; then
+      if command -v nvim &>/dev/null; then
+        EDITOR=nvim
+      elif command -v vim &>/dev/null; then
+        EDITOR=vim
+      elif command -v nano &>/dev/null; then
+        EDITOR=nano
+      elif command -v emacs &>/dev/null; then
+        EDITOR=emacs
+      elif command -v hx &>/dev/null; then
+        EDITOR=hx
+      elif command -v vi &>/dev/null; then
+        EDITOR=vi
+      else
+        echo 'no editor detected, manually set EDITOR env variable with a valid editor'
+        return 1
+      fi
+    fi
+
+    "$EDITOR" "$CONF_GAMES"
+    return 0
+  fi
+
   parse "$@"
   config
 
@@ -117,11 +142,16 @@ function config() {
   fi
 
   local display="$(xrandr | grep '\*+$')"
+  local mangohud_command=
 
   if [[ -n "$USE_MANGOHUD" ]] && command -v mangohud &>/dev/null; then
     if [[ -n "$USE_GAMESCOPE" ]]; then
-      add_if_missing GAMESCOPE_ARGS \
-        --mangoapp
+      if [[ "$(index --steam "${GAMESCOPE_ARGS[@]}")" -ge 0 ]]; then
+        mangohud_command=true
+      else
+        add_if_missing GAMESCOPE_ARGS \
+          --mangoapp
+      fi
     else
       add_if_missing ENV_VARS \
         MANGOHUD=1
@@ -155,6 +185,10 @@ function config() {
 
   if [[ "${#WINEDLLOVERRIDES[@]}" -gt 0 ]]; then
     ENV_VARS=("WINEDLLOVERRIDES=$(comma_separated "${WINEDLLOVERRIDES[@]}")=n,b" "${ENV_VARS[@]}")
+  fi
+
+  if [[ -n "$mangohud_command" ]]; then
+    COMMAND+=("$(command -v mangohud)")
   fi
 
   if [[ "${#ENV_VARS[@]}" -gt 0 ]]; then
