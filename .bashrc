@@ -111,4 +111,4 @@ EOF
 export -f sudo
 alias sudo='sudo '
 
-. "/home/missael/.local/share/rust/cargo/env"
+[[ -f ~/.local/share/rust/cargo/env ]] && source ~/.local/share/rust/cargo/env
