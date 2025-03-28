@@ -13,13 +13,15 @@ case "${POSITIONAL_ARGS[*]} " in
     # add_if_missing ARGS_POST \
     #   /WineDetectionEnabled:False
     #   -dx11
+    add_if_missing ENV_VARS \
+      LD_PRELOAD=
     if [[ "$GPU_VENDOR" == NVIDIA ]]; then
       add_if_missing ENV_VARS \
         PROTON_ENABLE_NGX_UPDATER=1 \
         PROTON_ENABLE_NVAPI=1 \
-        VKD3D_FEATURE_LEVEL=12_0 \
-        MESA_DISK_CACHE_SINGLE_FILE=0
-        # PROTON_HIDE_NVIDIA_GPU=1
+        MESA_DISK_CACHE_SINGLE_FILE=0 \
+        PROTON_HIDE_NVIDIA_GPU=1
+        # VKD3D_FEATURE_LEVEL=12_0
       add_if_missing VKD3D_DISABLE_EXTENSIONS \
         VK_NV_low_latency2
     fi

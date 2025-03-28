@@ -47,7 +47,11 @@ function main() {
       return $code
     }
     trap "trap - hup int kill term exit; post" hup int kill term exit
-    "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}"
+    if [[ -n "$log_genv" ]]; then
+      "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}" &> "${GENV_LOG}.log"
+    else
+      "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}"
+    fi
   fi
 }
 
@@ -277,6 +281,10 @@ function parse() {
         add_if_missing ENV_VARS \
           VKBASALT_LOG_LEVEL=trace \
           VKBASALT_LOG_FILE="$HOME/vkBasalt.log"
+        shift
+        ;;
+      --log)
+        log_genv=true
         shift
         ;;
       -s) # enable gamescope
