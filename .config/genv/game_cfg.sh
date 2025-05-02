@@ -30,6 +30,10 @@ case "${POSITIONAL_ARGS[*]} " in
     add_if_missing WINEDLLOVERRIDES \
       dinput8
     ;;
+  *"/vermintide.exe "*)
+    add_if_missing WINEDLLOVERRIDES \
+      dinput8
+    ;;
   *"/HoloCure.exe "*)
     USE_GAMESCOPE=true
     GAMESCOPE_AUTO_OUTPUT_SIZE=true
@@ -43,4 +47,9 @@ case "${POSITIONAL_ARGS[*]} " in
         --nested-width 1920
     fi
     ;;
+  *"/Last Epoch.exe "*)
+    add_if_missing ENV_VARS \
+      LD_PRELOAD=
+    add_if_missing ARGS_POST \
+      -force -d3d11
 esac
