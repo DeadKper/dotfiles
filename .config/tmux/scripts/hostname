@@ -32,7 +32,7 @@ get_hostname() {
 		fi
 	fi
 	if test -z "$hostname"; then
-		hostname
+		cat /etc/hostname
 	else
 		echo $hostname
 	fi
