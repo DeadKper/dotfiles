@@ -52,4 +52,11 @@ case "${POSITIONAL_ARGS[*]} " in
       LD_PRELOAD=
     add_if_missing ARGS_POST \
       -force -d3d11
+    ;;
+  *"/Gw2-64.exe "*)
+    add_if_missing ENV_VARS \
+      DXVK_ASYNC=1
+    add_if_missing ARGS_POST \
+      -autologin -USEALLAVAILABLECORES
+    ;;
 esac
