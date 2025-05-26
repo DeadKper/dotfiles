@@ -188,6 +188,10 @@ fi
 if command -v jj &>/dev/null; then
     abbr jjc='jj commit -m "<CURSOR>"'
     abbr jjp='jj git push'
+    abbr jjt='jj bookmark track main<CURSOR>@origin'
+    abbr jjb='jj bookmark set main<CURSOR> -r @-'
+    abbr 'jj p=jj git push'
+    abbr 'jj push=jj git push'
 fi
 
 if which ansible &>/dev/null; then
