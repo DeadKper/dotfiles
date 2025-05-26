@@ -185,6 +185,11 @@ if which git &>/dev/null; then
     abbr gps='git push'
 fi
 
+if command -v jj &>/dev/null; then
+    abbr jjc='jj commit -m "<CURSOR>"'
+    abbr jjp='jj git push'
+fi
+
 if which ansible &>/dev/null; then
     abbr apl='ansible-playbook'
     abbr apv='ansible-playbook -e "<CURSOR>"'

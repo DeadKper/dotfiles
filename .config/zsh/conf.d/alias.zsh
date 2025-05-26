@@ -8,6 +8,10 @@ else
     alias ls="ls --color=auto"
 fi
 
+if command -v trash &>/dev/null; then
+    alias rm=trash
+fi
+
 alias l="ls -l"
 alias ll="ls -l"
 alias la="ls -A"
