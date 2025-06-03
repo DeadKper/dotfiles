@@ -15,6 +15,10 @@ case "${POSITIONAL_ARGS[*]} " in
     #   -dx11
     add_if_missing ENV_VARS \
       LD_PRELOAD=
+    # USE_GAMESCOPE=true
+    # GAMESCOPE_AUTO_NESTED_SIZE=true
+    # add_if_missing GAMESCOPE_ARGS \
+    #   --hdr-enabled
     if [[ "$GPU_VENDOR" == NVIDIA ]]; then
       add_if_missing ENV_VARS \
         PROTON_ENABLE_NGX_UPDATER=1 \
@@ -58,5 +62,12 @@ case "${POSITIONAL_ARGS[*]} " in
       DXVK_ASYNC=1
     add_if_missing ARGS_POST \
       -autologin -USEALLAVAILABLECORES
+    ;;
+  *"ELDEN RING NIGHTREIGN/Game/start_protected_game.exe "*)
+    ;;
+  *"ELDEN RING/Game/start_protected_game.exe "*)
+    USE_GAMESCOPE=true
+    GAMESCOPE_AUTO_OUTPUT_SIZE=true
+    ENABLE_HDR=true
     ;;
 esac
