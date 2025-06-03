@@ -25,5 +25,6 @@ if test -z "$WAYLAND_DISPLAY"; then
 else
     deps ydotool wl-paste sed
     wait "$@"
-    ydotool type -d 0 "$(wl-paste | sed -e 'y/|'\''¿´+}ñ{-°!"&\/()=?¡¨*]Ñ[;:_/`-=[]'\\\\';'\''\/~!@^&*()_+{}|:"<>?/')"
+    # ydotool type -d 0 -f - < <(wl-paste | sed -e 'y/|'\''¿´+}ñ{-°!"&\/()=?¡¨*]Ñ[;:_/`-=[]'\\\\';'\''\/~!@^&*()_+{}|:"<>?/' | sed -z 's/\n$//')
+    ydotool type -d 0 -f - < <(wl-paste | sed -z 's/\n$//')
 fi
