@@ -1,5 +1,9 @@
 (defcfg
   process-unmapped-keys no
+
+  linux-dev-names-exclude (
+    "ydotoold virtual device"
+  )
 )
 
 (defsrc
