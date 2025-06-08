@@ -64,10 +64,19 @@ case "${POSITIONAL_ARGS[*]} " in
       -autologin -USEALLAVAILABLECORES
     ;;
   *"ELDEN RING NIGHTREIGN/Game/start_protected_game.exe "*)
+    USE_GAMESCOPE=true
+    GAMESCOPE_AUTO_OUTPUT_SIZE=true
+    GAMESCOPE_AUTO_NESTED_SIZE=true
+    add_if_missing GAMESCOPE_ARGS \
+      --nested-unfocused-refresh 30
+    add_if_missing GAMESCOPE_ARGS \
+      --force-grab-cursor
     ;;
   *"ELDEN RING/Game/start_protected_game.exe "*)
     USE_GAMESCOPE=true
     GAMESCOPE_AUTO_OUTPUT_SIZE=true
-    ENABLE_HDR=true
+    GAMESCOPE_AUTO_NESTED_SIZE=true
+    add_if_missing GAMESCOPE_ARGS \
+      --force-grab-cursor
     ;;
 esac
