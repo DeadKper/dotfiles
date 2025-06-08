@@ -41,12 +41,23 @@ function main() {
     echo -n > "$GENV_LOG"
     [[ "${#COMMAND_PRE[@]}" -gt 0 ]] && print_array "${COMMAND_PRE[@]}" >> "$GENV_LOG" && eval "$(print_array "${COMMAND_PRE[@]}")"
     print_array "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}" >> "$GENV_LOG"
+
     function post() {
       local code=$?
+      readarray -t pids < <(
+        ps -ax -o pid,cmd | grep -vE "grep|$(basename "$0")" | grep -F -- "${POSITIONAL_ARGS[*]}" | awk '{print $1}')
+      for pid in "${pids[@]}"; do
+        timeout $TIMEOUT tail --pid $pid -f /dev/null &
+      done
+      wait
+      if ps -p "${pids[@]}" &>/dev/null; then
+        kill -9 "${pids[@]}"
+      fi
       [[ "${#COMMAND_POST[@]}" -gt 0 ]] && print_array "${COMMAND_POST[@]}" >> "$GENV_LOG" && eval "$(print_array "${COMMAND_POST[@]}")"
       return $code
     }
     trap "trap - hup int kill term exit; post" hup int kill term exit
+
     if [[ -n "$log_genv" ]]; then
       "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}" &> "${GENV_LOG}.log"
     else
@@ -69,12 +80,12 @@ GAMESCOPE_ENV_VARS=()
 ARGS_PRE=()
 ARGS_POST=()
 
-ENABLE_HDR=
 USE_GAMEMODE=
 USE_MANGOHUD=
 USE_VKBASALT=
 
 USE_GAMESCOPE=
+GAMESCOPE_HDR=
 GAMESCOPE_ENV_VARS=()
 GAMESCOPE_AUTO_OUTPUT_SIZE=
 GAMESCOPE_AUTO_NESTED_SIZE=
@@ -129,6 +140,7 @@ EOF
       ;;
   esac
 
+  TIMEOUT=30
   COMMAND=()
   POSITIONAL_ARGS=()
 }
@@ -165,7 +177,7 @@ function config() {
     fi
   fi
 
-  if [[ -n "$ENABLE_HDR" ]]; then
+  if [[ -n "$GAMESCOPE_HDR" ]]; then
     if [[ -n "$USE_GAMESCOPE" ]]; then
       ENV_VARS+=(ENABLE_HDR_WSI=1)
       GAMESCOPE_ARGS+=(--hdr-enabled --hdr-sdr-content-nits 600)
@@ -185,6 +197,11 @@ function config() {
   fi
 
   if [[ -n "$USE_GAMESCOPE" ]] && command -v gamescope &>/dev/null; then
+    add_if_missing GAMESCOPE_ARGS \
+      --adaptive-sync
+    add_if_missing GAMESCOPE_ARGS \
+      --nested-unfocused-refresh 5
+
     COMMAND+=("$(command -v gamescope)" "${GAMESCOPE_ARGS[@]}" --)
     if [[ "${#GAMESCOPE_ENV_VARS[@]}" -gt 0 ]]; then
       COMMAND+=(env "${GAMESCOPE_ENV_VARS[@]}")
@@ -307,10 +324,6 @@ function parse() {
         USE_GAMESCOPE=true
         local display="$(xrandr | grep '\*+$')"
         # local refresh="$(sed -E 's/.*\s([0-9.]+)\*\+$/\1/' <<< "$display" | awk '{printf("%.0f\n",$0+0.5)}')"
-        add_if_missing GAMESCOPE_ARGS \
-          --adaptive-sync
-        add_if_missing GAMESCOPE_ARGS \
-          --nested-unfocused-refresh 5
         # add_if_missing GAMESCOPE_ARGS \
         #   --nested-refresh "$(awk '{printf "%0.f\n",$1*2}' <<< "$refresh")"
         #   --framerate-limit "$(awk '{printf "%0.f\n",$1*2}' <<< "$refresh")"
@@ -327,7 +340,7 @@ function parse() {
         ;;
       -y) # expose wayland to gamescope
         add_if_missing GAMESCOPE_ARGS \
-          --expose-wayland --backend wayland
+          --expose-wayland
         shift
         ;;
       -b) # set gamescope as borderless
@@ -372,7 +385,7 @@ function parse() {
         shift 2 || { usage && exit 1; }
         ;;
       --hdr) # Enable hdr support
-        ENABLE_HDR=true
+        GAMESCOPE_HDR=true
         shift
         ;;
       --install) # symlink this app to /bin/ (requires sudo)
