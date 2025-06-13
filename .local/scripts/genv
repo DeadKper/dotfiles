@@ -39,7 +39,11 @@ function main() {
     return 0
   else
     echo -n > "$GENV_LOG"
-    [[ "${#COMMAND_PRE[@]}" -gt 0 ]] && print_array "${COMMAND_PRE[@]}" >> "$GENV_LOG" && eval "$(print_array "${COMMAND_PRE[@]}")"
+    if [[ "${#COMMAND_PRE[@]}" -gt 0 ]]; then
+      print_array "${COMMAND_PRE[@]}" >> "$GENV_LOG"
+      nohup timeout $SCRIPT_TIMEOUT eval "$(print_array "${COMMAND_PRE[@]}")" &>/dev/null
+      disown &>/dev/null
+    fi
     print_array "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}" >> "$GENV_LOG"
 
     function post() {
@@ -47,13 +51,17 @@ function main() {
       readarray -t pids < <(
         ps -ax -o pid,cmd | grep -vE "grep|$(basename "$0")" | grep -F -- "${POSITIONAL_ARGS[*]}" | awk '{print $1}')
       for pid in "${pids[@]}"; do
-        timeout $TIMEOUT tail --pid $pid -f /dev/null &
+        timeout $GAME_TIMEOUT tail --pid $pid -f /dev/null &
       done
       wait
       if ps -p "${pids[@]}" &>/dev/null; then
         kill -9 "${pids[@]}"
       fi
-      [[ "${#COMMAND_POST[@]}" -gt 0 ]] && print_array "${COMMAND_POST[@]}" >> "$GENV_LOG" && eval "$(print_array "${COMMAND_POST[@]}")"
+      if [[ "${#COMMAND_POST[@]}" -gt 0 ]]; then
+        print_array "${COMMAND_POST[@]}" >> "$GENV_LOG"
+        nohup timeout $SCRIPT_TIMEOUT eval "$(print_array "${COMMAND_POST[@]}")" &>/dev/null
+        disown &>/dev/null
+      fi
       return $code
     }
     trap "trap - hup int kill term exit; post" hup int kill term exit
@@ -140,7 +148,8 @@ EOF
       ;;
   esac
 
-  TIMEOUT=30
+  GAME_TIMEOUT=5
+  SCRIPT_TIMEOUT=10
   COMMAND=()
   POSITIONAL_ARGS=()
 }
