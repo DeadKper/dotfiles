@@ -41,7 +41,7 @@ function main() {
     echo -n > "$GENV_LOG"
     if [[ "${#COMMAND_PRE[@]}" -gt 0 ]]; then
       print_array "${COMMAND_PRE[@]}" >> "$GENV_LOG"
-      nohup timeout $SCRIPT_TIMEOUT eval "$(print_array "${COMMAND_PRE[@]}")" &>/dev/null
+      timeout $SCRIPT_TIMEOUT bash -c "eval $(print_array "${COMMAND_PRE[@]}")"
       disown &>/dev/null
     fi
     print_array "${COMMAND[@]}" "${ARGS_PRE[@]}" "${POSITIONAL_ARGS[@]}" "${ARGS_POST[@]}" >> "$GENV_LOG"
@@ -59,7 +59,7 @@ function main() {
       fi
       if [[ "${#COMMAND_POST[@]}" -gt 0 ]]; then
         print_array "${COMMAND_POST[@]}" >> "$GENV_LOG"
-        nohup timeout $SCRIPT_TIMEOUT eval "$(print_array "${COMMAND_POST[@]}")" &>/dev/null
+        timeout $SCRIPT_TIMEOUT bash -c "eval $(print_array "${COMMAND_POST[@]}")"
         disown &>/dev/null
       fi
       return $code
