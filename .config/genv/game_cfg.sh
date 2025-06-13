@@ -64,13 +64,20 @@ case "${POSITIONAL_ARGS[*]} " in
       -autologin -USEALLAVAILABLECORES
     ;;
   *"ELDEN RING NIGHTREIGN/Game/start_protected_game.exe "*)
+    USE_GAMEMODE=
     USE_GAMESCOPE=true
+    USE_VKBASALT=true
+    add_if_missing ENV_VARS \
+      LD_PRELOAD= \
+      VKD3D_CONFIG=no_upload_hvv
     GAMESCOPE_AUTO_OUTPUT_SIZE=true
     GAMESCOPE_AUTO_NESTED_SIZE=true
     add_if_missing GAMESCOPE_ARGS \
-      --nested-unfocused-refresh 30
+      --nested-unfocused-refresh 60
     add_if_missing GAMESCOPE_ARGS \
       --force-grab-cursor
+    COMMAND_PRE=(gamemoded -r \&)
+    COMMAND_POST=(ps -ef \| grep -v grep \| grep -wF 'gamemoded -r' \| awk '{print $2}' \| xargs -r kill -s int)
     ;;
   *"ELDEN RING/Game/start_protected_game.exe "*)
     USE_GAMESCOPE=true
