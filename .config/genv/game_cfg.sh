@@ -40,12 +40,11 @@ case "${POSITIONAL_ARGS[*]} " in
     ;;
   *"/HoloCure.exe "*)
     USE_GAMESCOPE=true
-    GAMESCOPE_AUTO_OUTPUT_SIZE=true
     ;;
   *"/Terraria "*)
     if [[ "$(xrandr | grep '\*+$' | sed 's/^\s*//;s/x.*//')" -lt 1920 ]]; then
       USE_GAMESCOPE=true
-      GAMESCOPE_AUTO_OUTPUT_SIZE=true
+      GAMESCOPE_AUTO_NESTED_SIZE=
       add_if_missing GAMESCOPE_ARGS \
         --nested-height 1080 \
         --nested-width 1920
@@ -63,15 +62,35 @@ case "${POSITIONAL_ARGS[*]} " in
     add_if_missing ARGS_POST \
       -autologin -USEALLAVAILABLECORES
     ;;
+  *"PathOfExileSteam.exe "*)
+    add_if_missing ENV_VARS \
+      VKD3D_CONFIG=dxr11,dxr \
+      PULSE_LATENCY_MSEC=50
+    add_if_missing ARGS_POST \
+      --nologo \
+      --waitforpreload
+    if [[ "$GPU_VENDOR" == NVIDIA ]]; then
+      if [[ -n "$USE_GAMESCOPE" ]]; then
+        add_if_missing GAMESCOPE_ENV_VARS \
+          __NV_PRIME_RENDER_OFFLOAD=1 \
+          __GLX_VENDOR_LIBRARY_NAME=nvidia
+      else
+        add_if_missing ENV_VARS \
+          __NV_PRIME_RENDER_OFFLOAD=1 \
+          __GLX_VENDOR_LIBRARY_NAME=nvidia
+      fi
+    fi
+    ;;
   *"ELDEN RING NIGHTREIGN/Game/start_protected_game.exe "*)
     USE_GAMEMODE=
     USE_GAMESCOPE=true
     USE_VKBASALT=true
     add_if_missing ENV_VARS \
       LD_PRELOAD= \
-      VKD3D_CONFIG=no_upload_hvv
-    GAMESCOPE_AUTO_OUTPUT_SIZE=true
-    GAMESCOPE_AUTO_NESTED_SIZE=true
+      VKD3D_CONFIG=no_upload_hvv \
+      PULSE_LATENCY_MSEC=50
+    add_if_missing GAMESCOPE_ENV_VARS \
+      SDL_VIDEODRIVER=windows
     add_if_missing GAMESCOPE_ARGS \
       --nested-unfocused-refresh 60
     add_if_missing GAMESCOPE_ARGS \
@@ -81,8 +100,6 @@ case "${POSITIONAL_ARGS[*]} " in
     ;;
   *"ELDEN RING/Game/start_protected_game.exe "*)
     USE_GAMESCOPE=true
-    GAMESCOPE_AUTO_OUTPUT_SIZE=true
-    GAMESCOPE_AUTO_NESTED_SIZE=true
     add_if_missing GAMESCOPE_ARGS \
       --force-grab-cursor
     ;;

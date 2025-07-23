@@ -4,7 +4,6 @@ ENV_VARS=(
   __GL_SHADER_DISK_CACHE=1
   __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
   DXVK_HUD=compiler
-  # PULSE_LATENCY_MSEC=50
   # WINE_CPU_TOPOLOGY=12
 )
 DXVK_CONFIG=()
@@ -15,6 +14,7 @@ WINEDLLOVERRIDES=()
 VKD3D_DISABLE_EXTENSIONS=()
 GAMESCOPE_ARGS=(
   --backend sdl
+  --nested-refresh $(command -v xrandr &>/dev/null && xrandr | grep '\*+$' | sed -E 's/.*\s([0-9.]+)\*\+$/\1/' | awk '{printf("%.0f\n",$0+0.5)}' || echo 60)
 )
 GAMESCOPE_ENV_VARS=()
 ARGS_PRE=()
@@ -26,8 +26,8 @@ USE_VKBASALT=
 
 USE_GAMESCOPE=
 GAMESCOPE_HDR=
-GAMESCOPE_AUTO_OUTPUT_SIZE=
-GAMESCOPE_AUTO_NESTED_SIZE=
+GAMESCOPE_AUTO_OUTPUT_SIZE=true
+GAMESCOPE_AUTO_NESTED_SIZE=true
 
 COMMAND_PRE=()
 COMMAND_POST=()
