@@ -187,9 +187,12 @@ fi
 
 if command -v jj &>/dev/null; then
     abbr jjc='jj commit -m "<CURSOR>"'
-    abbr jjp='jj git push'
     abbr jjt='jj bookmark track main<CURSOR>@origin'
     abbr jjb='jj bookmark set main<CURSOR> -r @-'
+    abbr jjs='jj st'
+    abbr jjn='jj new'
+    abbr jjd='jj desc -m "<CURSOR>"'
+    abbr jjp='jj git push'
     abbr 'jj p=jj git push'
     abbr 'jj push=jj git push'
 fi
@@ -207,4 +210,8 @@ if which ansible &>/dev/null; then
     abbr arw='ansible-run -m wait'
     abbr alg='ansible-logs'
     abbr atp='ansible-template'
+fi
+
+if command -v just &>/dev/null; then
+    abbr j=just
 fi
