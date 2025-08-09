@@ -26,12 +26,6 @@ $cmd_duration\
 $time\
 """
 
-Rtransient="""
-$status\
-$cmd_duration\
-$time \
-"""
-
 [status]
 disabled = false
 
