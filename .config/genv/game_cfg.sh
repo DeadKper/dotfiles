@@ -13,8 +13,8 @@ case "${POSITIONAL_ARGS[*]} " in
     # add_if_missing ARGS_POST \
     #   /WineDetectionEnabled:False
     #   -dx11
-    add_if_missing ENV_VARS \
-      LD_PRELOAD=
+    # add_if_missing ENV_VARS \
+    #   LD_PRELOAD=
     # USE_GAMESCOPE=true
     # GAMESCOPE_AUTO_NESTED_SIZE=true
     # add_if_missing GAMESCOPE_ARGS \
@@ -51,8 +51,8 @@ case "${POSITIONAL_ARGS[*]} " in
     fi
     ;;
   *"/Last Epoch.exe "*)
-    add_if_missing ENV_VARS \
-      LD_PRELOAD=
+    # add_if_missing ENV_VARS \
+    #   LD_PRELOAD=
     add_if_missing ARGS_POST \
       -force -d3d11
     ;;
@@ -82,25 +82,30 @@ case "${POSITIONAL_ARGS[*]} " in
     fi
     ;;
   *"ELDEN RING NIGHTREIGN/Game/start_protected_game.exe "*)
-    USE_GAMEMODE=
+    USE_GAMEMODE=true
     USE_GAMESCOPE=true
-    USE_VKBASALT=true
+    # USE_VKBASALT=true
     add_if_missing ENV_VARS \
-      LD_PRELOAD= \
       VKD3D_CONFIG=no_upload_hvv \
       PULSE_LATENCY_MSEC=50
+      # LD_PRELOAD= \
     add_if_missing GAMESCOPE_ENV_VARS \
       SDL_VIDEODRIVER=windows
     add_if_missing GAMESCOPE_ARGS \
       --nested-unfocused-refresh 60
     add_if_missing GAMESCOPE_ARGS \
       --force-grab-cursor
-    COMMAND_PRE=(gamemoded -r \&)
-    COMMAND_POST=(ps -ef \| grep -v grep \| grep -wF 'gamemoded -r' \| awk '{print $2}' \| xargs -r kill -s int)
+    # COMMAND_PRE=(gamemoded -r \&)
+    # COMMAND_POST=(ps -ef \| grep -v grep \| grep -wF 'gamemoded -r' \| awk '{print $2}' \| xargs -r kill -s int)
     ;;
   *"ELDEN RING/Game/start_protected_game.exe "*)
     USE_GAMESCOPE=true
     add_if_missing GAMESCOPE_ARGS \
       --force-grab-cursor
+    ;;
+  *"/Hell Clock.exe "*)
+    ;;
+  *"/Warframe/Tools/Launcher.exe "*)
+    USE_GAMESCOPE=true
     ;;
 esac
