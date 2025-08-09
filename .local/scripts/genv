@@ -91,8 +91,8 @@ ARGS_POST=()
 USE_GAMEMODE=
 USE_MANGOHUD=
 USE_VKBASALT=
-
 USE_GAMESCOPE=
+
 GAMESCOPE_HDR=
 GAMESCOPE_ENV_VARS=()
 GAMESCOPE_AUTO_OUTPUT_SIZE=
@@ -202,7 +202,11 @@ function config() {
   fi
 
   if [[ -n "$USE_GAMEMODE" ]] && command -v gamemoderun &>/dev/null; then
-    COMMAND+=("$(command -v gamemoderun)")
+    if command -v game-performance &>/dev/null; then
+      COMMAND+=("$(command -v game-performance)")
+    elif command -v gamemoderun &>/dev/null; then
+      COMMAND+=("$(command -v gamemoderun)")
+    fi
   fi
 
   if [[ -n "$USE_GAMESCOPE" ]] && command -v gamescope &>/dev/null; then
