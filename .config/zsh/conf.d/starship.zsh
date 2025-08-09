@@ -9,8 +9,8 @@ if [[ -o interactive ]] && which starship &>/dev/null; then
     add-zle-hook-widget zle-line-finish transient-prompt
 
     function transient-prompt-startup() { # Save transient prompt format
-        SAVED_PROMPT="$(eval "printf '%s ' ${TRANSIENT_PROMPT}")"
-        SAVED_RPROMPT="$(eval "printf ' %s' ${TRANSIENT_RPROMPT}")"
+        SAVED_PROMPT="$(eval "printf '%s' '${TRANSIENT_PROMPT}'")"
+        SAVED_RPROMPT="$(eval "printf '%s' '${TRANSIENT_RPROMPT}'")"
     }
 
     function transient-prompt() { # Use saved transient prompt
