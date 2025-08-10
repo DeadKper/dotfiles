@@ -5,10 +5,10 @@ if [[ -o interactive ]] && which starship &>/dev/null; then
     TRANSIENT_RPROMPT="${PROMPT// prompt / prompt --profile rtransient }"
 
     autoload -Uz add-zle-hook-widget
-    add-zle-hook-widget zle-line-init transient-prompt-startup
+    add-zle-hook-widget zle-line-init transient-prompt-save
     add-zle-hook-widget zle-line-finish transient-prompt
 
-    function transient-prompt-startup() { # Save transient prompt format
+    function transient-prompt-save() { # Save transient prompt format
         SAVED_PROMPT="$(eval "printf '%s' \"${TRANSIENT_PROMPT}\"")"
         SAVED_RPROMPT="$(eval "printf '%s' \"${TRANSIENT_RPROMPT}\"")"
     }
