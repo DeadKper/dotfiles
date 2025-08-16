@@ -9,7 +9,7 @@ if [[ -o interactive ]] && which starship &>/dev/null; then
 
     function transient-prompt-precmd {
         # Fix ctrl+c behavior
-        TRAPINT() { transient-prompt; return $(( 128 + $1 )) }
+        TRAPINT() { transient-prompt 2>/dev/null; return $(( 128 + $1 )) }
 
         # Save transient prompt
         SAVED_PROMPT="$(eval "printf '%s' \"${TRANSIENT_PROMPT}\"")"
