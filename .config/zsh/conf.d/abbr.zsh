@@ -208,6 +208,8 @@ if which ansible &>/dev/null; then
     abbr arx='ansible-run -m script -a'
     abbr arm='ansible-run -m role -a'
     abbr arw='ansible-run -m wait'
+    abbr aru='ansible-run -m upload -a'
+    abbr ard='ansible-run -m download -a'
     abbr alg='ansible-logs'
     abbr atp='ansible-template'
 fi
