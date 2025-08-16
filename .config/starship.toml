@@ -59,7 +59,7 @@ read_only = " 󰌾"
 disabled = false
 
 [aws]
-symbol = "  "
+symbol = " "
 
 [buf]
 symbol = " "
@@ -91,11 +91,14 @@ symbol = " "
 [fossil_branch]
 symbol = " "
 
+[gcloud]
+symbol = " "
+
 [git_branch]
 symbol = " "
 
 [git_commit]
-tag_symbol = '  '
+tag_symbol = ' '
 
 [golang]
 symbol = " "
