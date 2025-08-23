@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 
+cpus=$(($(lscpu | awk '/^CPU\(s\):/ {print $2}')*3/4))
+
 ENV_VARS=(
   __GL_SHADER_DISK_CACHE=1
   __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
   DXVK_HUD=compiler
-  PROTON_ENABLE_WAYLAND=1
+  DXVK_ASYNC=1
   PROTON_ENABLE_HDR=1
-  # WINE_CPU_TOPOLOGY=12
+  PROTON_ENABLE_WAYLAND=1
+  WINE_CPU_TOPOLOGY="${cpus}:$(for i in $(seq $cpus); do echo -n $((i-1)),; done | sed 's/,$//')"
+  # DXIL_SPIRV_CONFIG=wmma_rdna3_workaround
+  # PROTON_FSR4_UPGRADE=1
 )
 DXVK_CONFIG=()
 VKD3D_CONFIG=(
