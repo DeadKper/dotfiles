@@ -51,10 +51,14 @@ case "${POSITIONAL_ARGS[*]} " in
     fi
     ;;
   *"/Last Epoch.exe "*)
-    # add_if_missing ENV_VARS \
-    #   LD_PRELOAD=
     add_if_missing ARGS_POST \
       -force -d3d11
+    USE_GAMESCOPE=true
+    if [[ "$GPU_VENDOR" == NVIDIA ]]; then
+      add_if_missing ENV_VARS \
+        PROTON_ENABLE_NGX_UPDATER=1 \
+        PROTON_ENABLE_NVAPI=1
+    fi
     ;;
   *"/Gw2-64.exe "*)
     add_if_missing ENV_VARS \
@@ -82,7 +86,6 @@ case "${POSITIONAL_ARGS[*]} " in
     fi
     ;;
   *"ELDEN RING NIGHTREIGN/Game/start_protected_game.exe "*)
-    USE_GAMEMODE=true
     USE_GAMESCOPE=true
     # USE_VKBASALT=true
     add_if_missing ENV_VARS \
@@ -104,6 +107,16 @@ case "${POSITIONAL_ARGS[*]} " in
       --force-grab-cursor
     ;;
   *"/Hell Clock.exe "*)
+    ;;
+  *"/The Finals/Discovery.exe "*)
+    USE_GAMESCOPE=true
+    add_if_missing ENV_VARS \
+      PROTON_USE_EAC_LINUX=1 \
+      PROTON_HIDE_NVIDIA_GPU=1
+    add_if_missing VKD3D_DISABLE_EXTENSIONS \
+      VK_NV_low_latency2
+    add_if_missing GAMESCOPE_ARGS \
+      --force-grab-cursor
     ;;
   *"/Warframe/Tools/Launcher.exe "*)
     USE_GAMESCOPE=true
