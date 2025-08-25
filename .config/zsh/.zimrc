@@ -61,5 +61,7 @@ zmodule zsh-users/zsh-autosuggestions
 # zsh autopair
 zmodule hlissner/zsh-autopair
 
+zmodule mafredri/zsh-async
+
 which zoxide &>/dev/null && zmodule z-shell/zsh-zoxide
 which fzf &>/dev/null && zmodule Aloxaf/fzf-tab
