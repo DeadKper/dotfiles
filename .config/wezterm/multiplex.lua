@@ -1,6 +1,19 @@
 local wezterm = require("wezterm")
 local mux = wezterm.mux
 
+local config = {
+	unix_domains = {
+		{
+			name = "unix",
+		},
+	},
+	wsl_domains = {
+		name = "WSL:Fedora",
+		distribution = "Fedora",
+	},
+	default_domain = "WSL:Fedora",
+}
+
 -- Decide whether cmd represents a default startup invocation
 local function is_default_startup(cmd)
 	if not cmd then
@@ -8,7 +21,7 @@ local function is_default_startup(cmd)
 		-- no other arguments
 		return true
 	end
-	if cmd.domain == "DefaultDomain" and not cmd.args then
+	if (cmd.domain == "DefaultDomain" or cmd.domain == config.default_domain) and not cmd.args then
 		-- Launched via `wezterm start --cwd something`
 		return true
 	end
@@ -19,19 +32,11 @@ end
 wezterm.on("gui-startup", function(cmd)
 	if is_default_startup(cmd) then
 		-- for the default startup case, we want to switch to the unix domain instead
-		local unix = mux.get_domain("unix")
-		-- mux.set_default_domain(unix)
+		local domain = mux.get_domain(config.default_domain)
+		mux.set_default_domain(domain)
 		-- ensure that it is attached
-		-- unix:attach() -- this seems to break wezterm
+		domain:attach() -- this seems to break wezterm
 	end
 end)
-
-local config = {
-	unix_domains = {
-		{
-			name = "unix",
-		},
-	},
-}
 
 return config
