@@ -23,4 +23,12 @@ if [[ -o interactive ]] && which starship &>/dev/null; then
         # Use saved transient prompt
         PROMPT="$SAVED_PROMPT" RPROMPT="$SAVED_RPROMPT" zle .reset-prompt
     }
+
+    function clear-screen() {
+        # Save transient prompt before clearing screen
+        transient-prompt-precmd
+        zle .clear-screen
+    }
+
+    zle -N clear-screen
 fi
