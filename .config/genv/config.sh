@@ -11,7 +11,10 @@ ENV_VARS=(
   PROTON_ENABLE_WAYLAND=1
   WINE_CPU_TOPOLOGY="${cpus}:$(for i in $(seq $cpus); do echo -n $((i-1)),; done | sed 's/,$//')"
   # DXIL_SPIRV_CONFIG=wmma_rdna3_workaround
-  # PROTON_FSR4_UPGRADE=1
+  PROTON_DLSS_UPGRADE=1
+  PROTON_FSR4_UPGRADE=1
+  PROTON_XESS_UPGRADE=1
+  PROTON_USE_NTSYNC=1
 )
 DXVK_CONFIG=()
 VKD3D_CONFIG=(
