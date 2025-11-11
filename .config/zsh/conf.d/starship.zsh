@@ -20,8 +20,14 @@ if [[ -o interactive ]] && which starship &>/dev/null; then
     add-zle-hook-widget zle-line-finish transient-prompt
 
     function transient-prompt() {
-        # Use saved transient prompt
-        PROMPT="$SAVED_PROMPT" RPROMPT="$SAVED_RPROMPT" zle .reset-prompt
+        # Use same directory transient prompt only
+        if [[ "$PWD" == "$SAVED_PROMPT_PWD" ]]; then
+            # Use saved transient prompt
+            PROMPT="$SAVED_PROMPT" RPROMPT="$SAVED_RPROMPT" zle .reset-prompt
+        else
+            # Save current directory to enable transient prompt next time
+            SAVED_PROMPT_PWD="$PWD"
+        fi
     }
 
     function clear-screen() {
