@@ -1,6 +1,6 @@
 format = """
 $shell\
-$all\
+$directory$git_branch$git_commit$git_state$git_status$git_metrics$all\
 $fill\
 $container\
 $status\
@@ -23,11 +23,12 @@ $character\
 rtransient="""
 $status\
 $cmd_duration\
-$time\
+$time \
 """
 
 [status]
 disabled = false
+style = "#ee5396"
 
 [line_break]
 disabled = false
@@ -37,115 +38,167 @@ disabled = false
 symbol = " "
 
 [character]
-success_symbol = "[❯](bold #9134cc)"
+success_symbol = "[❯](bold #be95ff)"
+error_symbol = "[❯](bold #ee5396)"
 
 [time]
 disabled = false
-style = "#909090"
+style = "#8d8d8d"
 format = "[$time]($style)"
 
 [container]
+style = "#08bdba"
 symbol = ''
 format = ' [$symbol \[$name\]]($style) '
 
 [directory]
-style = "bright-blue"
+style = "#78a9ff"
 truncation_length = 10
 truncate_to_repo = false
-repo_root_style = "bold bright-blue"
+repo_root_style = "bold #78a9ff"
 read_only = " 󰌾"
 
 [shell]
+style = "#e0e0e0"
 disabled = false
 
 [aws]
+style = "#78a9ff"
 symbol = " "
 
 [buf]
+style = "#78a9ff"
 symbol = " "
 
 [c]
+style = "#78a9ff"
 symbol = " "
 
 [conda]
+style = "#78a9ff"
 symbol = " "
 
 [crystal]
+style = "#78a9ff"
 symbol = " "
 
 [dart]
+style = "#78a9ff"
 symbol = " "
 
 [docker_context]
+style = "#78a9ff"
 symbol = " "
 
 [elixir]
+style = "#78a9ff"
 symbol = " "
 
 [elm]
+style = "#78a9ff"
 symbol = " "
 
 [fennel]
+style = "#78a9ff"
 symbol = " "
 
 [fossil_branch]
+style = "#78a9ff"
 symbol = " "
 
 [gcloud]
+style = "#78a9ff"
 symbol = " "
 
 [git_branch]
 symbol = " "
+style = "bold #ff7eb6"
+format = '[on](fg:#e0e0e0) [$symbol$branch]($style) '
 
 [git_commit]
 tag_symbol = ' '
 
+[git_status]
+style = "bold #ee5396"
+conflicted = "=${count}"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+stashed = "$"
+deleted = "✘"
+renamed = "»"
+modified = "!"
+staged = "+${count}"
+untracked = "?"
+format = '([\[$all_status$ahead_behind\]]($style))'
+
+[git_metrics]
+disabled = false
+added_style = "#42be65"
+deleted_style = "#ee5396"
+format = '([ +$added]($added_style) )([-$deleted]($deleted_style))'
+
 [golang]
+style = "#78a9ff"
 symbol = " "
 
 [guix_shell]
+style = "#78a9ff"
 symbol = " "
 
 [haskell]
+style = "#78a9ff"
 symbol = " "
 
 [haxe]
+style = "#78a9ff"
 symbol = " "
 
 [hg_branch]
+style = "#78a9ff"
 symbol = " "
 
 [hostname]
+style = "#99daff"
 ssh_symbol = " "
 
 [java]
+style = "#78a9ff"
 symbol = " "
 
 [julia]
+style = "#78a9ff"
 symbol = " "
 
 [kotlin]
+style = "#78a9ff"
 symbol = " "
 
 [lua]
+style = "#78a9ff"
 symbol = " "
 
 [memory_usage]
+style = "#ff7eb6"
 symbol = "󰍛 "
 
 [meson]
+style = "#78a9ff"
 symbol = "󰔷 "
 
 [nim]
+style = "#78a9ff"
 symbol = "󰆥 "
 
 [nix_shell]
+style = "#78a9ff"
 symbol = " "
 
 [nodejs]
+style = "#78a9ff"
 symbol = " "
 
 [ocaml]
+style = "#78a9ff"
 symbol = " "
 
 [os.symbols]
@@ -194,37 +247,67 @@ Void = " "
 Windows = "󰍲 "
 
 [package]
+style = "#be95ff"
 symbol = "󰏗 "
 
 [perl]
+style = "#78a9ff"
 symbol = " "
 
 [php]
+style = "#78a9ff"
 symbol = " "
 
 [pijul_channel]
+style = "#78a9ff"
 symbol = " "
 
 [python]
+style = "#78a9ff"
 symbol = " "
 
 [rlang]
+style = "#78a9ff"
 symbol = "󰟔 "
 
 [ruby]
+style = "#78a9ff"
 symbol = " "
 
 [rust]
+style = "#78a9ff"
 symbol = "󱘗 "
 
 [scala]
+style = "#78a9ff"
 symbol = " "
 
 [swift]
+style = "#78a9ff"
 symbol = " "
 
 [zig]
+style = "#78a9ff"
 symbol = " "
 
 [gradle]
+style = "#78a9ff"
 symbol = " "
+
+[cmd_duration]
+style = "#8d8d8d"
+min_time = 2000
+
+[jobs]
+style = "#99daff"
+
+[battery]
+[[battery.display]]
+threshold = 20
+style = "#ee5396"
+[[battery.display]]
+threshold = 50
+style = "#ff7eb6"
+[[battery.display]]
+threshold = 100
+style = "#42be65"

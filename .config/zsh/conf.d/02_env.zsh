@@ -20,6 +20,23 @@ Executed in %*E CPU %P
    usr time %*U
    sys time %*S"
 
-unset LS_COLORS
+# LS_COLORS — oxocarbon palette (RGB true-color where supported, 256-color fallback in comments)
+export LS_COLORS="\
+di=38;2;120;169;255:\
+ln=38;2;153;218;255:\
+ex=38;2;66;190;101:\
+fi=38;2;224;224;224:\
+pi=38;2;190;149;255:\
+so=38;2;190;149;255:\
+bd=38;2;255;126;182:\
+cd=38;2;255;126;182:\
+or=1;38;2;238;83;150:\
+mi=1;38;2;238;83;150:\
+su=38;2;255;126;182:\
+sg=38;2;255;126;182:\
+tw=38;2;120;169;255:\
+ow=38;2;120;169;255:\
+st=38;2;120;169;255"
+
 unset GREP_COLOR
 unset GREP_COLORS
