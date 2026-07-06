@@ -1,7 +1,7 @@
 format = """
 $shell\
 $directory\
-$distrobox\
+${custom.distrobox}\
 $git_branch\
 $git_commit\
 $git_state\
@@ -19,8 +19,8 @@ $line_break\
 $character\
 """
 
-command_timeout = 10000
-scan_timeout = 500
+command_timeout = 1000
+scan_timeout = 50
 add_newline = false
 
 [profiles]
@@ -28,6 +28,7 @@ left_transient = "$character"
 right_transient = "$status$cmd_duration$jobs$time"
 left_async = "$shell$directory$distrobox$git_branch$git_commit$git_state$git_status$git_metrics$localip$shlvl$singularity$kubernetes$nats$vcsh$fossil_branch$fossil_metrics$hg_branch$hg_state$pijul_channel$docker_context$package$bun$c$cmake$cobol$cpp$daml$dart$deno$dotnet$elixir$elm$erlang$fennel$fortran$gleam$golang$gradle$haskell$haxe$helm$java$julia$kotlin$lua$maven$mojo$nim$nodejs$ocaml$odin$opa$perl$php$pulumi$purescript$python$quarto$raku$rlang$red$ruby$rust$scala$solidity$swift$terraform$typst$vlang$vagrant$xmake$zig$buf$guix_shell$nix_shell$conda$pixi$meson$spack$memory_usage$aws$gcloud$openstack$azure$direnv$env_var$mise$crystal$sudo$netns$os"
 right_async = "$status$cmd_duration$jobs$time"
+statusline = "$directory$git_branch$git_status$git_metrics$fill${custom.statusline_model}${custom.statusline_cost}${custom.statusline_ctx_low}${custom.statusline_ctx_med}${custom.statusline_ctx_high}${custom.statusline_caveman}${custom.statusline_savings}$time"
 
 [custom.distrobox]
 description = "The activated distrobox/toolbox container"
@@ -37,6 +38,92 @@ when = """ [[ -n "$CONTAINER_ID"  ]] """
 style = "bold red dimmed"
 format = "[$symbol \\[$output\\]]($style) "
 disabled = false
+
+[custom.statusline_model]
+description = "Statusline: Active model name"
+command = 'echo "$STATUSLINE_MODEL"'
+when = 'test -n "$STATUSLINE_MODEL"'
+style = "#66ccff"
+format = "[$output]($style) "
+
+[custom.statusline_cost]
+description = "Statusline: Session cost in USD"
+command = 'echo "$STATUSLINE_COST"'
+when = 'test -n "$STATUSLINE_COST"'
+style = "#2dcc66"
+format = '[\$$output]($style) '
+
+# using "[$symbol]($style) [$output%]($style)" as a workaround for statusline
+[custom.statusline_ctx_low]
+description = "Statusline: Context usage <50%"
+command = 'echo "$STATUSLINE_PCT"'
+when = 'test -n "$STATUSLINE_PCT" && test "$STATUSLINE_PCT" -lt 50'
+symbol = "󰍛"
+style = "#ffafd7"
+format = "[$symbol]($style) [$output%]($style) "
+
+[custom.statusline_ctx_med]
+description = "Statusline: Context usage 50-79%"
+command = 'echo "$STATUSLINE_PCT"'
+when = 'test -n "$STATUSLINE_PCT" && test "$STATUSLINE_PCT" -ge 50 && test "$STATUSLINE_PCT" -lt 80'
+symbol = "󰍛 "
+style = "#ff7eb6"
+format = "[$symbol]($style) [$output%]($style) "
+
+[custom.statusline_ctx_high]
+description = "Statusline: Context usage >=80%"
+command = 'echo "$STATUSLINE_PCT"'
+when = 'test -n "$STATUSLINE_PCT" && test "$STATUSLINE_PCT" -ge 80'
+symbol = "󰍛 "
+style = "#ee5396"
+format = "[$symbol]($style) [$output%]($style) "
+
+[custom.statusline_caveman]
+description = "Statusline: Active caveman mode"
+command = 'echo "$STATUSLINE_CAVEMAN"'
+when = 'test -n "$STATUSLINE_CAVEMAN"'
+symbol = ""
+style = "#b36bff"
+format = "[$symbol]($style) [$output]($style) "
+
+[custom.statusline_savings]
+description = "Statusline: Caveman token savings"
+command = 'echo "$STATUSLINE_SAVINGS"'
+when = 'test -n "$STATUSLINE_SAVINGS"'
+symbol = "󰢷"
+style = "#b36bff"
+format = "[$symbol]($style) [$output]($style) "
+
+[git_branch]
+symbol = ""
+style = "bold #ff7eb6"
+format = '[on](fg:#e0e0e0) [$symbol]($style) [$branch]($style) '
+
+[git_commit]
+tag_symbol = ' '
+
+[git_state]
+format = '[\($state( $progress_current of $progress_total)\)]($style) '
+
+[git_status]
+style = "bold #ee5396"
+conflicted = "=${count}"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+stashed = "$"
+deleted = "✘"
+renamed = "»"
+modified = "!"
+staged = "+${count}"
+untracked = "?"
+format = '([\[$all_status$ahead_behind\]]($style))'
+
+[git_metrics]
+disabled = false
+added_style = "#42be65"
+deleted_style = "#ee5396"
+format = '([ +$added]($added_style))([ -$deleted]($deleted_style)) '
+
 
 [status]
 disabled = false
@@ -121,36 +208,6 @@ symbol = " "
 [gcloud]
 style = "#78a9ff"
 symbol = " "
-
-[git_branch]
-symbol = " "
-style = "bold #ff7eb6"
-format = '[on](fg:#e0e0e0) [$symbol$branch]($style) '
-
-[git_commit]
-tag_symbol = ' '
-
-[git_state]
-format = '[\($state( $progress_current of $progress_total)\)]($style) '
-
-[git_status]
-style = "bold #ee5396"
-conflicted = "=${count}"
-ahead = "⇡${count}"
-behind = "⇣${count}"
-stashed = "$"
-deleted = "✘"
-renamed = "»"
-modified = "!"
-staged = "+${count}"
-untracked = "?"
-format = '([\[$all_status$ahead_behind\]]($style))'
-
-[git_metrics]
-disabled = false
-added_style = "#42be65"
-deleted_style = "#ee5396"
-format = '([ +$added]($added_style))([ -$deleted]($deleted_style)) '
 
 [golang]
 style = "#78a9ff"
@@ -322,12 +379,16 @@ style = "#99daff"
 
 [battery]
 disabled = true
+
 [[battery.display]]
 threshold = 20
+
 style = "#ee5396"
 [[battery.display]]
+
 threshold = 50
 style = "#ff7eb6"
+
 [[battery.display]]
 threshold = 100
-style = "#42be65"
+style = "#ffafd7"
