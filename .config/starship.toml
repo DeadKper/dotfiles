@@ -83,7 +83,7 @@ description = "Statusline: Active caveman mode"
 command = 'echo "$STATUSLINE_CAVEMAN"'
 when = 'test -n "$STATUSLINE_CAVEMAN"'
 symbol = ""
-style = "#b36bff"
+style = "#be95ff"
 format = "[$symbol]($style) [$output]($style) "
 
 [custom.statusline_savings]
@@ -91,7 +91,7 @@ description = "Statusline: Caveman token savings"
 command = 'echo "$STATUSLINE_SAVINGS"'
 when = 'test -n "$STATUSLINE_SAVINGS"'
 symbol = "󰢷"
-style = "#b36bff"
+style = "#be95ff"
 format = "[$symbol]($style) [$output]($style) "
 
 [git_branch]
