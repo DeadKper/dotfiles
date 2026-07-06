@@ -1,4 +1,5 @@
 if [[ -o interactive ]] && command -v starship &>/dev/null; then
+    export STARSHIP_LOG=error
     eval "$(starship init zsh)"
 
     STARSHIP_TRANSIENT_PROMPT="${${PROMPT[@]:2:-1}// prompt / prompt --profile transient }"
