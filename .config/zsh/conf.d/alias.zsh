@@ -1,4 +1,9 @@
-which nvim &>/dev/null && alias vim=nvim
+if command -v nvim &>/dev/null; then
+	alias vim=nvim
+	alias vi=nvim
+elif command -v vim &>/dev/null; then
+	alias vi=vim
+fi
 
 if which lsd &>/dev/null; then
     alias ls=lsd

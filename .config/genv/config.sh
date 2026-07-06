@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 
-cpus=$(($(lscpu | awk '/^CPU\(s\):/ {print $2}')*3/4))
+cpus=$(($(lscpu | awk '/^CPU\(s\):/ {print $2}')*7/8))
 
 ENV_VARS=(
+  # __GL_THREADED_OPTIMIZATIONS=1
   __GL_SHADER_DISK_CACHE=1
   __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
   DXVK_HUD=compiler
   DXVK_ASYNC=1
   PROTON_ENABLE_HDR=1
-  PROTON_ENABLE_WAYLAND=1
+  PROTON_ENABLE_WAYLAND=0
   WINE_CPU_TOPOLOGY="${cpus}:$(for i in $(seq $cpus); do echo -n $((i-1)),; done | sed 's/,$//')"
   # DXIL_SPIRV_CONFIG=wmma_rdna3_workaround
   PROTON_DLSS_UPGRADE=1
   PROTON_FSR4_UPGRADE=1
   PROTON_XESS_UPGRADE=1
+  PROTON_ENABLE_NVAPI=1
   PROTON_USE_NTSYNC=1
+  #DISABLE_GAMESCOPE_WSI=1 # Breaks HDR support but allows steam overlay
 )
 DXVK_CONFIG=()
 VKD3D_CONFIG=(

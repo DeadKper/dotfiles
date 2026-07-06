@@ -1,4 +1,5 @@
 format = """
+$distrobox\
 $shell\
 $directory$git_branch$git_commit$git_state$git_status$git_metrics$all\
 $fill\
@@ -42,6 +43,15 @@ symbol = " "
 success_symbol = "[❯](bold #be95ff)"
 error_symbol = "[❯](bold #ee5396)"
 
+[custom.distrobox]
+description = "The activated distrobox/toolbox container"
+symbol = " "
+command = "echo -n $CONTAINER_ID"
+when = """ [[ -n "$CONTAINER_ID"  ]] """
+style = "bold red dimmed"
+format = "[$symbol \\[$output\\]]($style) "
+disabled = false
+
 [time]
 disabled = false
 style = "#8d8d8d"
@@ -49,8 +59,8 @@ format = "[$time]($style)"
 
 [container]
 style = "#08bdba"
-symbol = ''
-format = ' [$symbol \[$name\]]($style) '
+symbol = " "
+format = " [$symbol\\[$name\\]]($style) "
 
 [directory]
 style = "#78a9ff"

@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/bash
 
 RUNDIR=/run/user/$EUID/hypr
 SCRIPT="/run/user/$EUID/.run-macro"
@@ -13,6 +13,10 @@ function macros() {
       hyprctl keyword bind ",F10,exec,$SCRIPT -fi /menagerie" >/dev/null
 
       unbind_list=(',F5' ',F6' ',F9' ',F10')
+      ;;
+    activewindow\>\>awakened-poe-trade,Awakened\ PoE\ Trade)
+      hyprctl keyword bind ",ESC,exec,hyprctl dispatch focuswindow title:Path\ of\ Exile" >/dev/null
+      unbind_list=(',ESC')
       ;;
   esac
 }

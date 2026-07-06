@@ -6,10 +6,10 @@ case "${POSITIONAL_ARGS[*]} " in
     add_if_missing WINEDLLOVERRIDES \
       dinput8 \
       dstorage \
-      dstoragecore \
-      dxgi \
-      dlssg_to_fsr3_amd_is_better \
-      dbghelp
+      dstoragecore #\
+    #   dxgi \
+    #   dlssg_to_fsr3_amd_is_better \
+    #   dbghelp
     # add_if_missing ARGS_POST \
     #   /WineDetectionEnabled:False
     #   -dx11
@@ -22,7 +22,6 @@ case "${POSITIONAL_ARGS[*]} " in
     if [[ "$GPU_VENDOR" == NVIDIA ]]; then
       add_if_missing ENV_VARS \
         PROTON_ENABLE_NGX_UPDATER=1 \
-        PROTON_ENABLE_NVAPI=1 \
         MESA_DISK_CACHE_SINGLE_FILE=0 \
         PROTON_HIDE_NVIDIA_GPU=1
         # VKD3D_FEATURE_LEVEL=12_0
@@ -31,15 +30,17 @@ case "${POSITIONAL_ARGS[*]} " in
     fi
     ;;
   *"/MonsterHunterRise.exe "*)
+    USE_GAMESCOPE=true
     add_if_missing WINEDLLOVERRIDES \
       dinput8
+    add_if_missing ENV_VARS \
+      PROTON_ENABLE_NGX_UPDATER=1
     ;;
   *"/vermintide.exe "*)
     add_if_missing WINEDLLOVERRIDES \
       dinput8
     ;;
   *"/HoloCure.exe "*)
-    USE_GAMESCOPE=true
     ;;
   *"/Terraria "*)
     if [[ "$(xrandr | grep '\*+$' | sed 's/^\s*//;s/x.*//')" -lt 1920 ]]; then
@@ -53,11 +54,10 @@ case "${POSITIONAL_ARGS[*]} " in
   *"/Last Epoch.exe "*)
     add_if_missing ARGS_POST \
       -force -d3d11
-    USE_GAMESCOPE=true
+    # USE_GAMESCOPE=true
     if [[ "$GPU_VENDOR" == NVIDIA ]]; then
       add_if_missing ENV_VARS \
-        PROTON_ENABLE_NGX_UPDATER=1 \
-        PROTON_ENABLE_NVAPI=1
+        PROTON_ENABLE_NGX_UPDATER=1
     fi
     ;;
   *"/Gw2-64.exe "*)
@@ -84,9 +84,11 @@ case "${POSITIONAL_ARGS[*]} " in
           __GLX_VENDOR_LIBRARY_NAME=nvidia
       fi
     fi
+    # COMMAND_PRE=(env XDG_SESSION_TYPE=x11 OZONE_PLATFORM=x11 DESKTOPINTEGRATION=1 ~/AppImages/awakened_poe_trade.appimage --ozone-platform=x11 \&)
+    # COMMAND_POST=(pl -k awakened)
     ;;
-  *"ELDEN RING NIGHTREIGN/Game/start_protected_game.exe "*)
-    USE_GAMESCOPE=true
+  *"/ELDEN RING NIGHTREIGN/Game/start_protected_game.exe "*)
+    # USE_GAMESCOPE=true
     # USE_VKBASALT=true
     add_if_missing ENV_VARS \
       VKD3D_CONFIG=no_upload_hvv \
@@ -101,7 +103,7 @@ case "${POSITIONAL_ARGS[*]} " in
     # COMMAND_PRE=(gamemoded -r \&)
     # COMMAND_POST=(ps -ef \| grep -v grep \| grep -wF 'gamemoded -r' \| awk '{print $2}' \| xargs -r kill -s int)
     ;;
-  *"ELDEN RING/Game/start_protected_game.exe "*)
+  *"/ELDEN RING/Game/start_protected_game.exe "*)
     USE_GAMESCOPE=true
     add_if_missing GAMESCOPE_ARGS \
       --force-grab-cursor
@@ -109,16 +111,48 @@ case "${POSITIONAL_ARGS[*]} " in
   *"/Hell Clock.exe "*)
     ;;
   *"/The Finals/Discovery.exe "*)
-    USE_GAMESCOPE=true
+    # USE_GAMESCOPE=true
     add_if_missing ENV_VARS \
-      PROTON_USE_EAC_LINUX=1 \
-      PROTON_HIDE_NVIDIA_GPU=1
-    add_if_missing VKD3D_DISABLE_EXTENSIONS \
-      VK_NV_low_latency2
+      PROTON_USE_EAC_LINUX=1
+      # SDL_VIDEODRIVER=wayland,x11,windows
     add_if_missing GAMESCOPE_ARGS \
       --force-grab-cursor
+    add_if_missing ARGS_POST \
+      -useallavailablecores
+      # -dx11 \
     ;;
   *"/Warframe/Tools/Launcher.exe "*)
     USE_GAMESCOPE=true
+    add_if_missing GAMESCOPE_ARGS \
+      --force-grab-cursor
+    ;;
+  *"/Overwatch.exe "*)
+    add_if_missing ENV_VARS \
+      STAGING_SHARED_MEMORY=1 \
+      VKD3D_FEATURE_LEVEL=12_2 \
+      LFX=1 \
+      PROTON_PREFER_SDL=1
+    ;;
+  *"/helldivers2.exe "*)
+    add_if_missing ARGS_POST \
+      --use-d3d11 \
+      -USEALLAVAILABLECORES
+    ;;
+  *"/cs2.sh "*)
+    add_if_missing ENV_VARS \
+      SDL_VIDEO_DRIVER=wayland \
+      SDL_AUDIO_DRIVER=pipewire
+    add_if_missing ARGS_POST \
+      -sdlvideodriver wayland \
+      -sdlaudiodriver pipewire \
+      -high \
+      -nojoy \
+      -novid \
+      -vulkan
+    ;;
+  *"/FactoryGameSteam.exe "*)
+    USE_GAMESCOPE=true
+    add_if_missing GAMESCOPE_ARGS \
+      --force-grab-cursor
     ;;
 esac

@@ -172,6 +172,22 @@ function config() {
   local display="$(xrandr | grep '\*+$')"
   local mangohud_command=
 
+  if [[ -n "$USE_ZINK" ]]; then
+    if [[ -n "$USE_GAMESCOPE" ]]; then
+      add_if_missing GAMESCOPE_ENV_VARS \
+        __GLX_VENDOR_LIBRARY_NAME=mesa \
+        MESA_LOADER_DRIVER_OVERRIDE=zink \
+        GALLIUM_DRIVER=zink \
+        LIBGL_KOPPER_DRI2=1
+    else
+      add_if_missing ENV_VARS \
+        __GLX_VENDOR_LIBRARY_NAME=mesa \
+        MESA_LOADER_DRIVER_OVERRIDE=zink \
+        GALLIUM_DRIVER=zink \
+        LIBGL_KOPPER_DRI2=1
+    fi
+  fi
+
   if [[ -n "$USE_MANGOHUD" ]] && command -v mangohud &>/dev/null; then
     if [[ -n "$USE_GAMESCOPE" ]]; then
       if [[ "$(index --steam "${GAMESCOPE_ARGS[@]}")" -ge 0 ]]; then
@@ -213,7 +229,7 @@ function config() {
     add_if_missing GAMESCOPE_ARGS \
       --adaptive-sync
     add_if_missing GAMESCOPE_ARGS \
-      --nested-unfocused-refresh 5
+      --nested-unfocused-refresh 15
 
     COMMAND+=("$(command -v gamescope)" "${GAMESCOPE_ARGS[@]}" --)
     if [[ "${#GAMESCOPE_ENV_VARS[@]}" -gt 0 ]]; then
@@ -316,6 +332,14 @@ function parse() {
         ;;
       -V) # disable vkbasalt
         USE_VKBASALT=
+        shift
+        ;;
+      -z) # enable zink
+        USE_ZINK=true
+        shift
+        ;;
+      -Z) # disable zink
+        USE_ZINK=
         shift
         ;;
       -l) # set PROTON_LOG to 1
