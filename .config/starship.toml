@@ -23,7 +23,7 @@ $character\
 rtransient="""
 $status\
 $cmd_duration\
-$time \
+$time\
 """
 
 [status]
@@ -157,7 +157,11 @@ symbol = " "
 style = "#78a9ff"
 symbol = " "
 
+[username]
+disabled = true
+
 [hostname]
+disabled = true
 style = "#99daff"
 ssh_symbol = " "
 
@@ -295,13 +299,14 @@ style = "#78a9ff"
 symbol = " "
 
 [cmd_duration]
-style = "#8d8d8d"
+style = "#66ccff"
 min_time = 2000
 
 [jobs]
 style = "#99daff"
 
 [battery]
+disabled = true
 [[battery.display]]
 threshold = 20
 style = "#ee5396"
