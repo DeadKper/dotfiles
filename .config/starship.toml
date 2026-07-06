@@ -18,11 +18,11 @@ scan_timeout = 50
 add_newline = false
 
 [profiles]
-transient="""
+transient = """
 $character\
 """
 
-rtransient="""
+rtransient = """
 $status\
 $cmd_duration\
 $time\
@@ -146,7 +146,7 @@ format = '([\[$all_status$ahead_behind\]]($style))'
 disabled = false
 added_style = "#42be65"
 deleted_style = "#ee5396"
-format = '([ +$added]($added_style) )([-$deleted]($deleted_style))'
+format = '([ +$added]($added_style))([ -$deleted]($deleted_style))'
 
 [golang]
 style = "#78a9ff"
