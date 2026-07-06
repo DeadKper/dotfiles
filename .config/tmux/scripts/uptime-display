@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-seconds="$(cat /proc/uptime | cut -d ' ' -f 1 | sed 's/\..*//')"
+if [[ "$(uname)" == "Darwin" ]]; then
+	boot_sec=$(sysctl -n kern.boottime | awk -F'[ ,]' '{print $4}')
+	seconds=$(( $(date +%s) - boot_sec ))
+else
+	seconds="$(cat /proc/uptime | cut -d ' ' -f 1 | sed 's/\..*//')"
+fi
 hours="$((seconds/3600))"
 minutes="$((seconds-hours*3600))"
 minutes="$((minutes/60))"

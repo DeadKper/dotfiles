@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# On macOS, ensure we run under bash 4+ (tmux #() uses /bin/sh = zsh; readarray needs bash)
+if [ "$(uname)" = "Darwin" ] && [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
+	exec /opt/homebrew/bin/bash "$0" "$@"
+fi
 
 if test -n "$1"; then
 	pane_tty="$1"
@@ -6,17 +10,44 @@ else
 	pane_tty=$(tmux display -p '#{pane_tty}')
 fi
 
-readarray -t commands < <(ps -eH -o user:30,tty,cmd | grep -A 1000 -E "^\S+\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s")
-cut=$(echo "${commands[0]}" | grep -oE '^(\S+\s+){2}' | wc -c)
-tty_commands=("${commands[0]}")
+if [[ "$(uname)" == "Darwin" ]]; then
+	readarray -t commands < <(ps -e -o user,tty,command | grep -E "^\S+\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s")
+	cut=$(echo "${commands[0]}" | grep -oE '^(\S+\s+){2}' | wc -c | tr -d ' ')
+	[ "$cut" -lt 1 ] && cut=1
+	tty_commands=("${commands[@]}")
+else
+	readarray -t commands < <(ps -eH -o user:30,tty,cmd | grep -A 1000 -E "^\S+\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s")
+	cut=$(echo "${commands[0]}" | grep -oE '^(\S+\s+){2}' | wc -c | tr -d ' ')
+	[ "$cut" -lt 1 ] && cut=1
+	tty_commands=("${commands[0]}")
+	for cmd in "${commands[@]:1}"; do
+		if grep -qE "^.{$cut}\s" <<< "$cmd"; then
+			tty_commands+=("$cmd")
+		else
+			break
+		fi
+	done
+fi
 
-for cmd in "${commands[@]:1}"; do
-	if grep -qE "^.{$cut}\s" <<< "$cmd"; then
-		tty_commands+=("$cmd")
-	else
-		break
+# Cache key: tty + foreground command. Re-run ssh -qG only when command changes.
+foreground="${tty_commands[-1]}"
+is_ssh=false
+cut -c "${cut}-" <<< "${tty_commands[-1]}" | grep -qE "^\s*($(which ssh)|ssh)\s+" && is_ssh=true
+
+if $is_ssh; then
+	cache_dir="${TMPDIR:-/tmp}/tmux-statusbar"
+	mkdir -p "$cache_dir"
+	tty_key=$(sed 's,/,_,g' <<< "$pane_tty")
+	cache_file="$cache_dir/${tty_key}.hostname"
+	if [[ -f "$cache_file" ]]; then
+		cached_cmd=$(head -1 "$cache_file")
+		cached_result=$(tail -1 "$cache_file")
+		if [[ "$cached_cmd" == "$foreground" ]]; then
+			echo "$cached_result"
+			exit 0
+		fi
 	fi
-done
+fi
 
 get_hostname() {
 	if cut -c "${cut}-" <<< "$cmd" <<< "${tty_commands[-1]}" | grep -qE "^\s*($(which ssh)|ssh)\s+"; then
@@ -32,10 +63,16 @@ get_hostname() {
 		fi
 	fi
 	if test -z "$hostname"; then
-		cat /etc/hostname
+		if [[ "$(uname)" == "Darwin" ]]; then
+			hostname -s
+		else
+			cat /etc/hostname
+		fi
 	else
 		echo $hostname
 	fi
 }
 
-get_hostname
+result=$(get_hostname)
+$is_ssh && printf '%s\n%s\n' "$foreground" "$result" > "$cache_file"
+echo "$result"

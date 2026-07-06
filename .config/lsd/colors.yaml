@@ -16,8 +16,8 @@ date:
 size:
   none: 245
   small: 218
-  medium: 205
-  large: 177
+  medium: "#ff5fa3"
+  large: "#ee5396"
 inode:
   valid: 141
   invalid: 245

@@ -13,7 +13,7 @@ bind G run "#{SRC}/change_prefix 0"
 # general
 bind    C-w kill-window
 bind    C-x kill-pane \; refresh-client -S
-bind    C-c new-window -c "#{session_path}" \; refresh-client -S
+bind    C-c run "#{SRC}/create new-window"
 bind    c   new-window \; refresh-client -S
 bind    C   command-prompt -p "(new-session)" "new-session -A -s '%%' -c '#{pane_current_path}'" \; refresh-client -S
 bind    \;  command-prompt -p "(rename-session)" -I "#{session_name}" "rename-session '%%'" \; refresh-client -S
@@ -40,6 +40,12 @@ bind 7 select-window -t 7  \; refresh-client -S
 bind 8 select-window -t 8  \; refresh-client -S
 bind 9 select-window -t 9  \; refresh-client -S
 bind 0 select-window -t 10 \; refresh-client -S
+
+# splits
+bind    v   split-window -h -c "#{pane_current_path}" \; refresh-client -S
+bind    h   split-window -v -c "#{pane_current_path}" \; refresh-client -S
+bind    |   run "#{SRC}/create split-window -h"
+bind    -   run "#{SRC}/create split-window -v"
 
 # panes
 bind -r H   resize-pane -L 5

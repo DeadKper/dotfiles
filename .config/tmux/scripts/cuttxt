@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if [ "$(uname)" = "Darwin" ] && [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
+	exec /opt/homebrew/bin/bash "$0" "$@"
+fi
 
 [[ -p /dev/stdin ]] && { mapfile -t; set -- "${MAPFILE[@]}" "$@"; }
 
