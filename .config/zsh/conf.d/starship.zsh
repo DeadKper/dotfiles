@@ -157,14 +157,12 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
             _STARSHIP_ASYNC_PWD="$PWD"
 
             if (( _has_left_async )) && (( ${+functions[async_job]} )); then
-                async_flush_jobs _starship_left_worker
-                async_job _starship_left_worker _starship_render_left "$PWD" "$COLUMNS"
+                async_job _starship_left_worker _starship_render_left "$PWD" "$COLUMNS" 2>/dev/null
             fi
 
             if (( _has_right_async )) && (( ${+functions[async_job]} )); then
-                async_flush_jobs _starship_right_worker
                 async_job _starship_right_worker _starship_render_right \
-                    "${STARSHIP_CMD_STATUS:-0}" "${STARSHIP_PIPE_STATUS[*]:-}" "${STARSHIP_DURATION:-}" "${STARSHIP_JOBS_COUNT:-0}" "$COLUMNS" "${KEYMAP:-viins}"
+                    "${STARSHIP_CMD_STATUS:-0}" "${STARSHIP_PIPE_STATUS[*]:-}" "${STARSHIP_DURATION:-}" "${STARSHIP_JOBS_COUNT:-0}" "$COLUMNS" "${KEYMAP:-viins}" 2>/dev/null
             fi
         }
 
