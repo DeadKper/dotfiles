@@ -118,7 +118,7 @@ format = '([\[$all_status$ahead_behind\]]($style))'
 disabled = false
 added_style = "#42be65"
 deleted_style = "#ee5396"
-format = '([ +$added]($added_style)[ -$deleted]($deleted_style) )'
+format = '(([ +$added]($added_style))([ -$deleted]($deleted_style)) )'
 
 
 [status]
