@@ -3,7 +3,6 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     eval "$(starship init zsh)"
 
     # ── Profile detection — runs once at init ─────────────────────────────────
-    local profiles
     profiles=$(starship print-config 2>/dev/null | awk '/^\[profiles\]/{p=1;next} p && /^\[/{p=0} p && /^[a-z]/{print $1}')
 
     typeset -gi _has_left_async=0 _has_right_async=0 _has_left_trans=0 _has_right_trans=0
@@ -12,8 +11,8 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     [[ $profiles == *$'\n'left_transient*  || $profiles == left_transient*  ]] && _has_left_trans=1
     [[ $profiles == *$'\n'right_transient* || $profiles == right_transient* ]] && _has_right_trans=1
 
-    local has_async=$(( _has_left_async || _has_right_async ))
-    local has_transient=$(( _has_left_trans || _has_right_trans ))
+    has_async=$(( _has_left_async || _has_right_async ))
+    has_transient=$(( _has_left_trans || _has_right_trans ))
 
     # ── Transient prompt ──────────────────────────────────────────────────────
     if (( has_transient )); then
@@ -60,7 +59,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     # ── Async subsystem ───────────────────────────────────────────────────────
     if (( has_async )); then
         # ── zsh-async bootstrap ───────────────────────────────────────────────
-        local async_zsh="${ZDOTDIR}/.zim/modules/zsh-async/async.zsh"
+        local async_zsh="${ZIM_HOME:-${ZDOTDIR:-${HOME}}/.zim}/modules/zsh-async/async.zsh"
         [[ -f $async_zsh ]] && source "$async_zsh"
         unset async_zsh
 
@@ -113,12 +112,12 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         }
 
         # ── Persistent workers ────────────────────────────────────────────────
-        if (( _has_left_async )); then
+        if (( _has_left_async )) && (( ${+functions[async_start_worker]} )); then
             async_start_worker _starship_left_worker -u
             async_register_callback _starship_left_worker _starship_left_callback
         fi
 
-        if (( _has_right_async )); then
+        if (( _has_right_async )) && (( ${+functions[async_start_worker]} )); then
             async_start_worker _starship_right_worker -u
             async_register_callback _starship_right_worker _starship_right_callback
         fi
@@ -157,12 +156,12 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
             _STARSHIP_ASYNC_PWD="$PWD"
 
-            if (( _has_left_async )); then
+            if (( _has_left_async )) && (( ${+functions[async_job]} )); then
                 async_flush_jobs _starship_left_worker
                 async_job _starship_left_worker _starship_render_left "$PWD" "$COLUMNS"
             fi
 
-            if (( _has_right_async )); then
+            if (( _has_right_async )) && (( ${+functions[async_job]} )); then
                 async_flush_jobs _starship_right_worker
                 async_job _starship_right_worker _starship_render_right \
                     "${STARSHIP_CMD_STATUS:-0}" "${STARSHIP_PIPE_STATUS[*]:-}" "${STARSHIP_DURATION:-}" "${STARSHIP_JOBS_COUNT:-0}" "$COLUMNS" "${KEYMAP:-viins}"
