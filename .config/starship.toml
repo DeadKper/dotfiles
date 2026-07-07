@@ -98,7 +98,7 @@ format = "[$symbol]($style) [$output]($style) "
 [git_branch]
 symbol = ""
 style = "bold #ff7eb6"
-format = '[on](fg:#e0e0e0) [$symbol]($style) [$branch]($style) '
+format = '[on](fg:#e0e0e0) [$symbol$branch(:$remote_branch)]($style) '
 
 [git_commit]
 tag_symbol = ' '
@@ -112,13 +112,13 @@ conflicted = "=${count}"
 ahead = "⇡${count}"
 behind = "⇣${count}"
 diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-format = '([\[$all_status$ahead_behind\]]($style))'
+format = '([\[$all_status$ahead_behind\]]($style)) '
 
 [git_metrics]
 disabled = false
 added_style = "#42be65"
 deleted_style = "#ee5396"
-format = '(([ +$added]($added_style))([ -$deleted]($deleted_style)) )'
+format = '([+$added]($added_style) )([-$deleted]($deleted_style) )'
 
 
 [status]
