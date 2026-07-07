@@ -32,7 +32,18 @@ fi
 # Cache key: tty + foreground command. Re-run ssh -qG only when command changes.
 foreground="${tty_commands[-1]}"
 is_ssh=false
-cut -c "${cut}-" <<< "${tty_commands[-1]}" | grep -qE "^\s*($(which ssh)|ssh)\s+" && is_ssh=true
+if cut -c "${cut}-" <<< "${tty_commands[-1]}" | grep -qE "^\s*($(which ssh)|ssh)\s+"; then
+	# Only treat as SSH session if the direct parent of the ssh process is a shell,
+	# not git or another tool spawning ssh internally.
+	ssh_pid=$(ps -e -o pid,tty,comm | awk -v tty="$(sed 's,^/dev/,,' <<< "$pane_tty")" '$2==tty && $3~/^ssh$/{print $1}' | tail -1)
+	if [[ -n "$ssh_pid" ]]; then
+		ppid=$(ps -o ppid= -p "$ssh_pid" 2>/dev/null | tr -d ' ')
+		parent_cmd=$(ps -o comm= -p "$ppid" 2>/dev/null)
+		if [[ "$parent_cmd" =~ ^(bash|zsh|sh|fish|tmux)$ ]]; then
+			is_ssh=true
+		fi
+	fi
+fi
 
 if $is_ssh; then
 	cache_dir="${TMPDIR:-/tmp}/tmux-statusbar"
