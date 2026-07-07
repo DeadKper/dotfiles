@@ -50,8 +50,9 @@ format = "[$output]($style) "
 description = "Statusline: Session cost in USD"
 command = 'echo "$STATUSLINE_COST"'
 when = 'test -n "$STATUSLINE_COST"'
+symbol = "\\$"
 style = "#2dcc66"
-format = '[\$$output]($style) '
+format = '[$symbol$output]($style) '
 
 # using "[$symbol]($style) [$output%]($style)" as a workaround for statusline
 [custom.statusline_ctx_low]
@@ -110,12 +111,7 @@ style = "bold #ee5396"
 conflicted = "=${count}"
 ahead = "⇡${count}"
 behind = "⇣${count}"
-stashed = "$"
-deleted = "✘"
-renamed = "»"
-modified = "!"
-staged = "+${count}"
-untracked = "?"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
 format = '([\[$all_status$ahead_behind\]]($style))'
 
 [git_metrics]
