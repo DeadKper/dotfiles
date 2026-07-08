@@ -38,7 +38,7 @@ case ${HIST_STAMPS-} in
 esac
 
 ## History file configuration
-HISTFILE="${ZDOTDIR:=$HOME}/.zsh_history"
+[ -z "$HISTFILE" ] && HISTFILE="${ZDOTDIR:=$HOME}/.zsh_history"
 [ "$HISTSIZE" -lt 50000 ] && HISTSIZE=50000
 [ "$SAVEHIST" -lt 10000 ] && SAVEHIST=10000
 

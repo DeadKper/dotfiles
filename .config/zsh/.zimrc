@@ -61,12 +61,7 @@ zmodule zsh-users/zsh-autosuggestions
 # zsh autopair
 zmodule hlissner/zsh-autopair
 
-# powerlevel10k
-# zmodule romkatv/powerlevel10k
-
-# zsh better prompt
-# zmodule olets/zsh-transient-prompt
-# zmodule mafredri/zsh-async
+zmodule mafredri/zsh-async
 
 which zoxide &>/dev/null && zmodule z-shell/zsh-zoxide
 which fzf &>/dev/null && zmodule Aloxaf/fzf-tab
