@@ -4,6 +4,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 	STARSHIP_ASYNC_LEFT=DEFAULT
 	STARSHIP_TRANS_LEFT=left_transient
 	STARSHIP_TRANS_RIGHT=right_transient
+	STARSHIP_ASYNC_GIT_CACHE=1
 
     export STARSHIP_LOG=error
     eval "$(starship init zsh)"
@@ -72,6 +73,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         typeset -gi _STARSHIP_LINE_FINISHED=0
         typeset -g  _STARSHIP_LEFT_SEGMENT=""
         typeset -g  _STARSHIP_RIGHT_SEGMENT=""
+        typeset -gi _STARSHIP_ASYNC_GIT=0
 
         # ── PROMPT_SUBST ──────────────────────────────────────────────────────
         setopt PROMPT_SUBST
@@ -160,8 +162,23 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
                 RPROMPT=''
             fi
             _STARSHIP_LINE_FINISHED=0
-            _STARSHIP_LEFT_SEGMENT=""
-            _STARSHIP_RIGHT_SEGMENT=""
+
+            if (( STARSHIP_ASYNC_GIT_CACHE )); then
+                if [[ $PWD != $_STARSHIP_ASYNC_PWD ]]; then
+                    if git -C "$PWD" rev-parse --is-inside-work-tree &>/dev/null; then
+                        _STARSHIP_ASYNC_GIT=1
+                    else
+                        _STARSHIP_ASYNC_GIT=0
+                    fi
+                fi
+                if (( ! _STARSHIP_ASYNC_GIT )); then
+                    _STARSHIP_LEFT_SEGMENT=""
+                    _STARSHIP_RIGHT_SEGMENT=""
+                fi
+            else
+                _STARSHIP_LEFT_SEGMENT=""
+                _STARSHIP_RIGHT_SEGMENT=""
+            fi
 
             _STARSHIP_ASYNC_PWD="$PWD"
 
