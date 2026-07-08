@@ -3,22 +3,11 @@ if [ "$(uname)" = "Darwin" ] && [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
 	exec /opt/homebrew/bin/bash "$0" "$@"
 fi
 
-pane_tty=$(tmux display -p '#{pane_tty}')
-tty_key=$(sed 's,/,_,g' <<< "$pane_tty")
-cache_file="${TMPDIR:-/tmp}/tmux-statusbar/${tty_key}.hostname"
+_tty=$(tmux display -p '#{pane_tty}')
+. "$(dirname "$0")/ssh-context" "$_tty"
 
-current_foreground=$(ps -e -o user,tty,command | awk -v tty="$(sed 's,^/dev/,,' <<< "$pane_tty")" '$2==tty{print}' | tail -1)
-
-ssh_cmd=""
-if [[ -f "$cache_file" ]]; then
-	foreground=$(head -1 "$cache_file")
-	if [[ "$foreground" == "$current_foreground" ]] && echo "$foreground" | grep -qE "\bssh\b"; then
-		ssh_cmd=$(echo "$foreground" | grep -oE '\bssh\s+\S+.*' | head -1)
-	fi
-fi
-
-if [[ -n "$ssh_cmd" ]]; then
-	tmux "$@" -c "#{pane_current_path}" "$ssh_cmd; \$SHELL"
+if $is_ssh; then
+	tmux "$@" -c "#{pane_current_path}" "ssh $ssh_host; \$SHELL"
 else
 	tmux "$@" -c "#{pane_current_path}"
 fi

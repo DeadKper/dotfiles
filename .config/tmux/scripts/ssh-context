@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# ssh-context: sourced by hostname, username, create
+# Sets: pane_tty, tty_commands, cut, foreground, is_ssh, ssh_host, cache_dir, tty_key
+
+if test -n "$1"; then
+	pane_tty="$1"
+else
+	pane_tty=$(tmux display -p '#{pane_tty}')
+fi
+
+if [[ "$(uname)" == "Darwin" ]]; then
+	readarray -t commands < <(ps -e -o user,tty,command | grep -E "^\S+\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s")
+	cut=$(echo "${commands[0]}" | grep -oE '^(\S+\s+){2}' | awk '{print length}')
+	[ "$cut" -lt 1 ] && cut=1
+	tty_commands=("${commands[@]}")
+else
+	readarray -t commands < <(ps -eH -o user:30,tty,cmd | grep -A 1000 -E "^\S+\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s")
+	cut=$(echo "${commands[0]}" | grep -oE '^(\S+\s+){2}' | awk '{print length}')
+	[ "$cut" -lt 1 ] && cut=1
+	tty_commands=("${commands[0]}")
+	for cmd in "${commands[@]:1}"; do
+		if grep -qE "^.{$cut}\s" <<< "$cmd"; then
+			tty_commands+=("$cmd")
+		else
+			break
+		fi
+	done
+fi
+
+foreground="${tty_commands[-1]}"
+is_ssh=false
+ssh_host=""
+
+_last_ssh_cmd=""
+for _cmd in "${tty_commands[@]}"; do
+	if cut -c "${cut}-" <<< "$_cmd" | grep -qE "^\s*($(which ssh)|ssh)\s+"; then
+		_last_ssh_cmd="$_cmd"
+	fi
+done
+
+if [[ -n "$_last_ssh_cmd" ]]; then
+	is_ssh=true
+	_ssh_raw=$(cut -c "${cut}-" <<< "$_last_ssh_cmd" | sed 's/^[[:space:]]*//')
+	ssh_host=$(echo "$_ssh_raw" | sed 's/^ssh[[:space:]]*//' | awk '
+		BEGIN { skip=0 }
+		{
+			for (i=1; i<=NF; i++) {
+				if (skip) { skip=0; continue }
+				if ($i ~ /^-[bcDEeFIiJLlmOopQRSwX]$/) { skip=1; continue }
+				if ($i ~ /^-/) { continue }
+				print $i; exit
+			}
+		}
+	')
+fi
+
+cache_dir="${TMPDIR:-/tmp}/tmux-statusbar"
+mkdir -p "$cache_dir"
+tty_key=$(sed 's,/,_,g' <<< "$pane_tty")
