@@ -18,7 +18,7 @@ if [[ -f "$cache_file" ]]; then
 fi
 
 if [[ -n "$ssh_cmd" ]]; then
-	tmux "$@" -c "#{pane_current_path}" "$ssh_cmd"
+	tmux "$@" -c "#{pane_current_path}" "$ssh_cmd; \$SHELL"
 else
 	tmux "$@" -c "#{pane_current_path}"
 fi
