@@ -10,16 +10,14 @@ function _starship_native_prompt {
     if [[ -n $_STARSHIP_LEFT_SEGMENT ]]; then
         print -rn -- "${_STARSHIP_LEFT_SEGMENT}"
     else
-        local time_str dir_str
-        time_str="$(print -Pn -- "%F{#8d8d8d}%D{%H:%M:%S}%f")"
-        dir_str="$(print -Pn -- "%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f")"
-        print -rn -- "${dir_str}"
-        if (( ${COLUMNS:-0} > 0 )); then
-            print -n $'\e['"${COLUMNS}"'G\e[8D'"${time_str}"
-        fi
-        print -rn -- $'\n'"${char}"
+        local dir_str time_str
+        dir_str="%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f"
+        time_str="%F{#8d8d8d}%D{%H:%M:%S}%f"
+        # %{...%} marks escapes as zero-width so zsh doesn't miscalculate prompt width
+        print -rn -- "${dir_str}"$'%{\e['"${COLUMNS}"$'G\e[8D%}'"${time_str}"$'\n'"${char}"
     fi
 }
+
 
 
 # ── Instant prompt — prints native prompt before Zim/starship init ────────────
@@ -27,15 +25,16 @@ function _starship_native_prompt {
 if [[ -o interactive ]]; then
     print -n $'\e7'          # DECSC: save cursor position
 
-    _starship_native_prompt  # print left prompt (2 lines: dir + ❯)
-
+    # Inline raw rendering — _starship_native_prompt uses prompt escapes, can't call here
+    print -Pn -- "%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f"
     if (( ${COLUMNS:-0} > 0 )); then
         typeset _ip_time
         _ip_time="$(print -Pn -- "%F{#8d8d8d}%D{%H:%M:%S}%f")"
-        print -n $'\e[A'                    # up one line (to dir line)
-        print -n "\e[$((COLUMNS - 8))G"     # move to column COLUMNS-8
-        print -n "${_ip_time}"
-        print -n $'\e[B\e[3G'               # down one line, column 3 (after ❯ )
+        print -n $'\e['"${COLUMNS}"'G\e[8D'"${_ip_time}"
+    fi
+    print -Pn -- $'\n'"%B%F{#be95ff}❯%b%f "
+    if (( ${COLUMNS:-0} > 0 )); then
+        print -n $'\e[3G'   # reposition cursor after ❯
     fi
 
     function _instant_prompt_cleanup {
