@@ -9,6 +9,7 @@ _tty=$(tmux display -p '#{pane_tty}')
 if $is_ssh; then
 	# tmux "$@" -c "#{pane_current_path}" -P -F "#{pane_id}" "ssh $ssh_host"
 	new_pane=$(tmux "$@" -c "#{pane_current_path}" -P -F "#{pane_id}")
+	sleep 0.05
 	tmux send-keys -t "$new_pane" "ssh $ssh_host" Enter C-l
 else
 	tmux "$@" -c "#{pane_current_path}"
