@@ -9,6 +9,8 @@ else
 	pane_tty=$(tmux display -p '#{pane_tty}')
 fi
 
+pane_id=$(tmux display -p -t "$pane_tty" '#{pane_id}')
+
 if [[ "$(uname)" == "Darwin" ]]; then
 	readarray -t tty_commands < <(ps -t "$pane_tty" -o user=,args=)
 else
@@ -42,7 +44,3 @@ if [[ -n "$_first_ssh_cmd" ]]; then
 		}
 	')
 fi
-
-cache_dir="${TMPDIR:-/tmp}/tmux-statusbar"
-mkdir -p "$cache_dir"
-tty_key=$(sed 's,/,_,g' <<< "$pane_tty")

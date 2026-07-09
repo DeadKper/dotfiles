@@ -5,12 +5,11 @@ fi
 
 . "$(dirname "$0")/ssh-context"
 
-cache_file="$cache_dir/${tty_key}.username"
-if $is_ssh && [[ -f "$cache_file" ]]; then
-	cached_cmd=$(head -1 "$cache_file")
-	cached_result=$(tail -1 "$cache_file")
-	if [[ "$cached_cmd" == "$foreground" ]]; then
-		echo "$cached_result"
+if $is_ssh; then
+	_cached_cmd=$(tmux show-environment -t "$pane_id" TMUX_USERNAME_CMD 2>/dev/null | sed 's/^[^=]*=//')
+	_cached_val=$(tmux show-environment -t "$pane_id" TMUX_USERNAME_VAL 2>/dev/null | sed 's/^[^=]*=//')
+	if [[ "$_cached_cmd" == "$foreground" && -n "$_cached_val" ]]; then
+		echo "$_cached_val"
 		exit 0
 	fi
 fi
@@ -32,5 +31,8 @@ get_username() {
 }
 
 result=$(get_username)
-$is_ssh && printf '%s\n%s\n' "$foreground" "$result" > "$cache_file"
+if $is_ssh; then
+	tmux set-environment -t "$pane_id" TMUX_USERNAME_CMD "$foreground"
+	tmux set-environment -t "$pane_id" TMUX_USERNAME_VAL "$result"
+fi
 echo "$result"
