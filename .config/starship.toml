@@ -110,7 +110,7 @@ conflicted = "=${count}"
 ahead = "⇡${count}"
 behind = "⇣${count}"
 diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-format = '([\[$all_status$ahead_behind\]]($style)) '
+format = '([\[$all_status$ahead_behind\]]($style) )'
 
 [git_metrics]
 disabled = false
