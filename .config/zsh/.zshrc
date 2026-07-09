@@ -161,7 +161,7 @@ fi
 
 if [[ -o interactive ]]; then
   # Render instant prompt.
-  _instant_prompt
+  [ -z "$SSH_TTY" ] && _instant_prompt
 
   # Initialize modules.
   source ${ZIM_HOME}/init.zsh
