@@ -1,6 +1,5 @@
 if [[ -o interactive ]] && command -v starship &>/dev/null; then
     # ── Defaults — override by exporting before this file is sourced ──────────
-    # STARSHIP_ASYNC_RIGHT / STARSHIP_TRANS_RIGHT unset = disabled
 	STARSHIP_ASYNC_LEFT=DEFAULT
 	STARSHIP_TRANS_LEFT=left_transient
 	STARSHIP_TRANS_RIGHT=right_transient
@@ -78,12 +77,32 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         # ── PROMPT_SUBST ──────────────────────────────────────────────────────
         setopt PROMPT_SUBST
 
+        # PROMPT: use async right worker if configured, otherwise empty
         if [[ -n "${STARSHIP_ASYNC_LEFT+1}" ]]; then
             PROMPT='$(_starship_native_prompt)'
+
+            function _starship_native_prompt {
+                local char
+
+                if (( ${_STARSHIP_LAST_EXIT:-0} )); then
+                    char="$(print -Pn -- "%B%F{#ee5396}❯%b%f ")"
+                else
+                    char="$(print -Pn -- "%B%F{#be95ff}❯%b%f ")"
+                fi
+
+                if [[ -n $_STARSHIP_LEFT_SEGMENT ]]; then
+                    print -rn -- "${_STARSHIP_LEFT_SEGMENT}"
+                else
+                    local dir_str time_str
+                    dir_str="%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f"
+                    time_str="%F{#8d8d8d}%D{%H:%M:%S}%f"
+                    # %{...%} marks escapes as zero-width so zsh doesn't miscalculate prompt width
+                    print -rn -- "${dir_str}"$'%{\e['"${COLUMNS}"$'G\e[8D%}'"${time_str}"$'\n'"${char}"
+                fi
+            }
         fi
 
         # RPROMPT: use async right worker if configured, otherwise empty
-        # (time comes from starship's own format rendered in the left segment)
         if [[ -n "${STARSHIP_ASYNC_RIGHT+1}" ]]; then
             RPROMPT='$(_starship_native_rprompt)'
 

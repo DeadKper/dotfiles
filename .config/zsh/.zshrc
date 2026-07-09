@@ -1,25 +1,3 @@
-# ── Native prompt functions — defined early, shared by instant prompt + starship.zsh ──
-
-function _starship_native_prompt {
-    local char
-    if (( ${_STARSHIP_LAST_EXIT:-0} )); then
-        char="$(print -Pn -- "%B%F{#ee5396}❯%b%f ")"
-    else
-        char="$(print -Pn -- "%B%F{#be95ff}❯%b%f ")"
-    fi
-    if [[ -n $_STARSHIP_LEFT_SEGMENT ]]; then
-        print -rn -- "${_STARSHIP_LEFT_SEGMENT}"
-    else
-        local dir_str time_str
-        dir_str="%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f"
-        time_str="%F{#8d8d8d}%D{%H:%M:%S}%f"
-        # %{...%} marks escapes as zero-width so zsh doesn't miscalculate prompt width
-        print -rn -- "${dir_str}"$'%{\e['"${COLUMNS}"$'G\e[8D%}'"${time_str}"$'\n'"${char}"
-    fi
-}
-
-
-
 # ── Instant prompt — prints native prompt before Zim/starship init ────────────
 
 if [[ -o interactive ]]; then
@@ -38,10 +16,21 @@ if [[ -o interactive ]]; then
     fi
 
     function _instant_prompt_cleanup {
-        print -n $'\e[?25l\e8\e[J\e[?25h'   # hide cursor, restore position, clear to end, show cursor
-        precmd_functions=("${(@)precmd_functions:#_instant_prompt_cleanup}")
+        print -n $'\e[?25l\e8\e[J\e[?25h'
+        unfunction _instant_prompt_cleanup
     }
-    precmd_functions=(_instant_prompt_cleanup "${precmd_functions[@]}")
+
+    function _instant_prompt_precmd {
+        function _instant_prompt_sched_last {
+            (( ${+functions[_instant_prompt_cleanup]} )) || return
+            _instant_prompt_cleanup
+            setopt no_local_options no_prompt_cr no_prompt_sp
+        }
+        zmodload zsh/sched
+        sched +0 _instant_prompt_sched_last
+        precmd_functions=("${(@)precmd_functions:#_instant_prompt_precmd}")
+    }
+    precmd_functions=(_instant_prompt_precmd "${precmd_functions[@]}")
 fi
 
 if [ -n "${ZSH_DEBUGRC+1}" ]; then # debug startup time with ZSH_DEBUGRC
