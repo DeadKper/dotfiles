@@ -1,6 +1,6 @@
 # ── Instant prompt — prints native prompt before Zim/starship init ────────────
 
-if [[ -o interactive ]]; then
+function _instant_prompt {
     print -n $'\e7'          # DECSC: save cursor position
 
     # Inline raw rendering — _starship_native_prompt uses prompt escapes, can't call here
@@ -32,7 +32,7 @@ if [[ -o interactive ]]; then
         precmd_functions=("${(@)precmd_functions:#_instant_prompt_precmd}")
     }
     precmd_functions=(_instant_prompt_precmd "${precmd_functions[@]}")
-fi
+}
 
 if [ -n "${ZSH_DEBUGRC+1}" ]; then # debug startup time with ZSH_DEBUGRC
   zmodload zsh/zprof
@@ -155,6 +155,10 @@ fi
 if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
   source ${ZIM_HOME}/zimfw.zsh init -q
 fi
+
+# Render instant prompt.
+[[ -o interactive ]] && _instant_prompt
+
 # Initialize modules.
 source ${ZIM_HOME}/init.zsh
 
