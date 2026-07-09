@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ssh-context: sourced by hostname, username, create
-# Sets: pane_tty, tty_commands, cut, foreground, is_ssh, ssh_host, cache_dir, tty_key
+# Sets: pane_tty, tty_commands, foreground, is_ssh, ssh_host, cache_dir, tty_key
 
 if test -n "$1"; then
 	pane_tty="$1"
@@ -10,38 +10,27 @@ else
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then
-	readarray -t commands < <(ps -e -o user,tty,command | grep -E "^\S+\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s")
-	cut=$(echo "${commands[0]}" | grep -oE '^(\S+\s+){2}' | awk '{print length}')
-	[ "$cut" -lt 1 ] && cut=1
-	tty_commands=("${commands[@]}")
+	readarray -t tty_commands < <(ps -t "$pane_tty" -o user=,args=)
 else
-	readarray -t commands < <(ps -eH -o user:30,tty,cmd | grep -A 1000 -E "^\S+\s+$(sed 's,^/dev/,,' <<< "$pane_tty")\s")
-	cut=$(echo "${commands[0]}" | grep -oE '^(\S+\s+){2}' | awk '{print length}')
-	[ "$cut" -lt 1 ] && cut=1
-	tty_commands=("${commands[0]}")
-	for cmd in "${commands[@]:1}"; do
-		if grep -qE "^.{$cut}\s" <<< "$cmd"; then
-			tty_commands+=("$cmd")
-		else
-			break
-		fi
-	done
+	readarray -t tty_commands < <(ps -t "$pane_tty" -o user:30=,args=)
 fi
 
 foreground="${tty_commands[-1]}"
 is_ssh=false
 ssh_host=""
 
-_last_ssh_cmd=""
+_first_ssh_cmd=""
 for _cmd in "${tty_commands[@]}"; do
-	if cut -c "${cut}-" <<< "$_cmd" | grep -qE "^\s*($(which ssh)|ssh)\s+"; then
-		_last_ssh_cmd="$_cmd"
+	_cmd_args=$(awk '{$1=""; sub(/^ /,"")}1' <<< "$_cmd")
+	if grep -qE "(^|/)ssh\s+" <<< "$_cmd_args"; then
+		_first_ssh_cmd="$_cmd_args"
+		break
 	fi
 done
 
-if [[ -n "$_last_ssh_cmd" ]]; then
+if [[ -n "$_first_ssh_cmd" ]]; then
 	is_ssh=true
-	_ssh_raw=$(cut -c "${cut}-" <<< "$_last_ssh_cmd" | sed 's/^[[:space:]]*//')
+	_ssh_raw=$(sed 's/^[[:space:]]*//' <<< "$_first_ssh_cmd")
 	ssh_host=$(echo "$_ssh_raw" | sed 's/^ssh[[:space:]]*//' | awk '
 		BEGIN { skip=0 }
 		{
