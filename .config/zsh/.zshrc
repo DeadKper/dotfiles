@@ -14,6 +14,7 @@ if [[ -o interactive ]]; then
     if (( ${COLUMNS:-0} > 0 )); then
         print -n $'\e[3G'   # reposition cursor after ❯
     fi
+    unsetopt prompt_cr prompt_sp
 
     function _instant_prompt_cleanup {
         print -n $'\e[?25l\e8\e[J\e[?25h'
@@ -24,7 +25,7 @@ if [[ -o interactive ]]; then
         function _instant_prompt_sched_last {
             (( ${+functions[_instant_prompt_cleanup]} )) || return
             _instant_prompt_cleanup
-            setopt no_local_options no_prompt_cr no_prompt_sp
+            setopt no_local_options prompt_cr prompt_sp
         }
         zmodload zsh/sched
         sched +0 _instant_prompt_sched_last
