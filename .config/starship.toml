@@ -35,7 +35,6 @@ command = "echo -n $CONTAINER_ID"
 when = """ [[ -n "$CONTAINER_ID"  ]] """
 style = "bold red dimmed"
 format = "[$symbol \\[$output\\]]($style) "
-disabled = false
 
 [custom.statusline_model]
 description = "Statusline: Active model name"

@@ -186,6 +186,9 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
                 if [[ $PWD != $_STARSHIP_ASYNC_PWD ]]; then
                     if git -C "$PWD" rev-parse --is-inside-work-tree &>/dev/null; then
                         _STARSHIP_ASYNC_GIT=1
+                        # Dir changed, clean cache
+                        _STARSHIP_LEFT_SEGMENT=""
+                        _STARSHIP_RIGHT_SEGMENT=""
                     else
                         _STARSHIP_ASYNC_GIT=0
                     fi

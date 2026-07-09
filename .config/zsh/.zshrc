@@ -1,37 +1,39 @@
 # ── Instant prompt — prints native prompt before Zim/starship init ────────────
 
 function _instant_prompt {
-    print -n $'\e7'          # DECSC: save cursor position
+  print -n $'\e7'          # DECSC: save cursor position
 
-    # Inline raw rendering — _starship_native_prompt uses prompt escapes, can't call here
-    print -Pn -- "%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f"
-    if (( ${COLUMNS:-0} > 0 )); then
-        typeset _ip_time
-        _ip_time="$(print -Pn -- "%F{#8d8d8d}%D{%H:%M:%S}%f")"
-        print -n $'\e['"${COLUMNS}"'G\e[8D'"${_ip_time}"
-    fi
-    print -Pn -- $'\n'"%B%F{#be95ff}❯%b%f "
-    if (( ${COLUMNS:-0} > 0 )); then
-        print -n $'\e[3G'   # reposition cursor after ❯
-    fi
-    unsetopt prompt_cr prompt_sp
+  # Inline raw rendering — _starship_native_prompt uses prompt escapes, can't call here
+  print -Pn -- "%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f"
 
-    function _instant_prompt_cleanup {
-        print -n $'\e[?25l\e8\e[J\e[?25h'
-        unfunction _instant_prompt_cleanup
+  if (( ${COLUMNS:-0} > 0 )); then
+    typeset _ip_time
+    _ip_time="$(print -Pn -- "%F{#8d8d8d}%D{%H:%M:%S}%f")"
+    print -n $'\e['"${COLUMNS}"'G\e[8D'"${_ip_time}"
+  fi
+
+  print -Pn -- $'\n'"%B%F{#be95ff}❯%b%f "
+  (( ${COLUMNS:-0} > 0 )) && print -n $'\e[3G'   # reposition cursor after ❯
+  unsetopt prompt_cr prompt_sp
+
+  function _instant_prompt_cleanup {
+    print -n $'\e[?25l\e8\e[J\e[?25h'
+    unfunction _instant_prompt_cleanup
+  }
+
+  function _instant_prompt_precmd {
+    function _instant_prompt_sched_last {
+      (( ${+functions[_instant_prompt_cleanup]} )) || return
+      _instant_prompt_cleanup
+      setopt no_local_options prompt_cr prompt_sp
     }
 
-    function _instant_prompt_precmd {
-        function _instant_prompt_sched_last {
-            (( ${+functions[_instant_prompt_cleanup]} )) || return
-            _instant_prompt_cleanup
-            setopt no_local_options prompt_cr prompt_sp
-        }
-        zmodload zsh/sched
-        sched +0 _instant_prompt_sched_last
-        precmd_functions=("${(@)precmd_functions:#_instant_prompt_precmd}")
-    }
-    precmd_functions=(_instant_prompt_precmd "${precmd_functions[@]}")
+    zmodload zsh/sched
+    sched +0 _instant_prompt_sched_last
+    precmd_functions=("${(@)precmd_functions:#_instant_prompt_precmd}")
+  }
+
+  precmd_functions=(_instant_prompt_precmd "${precmd_functions[@]}")
 }
 
 if [ -n "${ZSH_DEBUGRC+1}" ]; then # debug startup time with ZSH_DEBUGRC
@@ -41,7 +43,7 @@ fi
 local XDG_CONFIG_HOME="${XDG_CONFIG_HOME:=$HOME/.config}"
 fpath=(${ZDOTDIR:=${XDG_CONFIG_HOME}/zsh}/completions "${fpath[@]}")
 
-if which yadm &>/dev/null && test -d "${XDG_DATA_HOME:=$HOME/.local/share}/yadm-git"; then
+if command -v yadm &>/dev/null && test -d "${XDG_DATA_HOME:=$HOME/.local/share}/yadm-git"; then
   fpath=("${XDG_DATA_HOME:=$HOME/.local/share}/yadm-git/completion/zsh" "${fpath[@]}")
 fi
 
@@ -141,6 +143,7 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main regexp)
 # ------------------
 
 ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
+
 # Download zimfw plugin manager if missing.
 if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
   if (( ${+commands[curl]} )); then
@@ -156,11 +159,13 @@ if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
   source ${ZIM_HOME}/zimfw.zsh init -q
 fi
 
-# Render instant prompt.
-[[ -o interactive ]] && _instant_prompt
+if [[ -o interactive ]]; then
+  # Render instant prompt.
+  _instant_prompt
 
-# Initialize modules.
-source ${ZIM_HOME}/init.zsh
+  # Initialize modules.
+  source ${ZIM_HOME}/init.zsh
+fi
 
 # ------------------------------
 # Post-init module configuration
