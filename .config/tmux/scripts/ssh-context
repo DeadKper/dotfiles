@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # ssh-context: sourced by hostname, username, create
-# Sets: pane_tty, tty_commands, foreground, is_ssh, ssh_host, cache_dir, tty_key
+# Sets: pane_tty, tty_commands, foreground, is_ssh, ssh_host, pane_id, pane_key
+# Manages: TMUX_${pane_key}_SSH_CMD, invalidates _USER/_HOST on foreground change
 
 if test -n "$1"; then
 	pane_tty="$1"
@@ -9,7 +10,8 @@ else
 	pane_tty=$(tmux display -p '#{pane_tty}')
 fi
 
-pane_id=$(tmux display -p -t "$pane_tty" '#{pane_id}')
+pane_id=$(tmux display -p '#{pane_id}' 2>&1)
+pane_key="${pane_id#%}"
 
 if [[ "$(uname)" == "Darwin" ]]; then
 	readarray -t tty_commands < <(ps -t "$pane_tty" -o user=,args=)
@@ -43,4 +45,18 @@ if [[ -n "$_first_ssh_cmd" ]]; then
 			}
 		}
 	')
+fi
+
+_var_prefix="TMUX_${pane_key}"
+if [[ -n "$pane_id" ]]; then
+	_prev_cmd=$(tmux show-environment "${_var_prefix}_SSH_CMD" 2>/dev/null | sed 's/^[^=]*=//')
+	if [[ "$_prev_cmd" != "$foreground" ]]; then
+		if is_ssh; then
+			tmux set-environment    "${_var_prefix}_SSH_CMD" "$foreground"
+		else
+			tmux set-environment -u "${_var_prefix}_SSH_CMD" 2>/dev/null || true
+		fi
+		tmux set-environment -u "${_var_prefix}_SSH_USER" 2>/dev/null || true
+		tmux set-environment -u "${_var_prefix}_SSH_HOST" 2>/dev/null || true
+	fi
 fi
