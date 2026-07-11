@@ -1,41 +1,3 @@
-# ── Instant prompt — prints native prompt before Zim/starship init ────────────
-
-function _instant_prompt {
-  print -n $'\e7'          # DECSC: save cursor position
-
-  # Inline raw rendering — _starship_native_prompt uses prompt escapes, can't call here
-  print -Pn -- "%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f"
-
-  if (( ${COLUMNS:-0} > 0 )); then
-    typeset _ip_time
-    _ip_time="$(print -Pn -- "%F{#8d8d8d}%D{%H:%M:%S}%f")"
-    print -n $'\e['"${COLUMNS}"'G\e[8D'"${_ip_time}"
-  fi
-
-  print -Pn -- $'\n'"%B%F{#be95ff}❯%b%f "
-  (( ${COLUMNS:-0} > 0 )) && print -n $'\e[3G'   # reposition cursor after ❯
-  unsetopt prompt_cr prompt_sp
-
-  function _instant_prompt_cleanup {
-    print -n $'\e[?25l\e8\e[J\e[?25h'
-    unfunction _instant_prompt_cleanup
-  }
-
-  function _instant_prompt_precmd {
-    function _instant_prompt_sched_last {
-      (( ${+functions[_instant_prompt_cleanup]} )) || return
-      _instant_prompt_cleanup
-      setopt no_local_options prompt_cr prompt_sp
-    }
-
-    zmodload zsh/sched
-    sched +0 _instant_prompt_sched_last
-    precmd_functions=("${(@)precmd_functions:#_instant_prompt_precmd}")
-  }
-
-  precmd_functions=(_instant_prompt_precmd "${precmd_functions[@]}")
-}
-
 if [ -n "${ZSH_DEBUGRC+1}" ]; then # debug startup time with ZSH_DEBUGRC
   zmodload zsh/zprof
 fi
@@ -160,6 +122,8 @@ if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
 fi
 
 if [[ -o interactive ]]; then
+  source "${ZDOTDIR:-${XDG_CONFIG_HOME:-$HOME/.config}/zsh}/conf.d/starship.zsh" instant
+
   # Render instant prompt.
   [ -z "$SSH_TTY" ] && _instant_prompt
 
