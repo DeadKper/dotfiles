@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+while IFS= read -r line; do
+	[[ "$line" =~ ^TMUX_([0-9]+)_SSH_ ]] || continue
+	key="${BASH_REMATCH[1]}"
+	varname="${line%%=*}"
+	tmux set-environment -u "$varname"
+done < <(tmux show-environment | grep '^TMUX_[0-9]*_SSH_')

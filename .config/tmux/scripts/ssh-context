@@ -23,18 +23,18 @@ foreground="${tty_commands[-1]}"
 is_ssh=false
 ssh_host=""
 
-_first_ssh_cmd=""
-for _cmd in "${tty_commands[@]}"; do
-	_cmd_args=$(awk '{$1=""; sub(/^ /,"")}1' <<< "$_cmd")
-	if grep -qE "(^|/)ssh\s+" <<< "$_cmd_args"; then
-		_first_ssh_cmd="$_cmd_args"
+first_ssh_cmd=""
+for cmd in "${tty_commands[@]}"; do
+	cmd_args=$(awk '{$1=""; sub(/^ /,"")}1' <<< "$cmd")
+	if grep -qE "(^|/)ssh\s+" <<< "$cmd_args"; then
+		first_ssh_cmd="$cmd_args"
 		break
 	fi
 done
 
-if [[ -n "$_first_ssh_cmd" ]]; then
+if [[ -n "$first_ssh_cmd" ]]; then
 	is_ssh=true
-	ssh_host=$(echo "$_first_ssh_cmd" | awk '
+	ssh_host=$(echo "$first_ssh_cmd" | awk '
 		BEGIN { skip=0 }
 		{
 			for (i=2; i<=NF; i++) {
@@ -47,16 +47,16 @@ if [[ -n "$_first_ssh_cmd" ]]; then
 	')
 fi
 
-_var_prefix="TMUX_${pane_key}"
+var_prefix="TMUX_${pane_key}"
 if [[ -n "$pane_id" ]]; then
-	_prev_cmd=$(tmux show-environment "${_var_prefix}_SSH_CMD" 2>/dev/null | sed 's/^[^=]*=//')
-	if [[ "$_prev_cmd" != "$foreground" ]]; then
+	prev_cmd=$(tmux show-environment "${var_prefix}_SSH_CMD" 2>/dev/null | sed 's/^[^=]*=//')
+	if [[ "$prev_cmd" != "$foreground" ]]; then
 		if is_ssh; then
-			tmux set-environment    "${_var_prefix}_SSH_CMD" "$foreground"
+			tmux set-environment    "${var_prefix}_SSH_CMD" "$foreground"
 		else
-			tmux set-environment -u "${_var_prefix}_SSH_CMD" 2>/dev/null || true
+			tmux set-environment -u "${var_prefix}_SSH_CMD" 2>/dev/null || true
 		fi
-		tmux set-environment -u "${_var_prefix}_SSH_USER" 2>/dev/null || true
-		tmux set-environment -u "${_var_prefix}_SSH_HOST" 2>/dev/null || true
+		tmux set-environment -u "${var_prefix}_SSH_USER" 2>/dev/null || true
+		tmux set-environment -u "${var_prefix}_SSH_HOST" 2>/dev/null || true
 	fi
 fi

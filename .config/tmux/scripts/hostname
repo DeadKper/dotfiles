@@ -6,9 +6,9 @@ fi
 . "$(dirname "$0")/ssh-context"
 
 if $is_ssh; then
-	_cached_val=$(tmux show-environment "TMUX_${pane_key}_SSH_HOST" 2>/dev/null | sed 's/^[^=]*=//')
-	if [[ -n "$_cached_val" ]]; then
-		echo "$_cached_val"
+	cached_val=$(tmux show-environment "TMUX_${pane_key}_SSH_HOST" 2>/dev/null | sed 's/^[^=]*=//')
+	if [[ -n "$cached_val" ]]; then
+		echo "$cached_val"
 		exit 0
 	fi
 fi
