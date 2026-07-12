@@ -1,25 +1,37 @@
 if [[ -o interactive ]] && command -v starship &>/dev/null; then
+    if [[ -z "$STARSHIP_SOURCED" ]]; then
+        # ── Defaults ──────────────────────────────────────────────────────────────────
+        STARSHIP_SOURCED=true
 
-    # ── Fast profile prompts ───────────────────────────────────────────────────
-    function _starship_fast_prompt {
-        if [[ -n $_STARSHIP_LEFT_SEGMENT ]]; then
-            print -rn -- "${_STARSHIP_LEFT_SEGMENT}"
-            return
-        fi
-        starship prompt --profile fast_left --status="${_STARSHIP_LAST_EXIT:-0}"
-    }
+        STARSHIP_TRANS_LEFT=transient_left
+        STARSHIP_TRANS_RIGHT=transient_right
 
-    function _starship_fast_rprompt {
-        if [[ -n $_STARSHIP_RIGHT_SEGMENT ]]; then
-            print -rn -- "$_STARSHIP_RIGHT_SEGMENT"
-            return
-        fi
-        starship prompt --profile fast_right --status="${_STARSHIP_LAST_EXIT:-0}"
-    }
+        STARSHIP_ASYNC_GIT_CACHE=1
+        STARSHIP_ASYNC_LEFT=DEFAULT
+        STARSHIP_ASYNC_RIGHT=''
+
+        export STARSHIP_LOG=error
+
+        # ── Fast profile prompts ───────────────────────────────────────────────────
+        function _starship_fast_prompt {
+            if [[ -n $_STARSHIP_LEFT_SEGMENT ]]; then
+                print -rn -- "${_STARSHIP_LEFT_SEGMENT}"
+            else
+                starship prompt --profile fast_left --status="${_STARSHIP_LAST_EXIT:-0}"
+            fi
+        }
+
+        function _starship_fast_rprompt {
+            if [[ -n $_STARSHIP_RIGHT_SEGMENT ]]; then
+                print -rn -- "$_STARSHIP_RIGHT_SEGMENT"
+            else
+                starship prompt --profile fast_right --status="${_STARSHIP_LAST_EXIT:-0}"
+            fi
+        }
+    fi
 
     # ── Phase guard: instant prompt only ─────────────────────────────────────────
     if [[ ${1:-} == instant ]]; then
-
         function _instant_prompt {
             print -n $'\e7'
 
@@ -50,19 +62,11 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         return 0
     fi
 
-    # ── Defaults ──────────────────────────────────────────────────────────────────
-    STARSHIP_ASYNC_LEFT=DEFAULT
-    STARSHIP_TRANS_LEFT=transient_left
-    STARSHIP_TRANS_RIGHT=transient_right
-    STARSHIP_ASYNC_GIT_CACHE=1
-
-    export STARSHIP_LOG=error
-
     # ── Starship init interception ────────────────────────────────────────────────
     # Strip PROMPT/RPROMPT/PROMPT2 assignments and starship's own precmd hook.
     # prompt_starship_precmd still gets defined (captures STARSHIP_CMD_STATUS etc.).
     # preexec hook still registers (timing). We own precmd entirely via _starship_precmd.
-    if [[ -n "${STARSHIP_TRANS_LEFT+1}" || -n "${STARSHIP_TRANS_RIGHT+1}" || -n "${STARSHIP_ASYNC_LEFT+1}" || -n "${STARSHIP_ASYNC_RIGHT+1}" ]]; then
+    if [[ -n "${STARSHIP_TRANS_LEFT}" || -n "${STARSHIP_TRANS_RIGHT}" || -n "${STARSHIP_ASYNC_LEFT}" || -n "${STARSHIP_ASYNC_RIGHT}" ]]; then
         local _starship_init
         _starship_init="$(starship init zsh)"
         _starship_init="$(printf '%s\n' "$_starship_init" | sed '/^PROMPT=/d; /^RPROMPT=/d; /^PROMPT2=/d; /add-zsh-hook precmd prompt_starship_precmd/d')"
@@ -112,12 +116,12 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     }
 
     # ── Persistent async workers ──────────────────────────────────────────────────
-    if [[ -n "${STARSHIP_ASYNC_LEFT+1}" ]] && (( ${+functions[async_start_worker]} )); then
+    if [[ -n "${STARSHIP_ASYNC_LEFT}" ]] && (( ${+functions[async_start_worker]} )); then
         async_start_worker _starship_left_worker -u
         async_register_callback _starship_left_worker _starship_left_callback
     fi
 
-    if [[ -n "${STARSHIP_ASYNC_RIGHT+1}" ]] && (( ${+functions[async_start_worker]} )); then
+    if [[ -n "${STARSHIP_ASYNC_RIGHT}" ]] && (( ${+functions[async_start_worker]} )); then
         async_start_worker _starship_right_worker -u
         async_register_callback _starship_right_worker _starship_right_callback
     fi
@@ -146,7 +150,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     }
 
     # ── Transient prompt ──────────────────────────────────────────────────────────
-    if [[ -n "${STARSHIP_TRANS_LEFT+1}" || -n "${STARSHIP_TRANS_RIGHT+1}" ]]; then
+    if [[ -n "${STARSHIP_TRANS_LEFT}" || -n "${STARSHIP_TRANS_RIGHT}" ]]; then
         function _starship_transient_prompt {
             _STARSHIP_LINE_FINISHED=1
             if [[ "$PWD" != "$_STARSHIP_SAVED_PWD" ]]; then
@@ -169,22 +173,22 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     fi
 
     # ── Merged precmd ─────────────────────────────────────────────────────────────
-    if [[ -n "${STARSHIP_TRANS_LEFT+1}" || -n "${STARSHIP_TRANS_RIGHT+1}" || -n "${STARSHIP_ASYNC_LEFT+1}" || -n "${STARSHIP_ASYNC_RIGHT+1}" ]]; then
+    if [[ -n "${STARSHIP_TRANS_LEFT}" || -n "${STARSHIP_TRANS_RIGHT}" || -n "${STARSHIP_ASYNC_LEFT}" || -n "${STARSHIP_ASYNC_RIGHT}" ]]; then
 
         function _starship_precmd {
             prompt_starship_precmd 2>/dev/null  # capture STARSHIP_CMD_STATUS, STARSHIP_DURATION, STARSHIP_PIPE_STATUS, STARSHIP_JOBS_COUNT
 
             # ── Transient block ───────────────────────────────────────────────────
-            if [[ -n "${STARSHIP_TRANS_LEFT+1}" || -n "${STARSHIP_TRANS_RIGHT+1}" ]]; then
+            if [[ -n "${STARSHIP_TRANS_LEFT}" || -n "${STARSHIP_TRANS_RIGHT}" ]]; then
                 _STARSHIP_LAST_EXIT=${STARSHIP_CMD_STATUS:-0}
 
-                if [[ -n "${STARSHIP_TRANS_LEFT+1}" ]]; then
+                if [[ -n "${STARSHIP_TRANS_LEFT}" ]]; then
                     local profile_args=()
                     [[ $STARSHIP_TRANS_LEFT != DEFAULT ]] && profile_args=(--profile "$STARSHIP_TRANS_LEFT")
                     _STARSHIP_SAVED_LEFT="$(starship prompt "${profile_args[@]}" --status="$_STARSHIP_LAST_EXIT" --terminal-width="$COLUMNS")"
                 fi
 
-                if [[ -n "${STARSHIP_TRANS_RIGHT+1}" ]]; then
+                if [[ -n "${STARSHIP_TRANS_RIGHT}" ]]; then
                     local profile_args=()
                     if [[ $STARSHIP_TRANS_RIGHT == DEFAULT ]]; then
                         profile_args=(--right)
@@ -198,11 +202,11 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
             fi
 
             # ── Async block ───────────────────────────────────────────────────────
-            if [[ -n "${STARSHIP_ASYNC_LEFT+1}" || -n "${STARSHIP_ASYNC_RIGHT+1}" ]]; then
-                if [[ -n "${STARSHIP_ASYNC_LEFT+1}" ]]; then
+            if [[ -n "${STARSHIP_ASYNC_LEFT}" || -n "${STARSHIP_ASYNC_RIGHT}" ]]; then
+                if [[ -n "${STARSHIP_ASYNC_LEFT}" ]]; then
                     PROMPT='$(_starship_fast_prompt)'
                 fi
-                if [[ -n "${STARSHIP_ASYNC_RIGHT+1}" ]]; then
+                if [[ -n "${STARSHIP_ASYNC_RIGHT}" ]]; then
                     RPROMPT='$(_starship_fast_rprompt)'
                 else
                     RPROMPT=''
@@ -230,13 +234,13 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
                 _STARSHIP_ASYNC_PWD="$PWD"
 
-                if [[ -n "${STARSHIP_ASYNC_LEFT+1}" ]] && (( ${+functions[async_job]} )); then
+                if [[ -n "${STARSHIP_ASYNC_LEFT}" ]] && (( ${+functions[async_job]} )); then
                     async_job _starship_left_worker _starship_render_left \
                         "$PWD" "${STARSHIP_CMD_STATUS:-0}" "${STARSHIP_PIPE_STATUS[*]:-}" \
                         "${STARSHIP_DURATION:-}" "${STARSHIP_JOBS_COUNT:-0}" "$COLUMNS" "${KEYMAP:-viins}" 2>/dev/null
                 fi
 
-                if [[ -n "${STARSHIP_ASYNC_RIGHT+1}" ]] && (( ${+functions[async_job]} )); then
+                if [[ -n "${STARSHIP_ASYNC_RIGHT}" ]] && (( ${+functions[async_job]} )); then
                     async_job _starship_right_worker _starship_render_right \
                         "${STARSHIP_CMD_STATUS:-0}" "${STARSHIP_PIPE_STATUS[*]:-}" \
                         "${STARSHIP_DURATION:-}" "${STARSHIP_JOBS_COUNT:-0}" "$COLUMNS" "${KEYMAP:-viins}" 2>/dev/null
