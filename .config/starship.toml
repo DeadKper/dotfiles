@@ -14,17 +14,17 @@ $status\
 $cmd_duration\
 $jobs\
 $battery\
-$time \
+$time\
 $line_break\
 $character\
 """
 
-command_timeout = 1000
+command_timeout = 500
 scan_timeout = 50
 add_newline = false
 
 [profiles]
-fast_left = "$shell$directory$fill$status$cmd_duration$jobs$battery$time $line_break$character"
+fast_left = "$shell$directory$fill$status$cmd_duration$jobs$battery$time$line_break$character"
 transient_left = "$character"
 transient_right = "$status$cmd_duration$jobs$time"
 statusline = "$directory$git_branch$git_status$git_metrics$fill${custom.statusline_model}${custom.statusline_cost}${custom.statusline_ctx_low}${custom.statusline_ctx_med}${custom.statusline_ctx_high}${custom.statusline_caveman}${custom.statusline_savings}$time"
