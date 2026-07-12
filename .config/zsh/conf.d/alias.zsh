@@ -18,5 +18,5 @@ alias la="ls -A"
 alias lla="ls -lA"
 
 if command -v rg &>/dev/null; then
-    alias cat="rg '' -N --colors=match:none "
+    alias rat="rg '' -N --colors=match:none "
 fi
