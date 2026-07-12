@@ -125,7 +125,7 @@ if [[ -o interactive ]]; then
   source "${ZDOTDIR:-${XDG_CONFIG_HOME:-$HOME/.config}/zsh}/conf.d/starship.zsh" instant
 
   # Render instant prompt.
-  [ -z "$SSH_TTY" ] && _instant_prompt
+  [ -z "$SSH_TTY" ] && _starship_instant_prompt
 
   # Initialize modules.
   source ${ZIM_HOME}/init.zsh
