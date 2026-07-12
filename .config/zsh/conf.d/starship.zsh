@@ -19,10 +19,37 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
         # ── Fast profile prompts ───────────────────────────────────────────────────
         function _starship_fast_prompt {
+            local fast_left="$(starship prompt --profile $STARSHIP_FAST_LEFT \
+                --status="${_STARSHIP_LAST_EXIT:-0}" \
+                --pipestatus="${STARSHIP_PIPE_STATUS[*]:-}" \
+                --cmd-duration="${STARSHIP_DURATION:-}" \
+                --jobs="${STARSHIP_JOBS_COUNT:-0}" \
+                --terminal-width="$COLUMNS" \
+                --keymap="${KEYMAP:-viins}")"
             if [[ -n "$_STARSHIP_SEGMENT_LEFT" ]]; then
-                print -rn -- "${_STARSHIP_SEGMENT_LEFT}"
+                local fill_start=$'%{\e[1;30m%}'
+
+                if [[ "$_STARSHIP_SEGMENT_LEFT" == *"$fill_start"* ]]; then
+                    local left_cached fast_right fill_str
+                    local zero='%([BSUbfksu]|([FK]|){*})'
+                    local fill_end=$'%{\e[0m%}'
+
+                    left_cached="${_STARSHIP_SEGMENT_LEFT%%${fill_start}*}"
+                    fast_right="${${fast_left#*${fill_start}}#*${fill_end}}"
+
+                    local left_size=${(m)#${(S%%)left_cached//$~zero/}}
+                    local right_size=${(m)#${(S%%)${fast_right%%$'\n'*}//$~zero/}}
+
+                    local fill_width=$(( COLUMNS - left_size - right_size ))
+                    (( fill_width < 0 )) && fill_width=0
+                    printf -v fill_str '%*s' "$fill_width" ''
+
+                    print -rn -- "${left_cached}${fill_str}${fast_right}"
+                else
+                    print -rn -- "${_STARSHIP_SEGMENT_LEFT}"
+                fi
             else
-                starship prompt --profile $STARSHIP_FAST_LEFT --status="${_STARSHIP_LAST_EXIT:-0}"
+                print -rn -- "$fast_left"
             fi
         }
 
@@ -30,7 +57,13 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
             if [[ -n "$_STARSHIP_SEGMENT_RIGHT" ]]; then
                 print -rn -- "$_STARSHIP_SEGMENT_RIGHT"
             else
-                starship prompt --profile $STARSHIP_FAST_RIGHT --status="${_STARSHIP_LAST_EXIT:-0}"
+                starship prompt --profile $STARSHIP_FAST_RIGHT \
+                    --status="${_STARSHIP_LAST_EXIT:-0}" \
+                    --pipestatus="${STARSHIP_PIPE_STATUS[*]:-}" \
+                    --cmd-duration="${STARSHIP_DURATION:-}" \
+                    --jobs="${STARSHIP_JOBS_COUNT:-0}" \
+                    --terminal-width="$COLUMNS" \
+                    --keymap="${KEYMAP:-viins}"
             fi
         }
     fi
@@ -189,7 +222,14 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
             if (( _STARSHIP_TRANS_ENABLED )); then
                 _STARSHIP_LAST_EXIT=${STARSHIP_CMD_STATUS:-0}
 
-                local side trans_var profile_var profile profile_args=() args=(--status="$_STARSHIP_LAST_EXIT" --cmd-duration="${STARSHIP_DURATION:-}" --terminal-width="$COLUMNS")
+                local side trans_var profile_var profile profile_args=() args=(
+                    --status="$_STARSHIP_LAST_EXIT"
+                    --pipestatus="${STARSHIP_PIPE_STATUS[*]:-}"
+                    --cmd-duration="${STARSHIP_DURATION:-}"
+                    --jobs="${STARSHIP_JOBS_COUNT:-0}"
+                    --terminal-width="$COLUMNS"
+                    --keymap="${KEYMAP:-viins}"
+                )
                 for side in left right; do
                     trans_var="STARSHIP_TRANS_${side:u}"
                     profile="${(P)trans_var}"
@@ -241,9 +281,19 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
                 _STARSHIP_ASYNC_PWD="$PWD"
 
-                local args=("$PWD" "${STARSHIP_CMD_STATUS:-0}" "${STARSHIP_PIPE_STATUS[*]:-}" "${STARSHIP_DURATION:-}" "${STARSHIP_JOBS_COUNT:-0}" "$COLUMNS" "${KEYMAP:-viins}")
-                (( _STARSHIP_ASYNC_LEFT_ENABLED )) && (( ${+functions[async_job]} )) && async_job _starship_async_worker_left _starship_async_render left "$STARSHIP_ASYNC_LEFT" "${args[@]}" 2>/dev/null
-                (( _STARSHIP_ASYNC_RIGHT_ENABLED )) && (( ${+functions[async_job]} )) && async_job _starship_async_worker_right _starship_async_render right "$STARSHIP_ASYNC_RIGHT" "${args[@]}" 2>/dev/null
+                local args=(
+                    "$PWD"
+                    "${STARSHIP_CMD_STATUS:-0}"
+                    "${STARSHIP_PIPE_STATUS[*]:-}"
+                    "${STARSHIP_DURATION:-}"
+                    "${STARSHIP_JOBS_COUNT:-0}"
+                    "$COLUMNS"
+                    "${KEYMAP:-viins}"
+                )
+                (( _STARSHIP_ASYNC_LEFT_ENABLED )) && (( ${+functions[async_job]} )) && \
+                    async_job _starship_async_worker_left _starship_async_render left "$STARSHIP_ASYNC_LEFT" "${args[@]}" 2>/dev/null
+                (( _STARSHIP_ASYNC_RIGHT_ENABLED )) && (( ${+functions[async_job]} )) && \
+                    async_job _starship_async_worker_right _starship_async_render right "$STARSHIP_ASYNC_RIGHT" "${args[@]}" 2>/dev/null
             fi
         }
 
