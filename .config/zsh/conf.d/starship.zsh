@@ -11,6 +11,8 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         STARSHIP_TRANS_LEFT=transient_left
         STARSHIP_TRANS_RIGHT=transient_right
 
+        STARSHIP_PROMPT2=DEFAULT
+
         STARSHIP_GIT_CACHE_ENABLED=1
         STARSHIP_ASYNC_LEFT=DEFAULT
         STARSHIP_ASYNC_RIGHT=''
@@ -132,6 +134,15 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         eval "$(starship init zsh)"
     fi
 
+    # ── PROMPT2 ───────────────────────────────────────────────────────────────────
+    if [[ -n "$STARSHIP_PROMPT2" ]]; then
+        if [[ "$STARSHIP_PROMPT2" == DEFAULT ]]; then
+            PROMPT2='$(starship prompt --continuation)'
+        else
+            PROMPT2='$(starship prompt --profile "$STARSHIP_PROMPT2")'
+        fi
+    fi
+
     # ── Transient state ───────────────────────────────────────────────────────────
     typeset -gi _STARSHIP_LAST_EXIT=0
     typeset -gi _STARSHIP_LINE_FINISHED=0
@@ -174,6 +185,18 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         (( has_next )) && return
         if (( ! _STARSHIP_LINE_FINISHED )) && zle && [[ $ret -eq 0 ]]; then
             typeset -g "_STARSHIP_SEGMENT_${side:u}=$stdout"
+            if (( _STARSHIP_TRANS_ENABLED )); then
+                local _trans_args=(
+                    --status="$_STARSHIP_LAST_EXIT"
+                    --pipestatus="${STARSHIP_PIPE_STATUS[*]:-}"
+                    --cmd-duration="${STARSHIP_DURATION:-}"
+                    --jobs="${STARSHIP_JOBS_COUNT:-0}"
+                    --terminal-width="$COLUMNS"
+                    --keymap="${KEYMAP:-viins}"
+                )
+                [[ -n "$STARSHIP_TRANS_LEFT" ]]  && _STARSHIP_TRANS_PROMPT="$(starship prompt --profile "$STARSHIP_TRANS_LEFT" "${_trans_args[@]}")"
+                [[ -n "$STARSHIP_TRANS_RIGHT" ]] && _STARSHIP_TRANS_RPROMPT="$(starship prompt --profile "$STARSHIP_TRANS_RIGHT" "${_trans_args[@]}")"
+            fi
             zle reset-prompt
         fi
     }

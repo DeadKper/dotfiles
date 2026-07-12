@@ -19,6 +19,8 @@ $line_break\
 $character\
 """
 
+continuation_prompt = '[∙](#8d8d8d) '
+
 command_timeout = 500
 scan_timeout = 50
 add_newline = false
@@ -117,7 +119,6 @@ disabled = false
 added_style = "#42be65"
 deleted_style = "#ee5396"
 format = '([+$added]($added_style) )([-$deleted]($deleted_style) )'
-
 
 [status]
 disabled = false
