@@ -1,5 +1,5 @@
 if [[ -o interactive ]] && command -v starship &>/dev/null; then
-    if ! (( "$STARSHIP_SOURCED" )); then
+    if ! (( $STARSHIP_SOURCED )); then
         ZLE_RPROMPT_INDENT=0
 
         # ── Defaults ──────────────────────────────────────────────────────────────────
