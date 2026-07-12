@@ -1,28 +1,20 @@
 if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
-    # ── Native fallback prompts ───────────────────────────────────────────────────
-    function _starship_native_prompt {
+    # ── Fast profile prompts ───────────────────────────────────────────────────
+    function _starship_fast_prompt {
         if [[ -n $_STARSHIP_LEFT_SEGMENT ]]; then
             print -rn -- "${_STARSHIP_LEFT_SEGMENT}"
             return
         fi
-        local char
-        if (( ${_STARSHIP_LAST_EXIT:-0} )); then
-            char="$(print -Pn -- "%B%F{#ee5396}❯%b%f ")"
-        else
-            char="$(print -Pn -- "%B%F{#be95ff}❯%b%f ")"
-        fi
-        local dir_str="%F{#e0e0e0}zsh%f %F{#78a9ff}%(6~|%-1~/…/%4~|%~)%f"
-        local time_str="%F{#8d8d8d}%D{%H:%M:%S}%f"
-        print -Pn -- "${dir_str}"$'%{\e['"${COLUMNS}"$'G\e[8D%}'"${time_str}"$'\n'"${char}"
+        starship prompt --profile fast_left --status="${_STARSHIP_LAST_EXIT:-0}"
     }
 
-    function _starship_native_rprompt {
+    function _starship_fast_rprompt {
         if [[ -n $_STARSHIP_RIGHT_SEGMENT ]]; then
             print -rn -- "$_STARSHIP_RIGHT_SEGMENT"
-        else
-            print -Pn -- "%F{#8d8d8d}%D{%H:%M:%S}%f"
+            return
         fi
+        starship prompt --profile fast_right --status="${_STARSHIP_LAST_EXIT:-0}"
     }
 
     # ── Phase guard: instant prompt only ─────────────────────────────────────────
@@ -31,7 +23,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         function _instant_prompt {
             print -n $'\e7'
 
-            _starship_native_prompt
+            print -Pn -- "$(_starship_fast_prompt)"
 
             (( ${COLUMNS:-0} > 0 )) && print -n $'\e[3G'
             unsetopt prompt_cr prompt_sp
@@ -60,8 +52,8 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
     # ── Defaults ──────────────────────────────────────────────────────────────────
     STARSHIP_ASYNC_LEFT=DEFAULT
-    STARSHIP_TRANS_LEFT=left_transient
-    STARSHIP_TRANS_RIGHT=right_transient
+    STARSHIP_TRANS_LEFT=transient_left
+    STARSHIP_TRANS_RIGHT=transient_right
     STARSHIP_ASYNC_GIT_CACHE=1
 
     export STARSHIP_LOG=error
@@ -208,10 +200,10 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
             # ── Async block ───────────────────────────────────────────────────────
             if [[ -n "${STARSHIP_ASYNC_LEFT+1}" || -n "${STARSHIP_ASYNC_RIGHT+1}" ]]; then
                 if [[ -n "${STARSHIP_ASYNC_LEFT+1}" ]]; then
-                    PROMPT='$(_starship_native_prompt)'
+                    PROMPT='$(_starship_fast_prompt)'
                 fi
                 if [[ -n "${STARSHIP_ASYNC_RIGHT+1}" ]]; then
-                    RPROMPT='$(_starship_native_rprompt)'
+                    RPROMPT='$(_starship_fast_rprompt)'
                 else
                     RPROMPT=''
                 fi
