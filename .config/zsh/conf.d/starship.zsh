@@ -1,5 +1,7 @@
 if [[ -o interactive ]] && command -v starship &>/dev/null; then
     if ! (( "$STARSHIP_SOURCED" )); then
+        ZLE_RPROMPT_INDENT=0
+
         # ── Defaults ──────────────────────────────────────────────────────────────────
         STARSHIP_SOURCED=1
 
@@ -40,7 +42,20 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
             print -Pn -- "$(_starship_fast_prompt)"
 
-            (( ${COLUMNS:-0} > 0 )) && print -n $'\e[3G'
+            if [[ -n "$STARSHIP_FAST_RIGHT" ]] && (( ${COLUMNS:-0} > 0 )); then
+                local _rp_rendered _rp_plain _rp_col
+                _rp_rendered="$(_starship_fast_rprompt)"
+                _rp_plain="$(print -P -- "$_rp_rendered" | sed 's/\x1b\[[0-9;]*[A-Za-z]//g')"
+                _rp_col=$(( COLUMNS - ${#_rp_plain} + 1 ))
+                (( _rp_col > 0 )) && {
+                    print -n $'\e[s'
+                    print -n "\e[${_rp_col}G"
+                    print -Pn -- "$_rp_rendered"
+                    print -n $'\e[u'
+                }
+            fi
+
+            print -n ''
             unsetopt prompt_cr prompt_sp
 
             function _starship_instant_prompt_cleanup {
@@ -87,8 +102,8 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     # ── Transient state ───────────────────────────────────────────────────────────
     typeset -gi _STARSHIP_LAST_EXIT=0
     typeset -gi _STARSHIP_LINE_FINISHED=0
-    typeset -g  _STARSHIP_SAVED_LEFT=""
-    typeset -g  _STARSHIP_SAVED_RIGHT=""
+    typeset -g  _STARSHIP_TRANS_PROMPT=""
+    typeset -g  _STARSHIP_TRANS_RPROMPT=""
     typeset -g  _STARSHIP_SAVED_PWD=""
 
     # ── Async state ───────────────────────────────────────────────────────────────
@@ -114,14 +129,15 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     }
 
     function _starship_render_right {
+        cd "$1" 2>/dev/null || return 1
         local profile_args=()
         if [[ "$STARSHIP_ASYNC_RIGHT" != DEFAULT ]]; then
             profile_args=(--profile "$STARSHIP_ASYNC_RIGHT")
         else
             profile_args=(--right)
         fi
-        starship prompt "${profile_args[@]}" --status="$1" --pipestatus="$2" \
-            --cmd-duration="$3" --jobs="$4" --terminal-width="$5" --keymap="$6"
+        starship prompt "${profile_args[@]}" --status="$2" --pipestatus="$3" \
+            --cmd-duration="$4" --jobs="$5" --terminal-width="$6" --keymap="$7"
     }
 
     # ── Persistent async workers ──────────────────────────────────────────────────
@@ -166,7 +182,8 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
                 _STARSHIP_SAVED_PWD="$PWD"
                 return
             fi
-            PROMPT="$_STARSHIP_SAVED_LEFT" RPROMPT="$_STARSHIP_SAVED_RIGHT"
+            _STARSHIP_SAVED_PROMPT="$PROMPT" _STARSHIP_SAVED_RPROMPT="$RPROMPT"
+            PROMPT="$_STARSHIP_TRANS_PROMPT" RPROMPT="$_STARSHIP_TRANS_RPROMPT"
             zle && zle .reset-prompt
         }
         zle -N _starship_transient_prompt
@@ -192,19 +209,21 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
                 _STARSHIP_LAST_EXIT=${STARSHIP_CMD_STATUS:-0}
 
                 if [[ -n "$STARSHIP_TRANS_LEFT" ]]; then
+                    [[ -n "$_STARSHIP_SAVED_PROMPT" ]] && PROMPT="$_STARSHIP_SAVED_PROMPT"
                     local profile_args=()
                     [[ "$STARSHIP_TRANS_LEFT" != DEFAULT ]] && profile_args=(--profile "$STARSHIP_TRANS_LEFT")
-                    _STARSHIP_SAVED_LEFT="$(starship prompt "${profile_args[@]}" --status="$_STARSHIP_LAST_EXIT" --terminal-width="$COLUMNS")"
+                    _STARSHIP_TRANS_PROMPT="$(starship prompt "${profile_args[@]}" --status="$_STARSHIP_LAST_EXIT" --terminal-width="$COLUMNS")"
                 fi
 
                 if [[ -n "$STARSHIP_TRANS_RIGHT" ]]; then
+                    [[ -n "$_STARSHIP_SAVED_RPROMPT" ]] && RPROMPT="$_STARSHIP_SAVED_RPROMPT"
                     local profile_args=()
                     if [[ "$STARSHIP_TRANS_RIGHT" != DEFAULT ]]; then
                         profile_args=(--profile "$STARSHIP_TRANS_RIGHT")
                     else
                         profile_args=(--right)
                     fi
-                    _STARSHIP_SAVED_RIGHT="$(starship prompt "${profile_args[@]}" --status="$_STARSHIP_LAST_EXIT" --cmd-duration="${STARSHIP_DURATION:-}" --terminal-width="$COLUMNS")"
+                    _STARSHIP_TRANS_RPROMPT="$(starship prompt "${profile_args[@]}" --status="$_STARSHIP_LAST_EXIT" --cmd-duration="${STARSHIP_DURATION:-}" --terminal-width="$COLUMNS")"
                 fi
 
                 TRAPINT() { _starship_transient_prompt 2>/dev/null; return $(( 128 + $1 )) }
@@ -217,8 +236,6 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
                 fi
                 if (( _STARSHIP_ASYNC_RIGHT_ENABLED )); then
                     RPROMPT='$(_starship_fast_rprompt)'
-                else
-                    RPROMPT=''
                 fi
                 _STARSHIP_LINE_FINISHED=0
 
@@ -251,7 +268,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
                 if (( _STARSHIP_ASYNC_RIGHT_ENABLED )) && (( ${+functions[async_job]} )); then
                     async_job _starship_worker_right _starship_render_right \
-                        "${STARSHIP_CMD_STATUS:-0}" "${STARSHIP_PIPE_STATUS[*]:-}" \
+                        "$PWD" "${STARSHIP_CMD_STATUS:-0}" "${STARSHIP_PIPE_STATUS[*]:-}" \
                         "${STARSHIP_DURATION:-}" "${STARSHIP_JOBS_COUNT:-0}" "$COLUMNS" "${KEYMAP:-viins}" 2>/dev/null
                 fi
             fi
