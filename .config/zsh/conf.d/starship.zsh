@@ -8,10 +8,9 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         STARSHIP_FAST_LEFT=fast_left
         STARSHIP_FAST_RIGHT=''
 
+        STARSHIP_TRANS_KEEP_FIRST=1
         STARSHIP_TRANS_LEFT=transient_left
         STARSHIP_TRANS_RIGHT=transient_right
-
-        STARSHIP_PROMPT2=DEFAULT
 
         STARSHIP_GIT_CACHE_ENABLED=1
         STARSHIP_ASYNC_LEFT=DEFAULT
@@ -22,7 +21,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
         # ── Fast profile prompts ───────────────────────────────────────────────────
         function _starship_fast_prompt {
             local fast_left="$(starship prompt --profile $STARSHIP_FAST_LEFT \
-                --status="${_STARSHIP_LAST_EXIT:-0}" \
+                --status="${STARSHIP_CMD_STATUS:-0}" \
                 --pipestatus="${STARSHIP_PIPE_STATUS[*]:-}" \
                 --cmd-duration="${STARSHIP_DURATION:-}" \
                 --jobs="${STARSHIP_JOBS_COUNT:-0}" \
@@ -60,7 +59,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
                 print -rn -- "$_STARSHIP_SEGMENT_RIGHT"
             else
                 starship prompt --profile $STARSHIP_FAST_RIGHT \
-                    --status="${_STARSHIP_LAST_EXIT:-0}" \
+                    --status="${STARSHIP_CMD_STATUS:-0}" \
                     --pipestatus="${STARSHIP_PIPE_STATUS[*]:-}" \
                     --cmd-duration="${STARSHIP_DURATION:-}" \
                     --jobs="${STARSHIP_JOBS_COUNT:-0}" \
@@ -129,31 +128,25 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     # prompt_starship_precmd still gets defined (captures STARSHIP_CMD_STATUS etc.).
     # preexec hook still registers (timing). We own precmd entirely via _starship_precmd.
     if (( _STARSHIP_CUSTOM_ENABLED )); then
-        eval "$(starship init zsh | sed '/^PROMPT=/d; /^RPROMPT=/d; /^PROMPT2=/d; /add-zsh-hook precmd prompt_starship_precmd/d')"
+        eval "$(starship init zsh | sed '/add-zsh-hook precmd prompt_starship_precmd/d')"
+		_STARSHIP_SAVED_PROMPT="$PROMPT"
+		_STARSHIP_SAVED_RPROMPT="$RPROMPT"
     else
         eval "$(starship init zsh)"
     fi
 
-    # ── PROMPT2 ───────────────────────────────────────────────────────────────────
-    if [[ -n "$STARSHIP_PROMPT2" ]]; then
-        if [[ "$STARSHIP_PROMPT2" == DEFAULT ]]; then
-            PROMPT2='$(starship prompt --continuation)'
-        else
-            PROMPT2='$(starship prompt --profile "$STARSHIP_PROMPT2")'
-        fi
-    fi
+    # ── Custom state ──────────────────────────────────────────────────────────────
+    typeset -gi _STARSHIP_LINE_FINISHED=0
+    typeset -g  _STARSHIP_SEGMENT_LEFT=""
+    typeset -g  _STARSHIP_SEGMENT_RIGHT=""
 
     # ── Transient state ───────────────────────────────────────────────────────────
-    typeset -gi _STARSHIP_LAST_EXIT=0
-    typeset -gi _STARSHIP_LINE_FINISHED=0
+    typeset -g  _STARSHIP_TRANS_PWD=""
     typeset -g  _STARSHIP_TRANS_PROMPT=""
     typeset -g  _STARSHIP_TRANS_RPROMPT=""
-    typeset -g  _STARSHIP_SAVED_PWD=""
 
     # ── Async state ───────────────────────────────────────────────────────────────
     typeset -g  _STARSHIP_ASYNC_PWD=""
-    typeset -g  _STARSHIP_SEGMENT_LEFT=""
-    typeset -g  _STARSHIP_SEGMENT_RIGHT=""
     typeset -gi _STARSHIP_ASYNC_GIT_ENABLED=0
 
     setopt PROMPT_SUBST
@@ -187,7 +180,7 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
             typeset -g "_STARSHIP_SEGMENT_${side:u}=$stdout"
             if (( _STARSHIP_TRANS_ENABLED )); then
                 local _trans_args=(
-                    --status="$_STARSHIP_LAST_EXIT"
+                    --status="$STARSHIP_CMD_STATUS"
                     --pipestatus="${STARSHIP_PIPE_STATUS[*]:-}"
                     --cmd-duration="${STARSHIP_DURATION:-}"
                     --jobs="${STARSHIP_JOBS_COUNT:-0}"
@@ -216,13 +209,12 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
     if (( _STARSHIP_TRANS_ENABLED )); then
         function _starship_transient_prompt {
             _STARSHIP_LINE_FINISHED=1
-            if [[ "$PWD" != "$_STARSHIP_SAVED_PWD" ]]; then
-                _STARSHIP_SAVED_PWD="$PWD"
+            if (( $STARSHIP_TRANS_KEEP_FIRST )) && [[ "$PWD" != "$_STARSHIP_TRANS_PWD" ]]; then
+                _STARSHIP_TRANS_PWD="$PWD"
                 return
             fi
-            _STARSHIP_SAVED_PROMPT="$PROMPT" _STARSHIP_SAVED_RPROMPT="$RPROMPT"
             PROMPT="$_STARSHIP_TRANS_PROMPT" RPROMPT="$_STARSHIP_TRANS_RPROMPT"
-            zle && zle .reset-prompt
+            zle .reset-prompt
         }
         zle -N _starship_transient_prompt
 
@@ -243,10 +235,8 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 
             # ── Transient block ───────────────────────────────────────────────────
             if (( _STARSHIP_TRANS_ENABLED )); then
-                _STARSHIP_LAST_EXIT=${STARSHIP_CMD_STATUS:-0}
-
                 local side trans_var profile_var profile profile_args=() args=(
-                    --status="$_STARSHIP_LAST_EXIT"
+                    --status="$STARSHIP_CMD_STATUS"
                     --pipestatus="${STARSHIP_PIPE_STATUS[*]:-}"
                     --cmd-duration="${STARSHIP_DURATION:-}"
                     --jobs="${STARSHIP_JOBS_COUNT:-0}"
@@ -282,6 +272,11 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
                 (( _STARSHIP_ASYNC_RIGHT_ENABLED )) && RPROMPT='$(_starship_fast_rprompt)'
 
                 _STARSHIP_LINE_FINISHED=0
+
+                if [[ "$PWD" != "$_STARSHIP_ASYNC_PWD" ]] && (( ${+functions[async_flush_jobs]} )); then
+                    (( _STARSHIP_ASYNC_LEFT_ENABLED ))  && async_flush_jobs _starship_async_worker_left
+                    (( _STARSHIP_ASYNC_RIGHT_ENABLED )) && async_flush_jobs _starship_async_worker_right
+                fi
 
                 if (( STARSHIP_GIT_CACHE_ENABLED )); then
                     if [[ "$PWD" != "$_STARSHIP_ASYNC_PWD" ]]; then
