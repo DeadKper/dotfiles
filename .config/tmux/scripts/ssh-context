@@ -51,7 +51,7 @@ var_prefix="TMUX_${pane_key}"
 if [[ -n "$pane_id" ]]; then
 	prev_cmd=$(tmux show-environment "${var_prefix}_SSH_CMD" 2>/dev/null | sed 's/^[^=]*=//')
 	if [[ "$prev_cmd" != "$foreground" ]]; then
-		if is_ssh; then
+		if $is_ssh; then
 			tmux set-environment    "${var_prefix}_SSH_CMD" "$foreground"
 		else
 			tmux set-environment -u "${var_prefix}_SSH_CMD" 2>/dev/null || true
